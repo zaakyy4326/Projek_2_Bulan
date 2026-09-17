@@ -19,7 +19,7 @@ Proyek ini dibangun menggunakan arsitektur **ASP.NET MVC 5** dan **Web API 2 (.N
 * **Pencarian & Penyaringan**: Cari menu berdasarkan kata kunci pencarian serta filter instan berdasarkan kategori menu.
 * **Detail Menu & Varian**: Informasi bahan kue, pilihan varian porsi/rasa, catatan khusus pembeli, serta ulasan pelanggan.
 * **Keranjang Belanja Interaktif**: Perhitungan harga otomatis dan integrasi voucher diskon yang didapatkan dari pencapaian dalam game.
-* **Simulasi Pembayaran & Pelacakan**: Alur pembayaran instan dengan simulasi QRIS dinamis, batas waktu pembayaran, serta pelacakan status pesanan dapur secara berkala (Dikonfirmasi $\rightarrow$ Diproses Chef $\rightarrow$ Diantar $\rightarrow$ Selesai).
+* **Simulasi Pembayaran & Pelacakan**: Alur pembayaran instan dengan simulasi QRIS dinamis, batas waktu pembayaran, serta pelacakan status pesanan dapur secara berkala (Dikonfirmasi -> Diproses Chef -> Diantar -> Selesai).
 
 ### 3. 🔐 Autentikasi & Keamanan Akun
 * **Autentikasi Pengguna**: Mendukung pendaftaran akun baru, login sesi, dan penyimpanan token aman.
@@ -121,9 +121,11 @@ Buka berkas `Web.config` pada baris `<connectionStrings>` dan pastikan nama serv
 
 ### 4. Menjalankan Aplikasi
 1. Buka berkas `UAS_C#_Lanjutan.sln` di Visual Studio.
-2. Lakukan restorasi paket dependensi: menu **Build $\rightarrow$ Rebuild Solution**.
-3. Jalankan aplikasi dengan menekan tombol **IIS Express (Google Chrome / Edge)** atau tombol pintas **F5**.
-4. Browser akan otomatis membuka halaman utama game dan toko.
+2. Klik kanan pada baris paling atas: Solution 'UAS_C#_Lanjutan'
+3. Pilih Restore NuGet Packages
+4. Lakukan restorasi paket dependensi: menu **Build -> Rebuild Solution**.
+5. Jalankan aplikasi dengan menekan tombol **IIS Express (Google Chrome / Edge)** atau tombol pintas **F5**.
+6. Browser akan otomatis membuka halaman utama game dan toko.
 
 ---
 
