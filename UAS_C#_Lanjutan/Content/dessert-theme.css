@@ -1,0 +1,306 @@
+body {
+    font-family: 'Fredoka', sans-serif;
+    /* Gradasi warna netral dessert: coklat, krem, mint, oranye pastel */
+    background: linear-gradient(135deg, #D4A373 0%, #FAEDCD 30%, #CCD5AE 70%, #FBC8B5 100%);
+    /* FIX BACKGROUND KEPOTONG: */
+    background-attachment: fixed; /* Mengunci gradasi agar tidak ikut bergeser atau patah */
+    background-size: cover; /* Memastikan gradasi menutup seluruh layar dengan rapat */
+
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+    margin: 0; /* Menghapus margin bawaan browser */
+}
+
+/* Disable text selection everywhere so emojis don't get highlighted */
+* {
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+}
+
+/* Universal Custom Dessert Cursor - Always keep brown cursor */
+html, body, *, *::before, *::after {
+    cursor: url('/Content/PNG/Cursor32.png') 0 0, url('PNG/Cursor32.png') 0 0, auto !important;
+}
+
+a, button, [role="button"], input[type="button"], input[type="submit"], input[type="reset"], 
+select, label, .btn, .btn-game-menu, .profile-avatar, .clickable, .tab, .leaderboard-tab, 
+.modal-tab-btn, .leaderboard-btn-visit, .leaderboard-btn-friend-action, .leaderboard-btn-request-action, 
+.btn-claim-mission-reward, .ach-card-item, .avatar-thumbnail-option, .btn-avatar-upload-badge, 
+.audio-control, .swal2-confirm, .swal2-cancel, .swal2-close, .swal2-popup, .swal2-html-container * {
+    cursor: url('/Content/PNG/Cursor32.png') 0 0, url('PNG/Cursor32.png') 0 0, pointer !important;
+}
+
+/* Allow text selection & I-beam cursor only in text input fields */
+input[type="text"], input[type="password"], input[type="email"], input[type="number"], textarea {
+    -webkit-user-select: auto !important;
+    -moz-user-select: auto !important;
+    -ms-user-select: text !important;
+    user-select: auto !important;
+    cursor: text !important;
+}
+
+/* Animasi kue mengapung */
+#floating-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0; /* Background layer */
+    pointer-events: none !important; /* Supaya emojinya tidak menghalangi klik mouse */
+    overflow: hidden;
+}
+
+/* Animasi kue mengapung */
+.floating-dessert {
+    position: absolute;
+    font-size: 2.2rem;
+    user-select: none;
+    opacity: 0.35;
+    animation: floatUp 14s linear infinite;
+    z-index: 0; /* Tetap di background di bawah semua card */
+    pointer-events: none !important;
+}
+
+
+
+/* Card Login - Naikkan z-index agar pasti berada di atas kue */
+.login-card {
+    background: rgba(255, 248, 235, 0.9);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 2px solid rgba(210, 150, 75, 0.4);
+    border-radius: 24px;
+    width: 90%;
+    max-width: 390px;
+    z-index: 10; /* Berada di atas kue mengapung */
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+}
+
+@keyframes floatUp {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 0.65;
+    }
+
+    90% {
+        opacity: 0.65;
+    }
+
+    100% {
+        transform: translateY(-120vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+.form-control {
+    border-radius: 12px;
+    border: 1.5px solid #D4A373;
+    background-color: #FFFEF7;
+}
+
+    .form-control:focus {
+        border-color: #B5835A;
+        box-shadow: 0 0 0 0.25rem rgba(181, 131, 90, 0.25);
+    }
+
+.form-label {
+    color: #7B5B3A !important;
+}
+
+/* Tombol Masuk - Oranye kecoklatan */
+.btn-masuk {
+    background-color: #D4A373;
+    color: white;
+    border-radius: 12px;
+    border: none;
+    transition: all 0.2s ease-in-out;
+}
+
+    .btn-masuk:hover {
+        background-color: #B5835A;
+        transform: scale(1.03);
+        color: white;
+    }
+
+/* Tombol Daftar - Outline coklat */
+.btn-daftar {
+    border-radius: 12px;
+    border: 2px solid #D4A373;
+    color: #B5835A;
+    background: transparent;
+}
+
+    .btn-daftar:hover {
+        background-color: #D4A373;
+        color: white;
+    }
+
+/* Kontrol Audio */
+/* Kontrol Audio - POSISI FIXED KONSISTEN UNTUK SEMUA HALAMAN */
+.audio-control {
+    position: fixed !important;
+    bottom: 20px !important;
+    right: 20px !important;
+    z-index: 9999 !important;
+    background: rgba(210, 180, 140, 0.9);
+    padding: 8px 16px;
+    border-radius: 30px;
+    font-size: 0.9rem;
+    color: #5C3E1F;
+    font-weight: 600;
+    backdrop-filter: blur(5px);
+    font-family: 'Fredoka', sans-serif;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+    .audio-control:hover {
+        background: rgba(180, 140, 100, 0.95);
+        color: white;
+        transform: scale(1.02);
+    }
+
+/* Judul warna netral */
+h2 {
+    color: #B5835A !important;
+}
+
+.text-muted {
+    color: #8B6B42 !important;
+}
+
+/* Class pembulatan gemes yang kamu panggil di cshtml */
+.border-radius-24 {
+    border-radius: 24px !important;
+}
+
+/* Mencegah SweetAlert2 merusak susunan tata letak latar belakang */
+body.swal2-shown {
+    overflow: hidden !important;
+    height: 100vh !important;
+    padding-right: 0px !important; /* Mencegah lonjakan padding saat scrollbar hilang */
+}
+
+.swal2-container {
+    z-index: 99999 !important;
+}
+
+#btnForgotPassword:hover {
+    color: #FF5C8A !important; /* Berubah jadi warna pink manis saat di-hover */
+    text-decoration: underline !important;
+}
+
+/* GLOBAL PAGE LOADER */
+#global-page-loader {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(255, 254, 247, 0.85);
+    backdrop-filter: blur(4px);
+    z-index: 99999999 !important;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.loader-spinner {
+    width: 60px; height: 60px;
+    border: 6px solid #fca5a5;
+    border-top: 6px solid #FF5C8A;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+.loader-text {
+    margin-top: 15px;
+    color: #7B5B3A;
+    font-weight: 800;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 1.5rem;
+    animation: pulseText 1.5s infinite alternate;
+}
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+@keyframes pulseText { 0% { opacity: 0.7; transform: scale(0.95); } 100% { opacity: 1; transform: scale(1.05); } }
+
+/* GLOBAL PORTRAIT ORIENTATION ENFORCER */
+#global-portrait-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(circle, #3d2410 0%, #1a1006 100%);
+    color: #ffe8c4;
+    z-index: 2147483647 !important;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-family: 'Fredoka', 'Quicksand', 'Plus Jakarta Sans', sans-serif;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+body:not(.cooking-body):not(.shop-body) #global-portrait-overlay.active {
+    display: flex !important;
+}
+
+/* Hanya aktif di perangkat mobile/tablet (touch screen murni tanpa mouse hover), PC/Laptop tidak akan terpicu */
+@media screen and (orientation: landscape) and (pointer: coarse) and (hover: none) and (max-width: 1366px) {
+    body:not(.cooking-body):not(.shop-body) #global-portrait-overlay {
+        display: flex !important;
+    }
+}
+
+body.shop-body #global-portrait-overlay {
+    display: none !important;
+}
+
+.global-portrait-card {
+    max-width: 480px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(43, 29, 12, 0.85);
+    border: 2px solid #8b5f3a;
+    border-radius: 24px;
+    padding: 24px 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    backdrop-filter: blur(8px);
+}
+
+.global-phone-icon {
+    font-size: 3.5rem;
+    margin-bottom: 12px;
+    animation: rotatePhoneToPortrait 2s infinite ease-in-out;
+}
+
+@keyframes rotatePhoneToPortrait {
+    0% { transform: rotate(-90deg); }
+    50% { transform: rotate(0deg); }
+    100% { transform: rotate(0deg); }
+}
+
+.global-portrait-title {
+    font-size: clamp(1.2rem, 3.5vw, 1.6rem);
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #ff5c8a !important;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
+    line-height: 1.3;
+}
+
+.global-portrait-desc {
+    font-size: clamp(0.85rem, 2vw, 1rem);
+    line-height: 1.45;
+    color: #fce3b5;
+    margin-bottom: 0;
+}

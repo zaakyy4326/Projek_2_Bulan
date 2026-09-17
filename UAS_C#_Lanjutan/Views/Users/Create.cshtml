@@ -1,0 +1,358 @@
+@model UAS_C__Lanjutan.Models.Entity.User
+
+
+
+@{
+
+    Layout = null; // Kita matikan layout bawaan mvc biar gak tabrakan bunderannya
+
+}
+
+
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Daftar Player Baru! 🧁</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <link rel="stylesheet" href="@Url.Content("~/Content/dessert-theme.css")?v=@DateTime.Now.Ticks" />
+
+
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <style>
+        body {
+            cursor: url('@Url.Content("~/Content/PNG/Cursor32.png")') 0 0, auto;
+        }
+        input, textarea {
+            cursor: auto;
+        }
+    </style>
+
+</head>
+
+<body class="d-flex align-items-center justify-content-center">
+
+
+
+    <div id="floating-container"></div>
+
+
+
+    <audio id="bgmMusic" loop>
+
+        <source src="@Url.Content("~/Content/Audio/Main Theme - Dessert.mp3")" type="audio/mp3">
+
+    </audio>
+
+    <audio id="sfxClick">
+
+        <source src="@Url.Content("~/Content/Audio/bubble-pop.mp3")" type="audio/mp3">
+
+    </audio>
+
+
+
+    <div class="card login-card shadow p-4 text-center">
+
+        <h2 class="fw-bold mb-1">📝 DAFTAR AKUN</h2>
+
+        <p class="text-muted small mb-4">Buat akun barumu untuk mulai bermain! 🍩</p>
+
+
+
+        @using (Html.BeginForm())
+
+        {
+
+            @Html.AntiForgeryToken()
+
+
+
+    <div class="text-start">
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger small fw-bold mb-2" })
+
+
+
+        <div class="mb-3">
+
+            <label class="form-label fw-bold" style="color: #7B5B3A;">Email Player</label>
+
+            @Html.EditorFor(model => model.Email,
+
+            new
+
+            {
+
+                htmlAttributes = new
+
+                {
+
+                    @class = "form-control",
+
+                    placeholder = "contoh: player@gmail.com",
+
+                    type = "email",
+
+                    required = "required",
+
+                    autocomplete = "off",
+
+                    pattern = @"^[^@\s]+@gmail\.com$",
+
+                    title = "Format email harus menggunakan domain @gmail.com"
+
+                }
+
+            })
+
+            @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger small fw-bold" })
+
+        </div>
+
+
+
+        <div class="mb-3">
+
+            <label class="form-label fw-bold">Username Player</label>
+
+            @Html.EditorFor(model => model.Username, new { htmlAttributes = new { @class = "form-control", placeholder = "Buat username baru...", autocomplete = "off" } })
+
+            @Html.ValidationMessageFor(model => model.Username, "", new { @class = "text-danger small fw-bold" })
+
+        </div>
+
+
+
+        <div class="mb-3">
+
+            <label class="form-label fw-bold">Password</label>
+
+            <div class="input-group">
+
+                <input type="password" name="Password" id="Password" class="form-control" placeholder="Minimal 8 karakter (Huruf + Angka)" required />
+
+                <button class="btn btn-outline-secondary" type="button" id="btnTogglePass" style="border-color:#FFB3B3;">👁️</button>
+
+            </div>
+
+            @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger small fw-bold" })
+
+        </div>
+
+
+
+        <div class="mb-4">
+
+            <label class="form-label fw-bold">Konfirmasi Password</label>
+
+            <input type="password" id="ConfirmPassword" class="form-control" placeholder="Ulangi password di atas..." required />
+
+            <span id="errorConfirm" class="text-danger small fw-bold"></span>
+
+        </div>
+
+
+
+        <button type="submit" id="btnSubmitRegis" class="btn btn-masuk w-100 fw-bold py-2 mb-2 shadow-sm">Daftar Sekarang ✨</button>
+
+        <a href="/Account/Login" id="btnBackToLogin" class="btn btn-daftar w-100 fw-bold py-2 btn-sm">Sudah Punya Akun? Login</a>
+
+    </div>
+
+        }
+
+    </div>
+
+
+
+    <div class="audio-control fw-bold" id="musicToggle">🎵 Musik: OFF</div>
+
+
+
+    <div id="global-portrait-overlay">
+        <div class="global-portrait-card">
+            <div class="global-phone-icon">
+                <span style="font-size: 60px; display: inline-block;">📱</span>
+            </div>
+            <h2 class="global-portrait-title">Harap Putar Layar ke Posisi Tegak (Portrait) 🔄</h2>
+            <p class="global-portrait-desc">Halaman ini dirancang dalam posisi tegak (Portrait) agar pas dengan genggaman Anda. Silakan putar HP Anda!</p>
+        </div>
+    </div>
+
+    <script src="@Url.Content("~/Scripts/bubble-pop.js")?v=@DateTime.Now.Ticks"></script>
+
+    <script src="@Url.Content("~/Scripts/dessert-auth.js")"></script>
+
+
+
+    @if (TempData["RegisSukses"] != null)
+
+    {
+
+        <script>
+
+            $(document).ready(function () {
+
+                Swal.fire({
+
+                    title: 'Registrasi Berhasil! 🍰',
+
+                    text: 'Akun barumu siap digunakan untuk mengumpulkan koin!',
+
+                    icon: 'success',
+
+                    confirmButtonText: 'Masuk Game 🚀',
+
+                    confirmButtonColor: '#D4A373', // Warna cokelat/krem senada tombol masuk
+
+                    background: '#FFFEF7', // Warna kertas krem manis
+
+                    color: '#7B5B3A', // Warna teks cokelat gelap
+
+                    customClass: {
+
+                        popup: 'border-radius-24' // Biar membulat gemes
+
+                    }
+
+                }).then((result) => {
+
+                    // Setelah user klik tombol sukses, arahkan ke halaman Login
+
+                    window.location.href = "/Account/Login";
+
+                });
+
+            });
+
+        </script>
+
+    }
+
+
+
+    <script>
+
+        $(document).ready(function () {
+
+            var bgm = document.getElementById("bgmMusic");
+
+
+
+            // Trik Menyimpan Detik Musik: Jika sebelumnya sudah ada catatan detik, langsung lompat ke detik tersebut
+
+            var lastTime = sessionStorage.getItem("bgm_current_time");
+
+            if (lastTime) {
+
+                bgm.currentTime = parseFloat(lastTime);
+
+            }
+
+
+
+            // Setiap 1 detik, catat posisi detik lagu saat ini ke memori browser
+
+            bgm.addEventListener("timeupdate", function () {
+
+                sessionStorage.setItem("bgm_current_time", bgm.currentTime);
+
+            });
+
+
+
+            // Fix bug kursor terkunci mvc yang kemarin
+
+            $("#Username").on("input focus", function () {
+
+                $(this).closest('.mb-3').find('.field-validation-error')
+
+                    .removeClass('field-validation-error')
+
+                    .addClass('field-validation-valid')
+
+                    .text('');
+
+            });
+
+
+
+            // Logika mata intip
+
+            $("#btnTogglePass").click(function () {
+
+                var passInput = $("#Password");
+
+                var confirmInput = $("#ConfirmPassword");
+
+
+
+                if (passInput.attr("type") === "password") {
+
+                    passInput.attr("type", "text");
+
+                    confirmInput.attr("type", "text");
+
+                    $(this).text("🔒");
+
+                } else {
+
+                    passInput.attr("type", "password");
+
+                    confirmInput.attr("type", "password");
+
+                    $(this).text("👁️");
+
+                }
+
+            });
+
+
+
+            // Validasi kecocokan password sebelum submit form
+
+            $("form").submit(function (e) {
+
+                var password = $("#Password").val();
+
+                var confirmPassword = $("#ConfirmPassword").val();
+
+
+
+                if (password !== confirmPassword) {
+
+                    e.preventDefault();
+
+                    $("#errorConfirm").text("❌ Konfirmasi password tidak cocok!");
+
+                    return false;
+
+                }
+
+                $("#errorConfirm").text("");
+
+            });
+
+        });
+
+    </script>
+
+</body>
+
+</html>

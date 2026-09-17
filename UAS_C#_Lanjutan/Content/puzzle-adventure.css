@@ -1,0 +1,826 @@
+html {
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+body {
+    background: linear-gradient(180deg, #56CCF2 0%, #2F80ED 100%);
+    background-attachment: fixed;
+    color: #fff;
+    min-height: 100vh;
+    height: auto !important;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Nunito', sans-serif;
+    overflow-x: hidden;
+    overflow-y: auto !important;
+}
+
+/* Adventure Map Styles - Dessert Island Theme */
+.header {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 20px;
+    background: rgba(0, 0, 0, 0.3);
+    align-items: center;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 100;
+    box-sizing: border-box;
+    backdrop-filter: blur(10px);
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn-back {
+    background: #ff6b6b;
+    color: white;
+    border: none;
+    padding: clamp(6px, 1.5vw, 10px) clamp(12px, 3vw, 20px);
+    border-radius: 10px;
+    font-family: 'Fredoka One', cursive;
+    text-decoration: none;
+    transition: 0.2s;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    font-size: clamp(0.85rem, 2vw, 1rem);
+}
+
+.btn-back:hover {
+    background: #ff5252;
+    transform: scale(1.05);
+}
+
+.total-stars {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(0.75rem, 2.2vw, 1.3rem);
+    color: #ffd700;
+    display: flex;
+    align-items: center;
+    gap: clamp(4px, 1.2vw, 8px);
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.map-container {
+    position: relative;
+    width: 100%;
+    min-height: 100vh; /* Will be expanded by JS */
+    overflow: hidden; /* Hide horizontal overflow of paths */
+    padding-bottom: 100px;
+}
+
+/* Fog of War */
+.fog-of-war-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    pointer-events: auto; 
+    z-index: 15; /* Above nodes (z-index 10) */
+    border-bottom: 5px dashed rgba(255, 255, 255, 0.5);
+}
+
+.path-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.path-line {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.8);
+    stroke-width: 16px;
+    stroke-linecap: round;
+    stroke-dasharray: 24, 24;
+    animation: dash 3s linear infinite reverse;
+}
+
+@keyframes dash {
+    to {
+        stroke-dashoffset: 48;
+    }
+}
+
+.giant-locked-dessert {
+    position: absolute;
+    bottom: 100px;
+    top: auto;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 8rem;
+    opacity: 0.8;
+    filter: drop-shadow(0 0 20px rgba(0,0,0,0.8));
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.level-node {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+/* Island visual for nodes (Cookie Emote) */
+.level-island {
+    width: 80px;
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+    transition: transform 0.3s, filter 0.3s;
+}
+
+.level-island::before {
+    content: "🍪";
+    font-size: 70px;
+    position: absolute;
+    z-index: -1;
+    filter: drop-shadow(0 10px 10px rgba(0,0,0,0.4));
+}
+
+.level-node:hover .level-island {
+    transform: scale(1.15) translateY(-10px);
+}
+
+/* Birthday Cake Emote for Bonus Levels */
+.level-island.bonus {
+    width: 100px;
+    height: 100px;
+    border: none;
+}
+
+.level-island.bonus::before {
+    content: "🥧";
+    font-size: 90px;
+}
+
+.level-island.locked {
+    filter: grayscale(100%) brightness(0.6);
+}
+
+.level-island.current {
+    animation: pulseGlow 2s infinite alternate;
+}
+
+@keyframes pulseGlow {
+    0% { filter: drop-shadow(0 0 10px #fff) drop-shadow(0 0 20px #f8b500); transform: scale(1); }
+    100% { filter: drop-shadow(0 0 20px #fff) drop-shadow(0 0 40px #fceabb); transform: scale(1.1); }
+}
+
+/* Island Decorations (Pure CSS Sweets) */
+.unlocked-node:nth-child(2n)::after {
+    content: "";
+    position: absolute;
+    top: -10px; 
+    left: -25px;
+    width: 25px; 
+    height: 25px;
+    /* Swirl mint candy */
+    background: repeating-conic-gradient(#ff4757 0% 15%, #ffffff 15% 30%);
+    border-radius: 50%;
+    box-shadow: inset -2px -2px 5px rgba(0,0,0,0.3), 0 5px 8px rgba(0,0,0,0.4);
+    z-index: 5;
+    transform: rotate(-15deg);
+}
+
+.unlocked-node:nth-child(3n)::before {
+    content: "";
+    position: absolute;
+    bottom: -5px; 
+    right: -25px;
+    width: 30px; 
+    height: 30px;
+    /* Donut with sprinkles */
+    background-color: #eccc68; /* dough */
+    border-radius: 50%;
+    box-shadow:
+        inset 0 0 0 6px #ff7f50, /* Coral icing */
+        inset -3px -3px 5px rgba(0,0,0,0.3), /* 3D effect on dough */
+        0 5px 8px rgba(0,0,0,0.4);
+    /* Inner hole simulation */
+    background-image: radial-gradient(circle at 50% 50%, #2f80ed 20%, transparent 22%);
+    z-index: 5;
+    transform: rotate(30deg);
+}
+
+/* Area Bonus Island (Emoji Only) */
+.bonus-island-emoji {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 90px;
+    z-index: -1;
+    filter: drop-shadow(0 10px 10px rgba(0,0,0,0.4));
+}
+.level-island.area-bonus::before {
+    content: none !important;
+}
+.level-island.area-bonus {
+    width: 110px;
+    height: 110px;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    animation: area-bounce 2.5s infinite ease-in-out;
+}
+.level-island.area-bonus.locked {
+    filter: grayscale(100%);
+    opacity: 0.8;
+}
+@keyframes area-bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+}
+
+/* Bonus Flag */
+.bonus-flag {
+    position: absolute;
+    top: -25px;
+    right: 5px;
+    width: 30px;
+    height: 40px;
+    z-index: 10;
+    transform: rotate(15deg);
+    pointer-events: none;
+}
+.flag-pole {
+    width: 4px;
+    height: 45px;
+    background: #8b4513;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    border-radius: 2px;
+    box-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+}
+.flag-triangle {
+    width: 0;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-left: 22px solid #ff3b30;
+    position: absolute;
+    left: 3px;
+    top: 2px;
+    transform-origin: left center;
+    animation: flutter 0.5s ease-in-out infinite alternate;
+    filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.3));
+}
+@keyframes flutter {
+    0% { transform: rotateY(0deg) skewY(-5deg); }
+    100% { transform: rotateY(40deg) skewY(5deg); }
+}
+
+/* Background Clouds */
+.cloud {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 50px;
+    filter: blur(2px);
+    pointer-events: none;
+    z-index: 0;
+    animation: float-cloud linear infinite;
+}
+.cloud::before, .cloud::after {
+    content: '';
+    position: absolute;
+    background: inherit;
+    border-radius: 50%;
+}
+.cloud::before {
+    width: 60%; height: 100%; top: -40%; left: 15%;
+}
+.cloud::after {
+    width: 40%; height: 80%; top: -20%; right: 10%;
+}
+
+.requirement-tooltip::after {
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 8px 8px 0;
+    border-style: solid;
+    border-color: #ff6b6b transparent transparent transparent;
+}
+
+.level-node:hover .requirement-tooltip {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Bonus Requirement Display */
+.bonus-req-display {
+    position: absolute;
+    bottom: -45px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    background: rgba(0,0,0,0.6);
+    padding: 5px 10px;
+    border-radius: 10px;
+    backdrop-filter: blur(2px);
+    pointer-events: none;
+    z-index: 5;
+}
+
+.bonus-req-display .star-req {
+    color: white;
+    font-family: 'Fredoka One', cursive;
+    font-size: 1rem;
+    white-space: nowrap;
+}
+
+.bonus-req-display .recipe-req {
+    position: relative;
+    font-size: 1.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    text-decoration: none;
+}
+
+.bonus-req-display .recipe-req.locked .emoji {
+    filter: grayscale(100%) opacity(0.5);
+}
+
+.bonus-req-display .recipe-req.locked .overlay-lock {
+    position: absolute;
+    font-size: 1rem;
+    color: #ff4757;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+    bottom: -5px;
+    right: -5px;
+}
+
+.bonus-req-display .recipe-req.unlocked .overlay-check {
+    position: absolute;
+    font-size: 1rem;
+    color: #2ed573;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+    bottom: -5px;
+    right: -5px;
+}
+@keyframes float-cloud {
+    from { transform: translateX(-100vw); }
+    to { transform: translateX(100vw); }
+}
+
+.level-number {
+    font-family: 'Fredoka One', cursive;
+    font-size: 2rem;
+    color: #fff;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+}
+
+.locked-icon {
+    font-size: 2rem;
+    color: #bdc3c7;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+}
+
+.stars-display {
+    position: absolute;
+    bottom: -30px;
+    display: flex;
+    gap: 3px;
+    font-size: 1.2rem;
+    background: rgba(0,0,0,0.5);
+    padding: 3px 10px;
+    border-radius: 15px;
+    backdrop-filter: blur(2px);
+}
+
+.requirement-tooltip {
+    position: absolute;
+    top: -50px;
+    background: rgba(255,255,255,0.9);
+    padding: 8px 15px;
+    border-radius: 15px;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    pointer-events: none;
+    border: 2px solid #ff6b6b;
+    color: #333;
+    font-family: 'Nunito', sans-serif;
+    font-weight: bold;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    opacity: 0;
+    transform: translateY(10px);
+    transition: 0.3s;
+    z-index: 10;
+}
+
+.requirement-tooltip::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 8px 8px 0;
+    border-style: solid;
+    border-color: #ff6b6b transparent transparent transparent;
+}
+
+.level-node:hover .requirement-tooltip {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Adventure Game Styles */
+.target-panel {
+    background: rgba(0,0,0,0.6);
+    padding: clamp(6px, 1.5vh, 12px) clamp(15px, 4vw, 30px);
+    border-radius: 30px;
+    border: 2px solid #D4A373;
+    display: flex;
+    flex-direction: row;
+    gap: clamp(10px, 3vw, 30px);
+    justify-content: center;
+    align-items: center;
+    margin-bottom: clamp(10px, 2vh, 25px);
+    flex-wrap: wrap;
+    max-width: 95%;
+}
+
+.target-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: 'Fredoka One', cursive;
+    color: white;
+    font-size: clamp(0.95rem, 2vw, 1.2rem);
+}
+
+.target-item img {
+    width: clamp(35px, 8vw, 50px);
+    height: clamp(35px, 8vw, 50px);
+    object-fit: contain;
+}
+
+.header-top {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 20px;
+    background: #2c3e50;
+    color: white;
+    align-items: center;
+}
+
+/* --- LUXURY DESSERT BACKGROUNDS --- */
+
+/* 1. Caramel/Chocolate Warm Luxury */
+.luxury-caramel-bg {
+    background: radial-gradient(circle at 50% 50%, #4a2e1b 0%, #2e1c0d 100%);
+    position: relative;
+    min-height: 100vh;
+    overflow: hidden !important;
+    font-family: 'Nunito', sans-serif;
+}
+
+.luxury-caramel-bg::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-image: 
+        radial-gradient(rgba(255, 215, 0, 0.1) 20%, transparent 20%),
+        radial-gradient(rgba(255, 215, 0, 0.1) 20%, transparent 20%);
+    background-color: transparent;
+    background-position: 0 0, 50px 50px;
+    background-size: 100px 100px;
+    opacity: 0.5;
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* 2. Pastel/Sweet Macaron Luxury */
+.luxury-pastel-bg {
+    background: linear-gradient(135deg, #ffd1dc 0%, #ffb6c1 50%, #ffc0cb 100%);
+    position: relative;
+    min-height: 100vh;
+    overflow: hidden !important;
+    font-family: 'Nunito', sans-serif;
+}
+
+.luxury-pastel-bg::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-image: 
+        radial-gradient(rgba(255, 255, 255, 0.4) 20%, transparent 20%),
+        radial-gradient(rgba(255, 255, 255, 0.4) 20%, transparent 20%);
+    background-position: 0 0, 60px 60px;
+    background-size: 120px 120px;
+    opacity: 0.5;
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* 3. Boss Level Ultimate Luxury */
+.luxury-boss-bg {
+    background: radial-gradient(circle at center, #2c0e37 0%, #0d0411 100%);
+    position: relative;
+    min-height: 100vh;
+    overflow: hidden !important;
+    font-family: 'Nunito', sans-serif;
+}
+
+.luxury-boss-bg::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: 
+        linear-gradient(45deg, transparent 49%, rgba(212, 175, 55, 0.05) 49%, rgba(212, 175, 55, 0.05) 51%, transparent 51%) 0 0 / 80px 80px,
+        linear-gradient(-45deg, transparent 49%, rgba(212, 175, 55, 0.05) 49%, rgba(212, 175, 55, 0.05) 51%, transparent 51%) 0 0 / 80px 80px;
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* --- ENHANCED GRID BOARD FOR LUXURY BGS (Optimized: No heavy backdrop-filter blur) --- */
+.luxury-caramel-bg .grid-board {
+    background: rgba(43, 26, 16, 0.95);
+    border: 6px solid #d4a373;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.7), inset 0 0 20px rgba(0,0,0,0.8);
+    border-radius: 20px;
+}
+
+.luxury-pastel-bg .grid-board {
+    background: rgba(255, 255, 255, 0.9);
+    border: 6px solid #ff9eb5;
+    box-shadow: 0 15px 35px rgba(255, 105, 180, 0.3), inset 0 0 20px rgba(255,255,255,0.8);
+    border-radius: 25px;
+}
+
+.luxury-boss-bg .grid-board {
+    background: rgba(18, 5, 24, 0.95);
+    border: 6px solid #d4af37; /* Gold */
+    box-shadow: 0 0 30px rgba(212, 175, 55, 0.4), inset 0 0 20px rgba(212, 175, 55, 0.2);
+    border-radius: 15px;
+}
+
+/* --- ENHANCED TARGET PANEL (High Performance 60fps) --- */
+.luxury-caramel-bg .target-panel,
+.luxury-pastel-bg .target-panel,
+.luxury-boss-bg .target-panel {
+    background: rgba(43, 26, 16, 0.9);
+    border: 2px solid rgba(255,255,255,0.3);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+.luxury-boss-bg .target-panel {
+    border-color: #d4af37;
+    background: rgba(30, 10, 40, 0.92);
+}
+.luxury-pastel-bg .target-panel {
+    background: rgba(255, 255, 255, 0.92);
+    border-color: #ff9eb5;
+    color: #555;
+}
+.luxury-pastel-bg .target-item {
+    color: #ff6b81;
+    text-shadow: 1px 1px 0 #fff;
+}
+
+/* Force hardware acceleration and zero blur lag on game elements */
+.grid-board, .block-option, .target-panel {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    transform: translateZ(0);
+}
+
+/* --- RESPONSIVE TARGET SPLASH OVERLAYS --- */
+.splash-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.75);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background 0.5s;
+}
+
+.splash-box-boss {
+    background: rgba(26, 15, 10, 0.96);
+    padding: clamp(20px, 5vw, 50px);
+    border-radius: clamp(15px, 4vw, 30px);
+    border: 4px solid #ff5c8a;
+    transform: scale(0.1);
+    opacity: 0;
+    transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
+    max-width: 90%;
+    box-sizing: border-box;
+}
+
+.splash-bonus-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    min-width: clamp(260px, 80vw, 320px);
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.splash-bonus-title {
+    font-size: clamp(24px, 6vw, 52px);
+    font-family: 'Fredoka One', cursive;
+    color: #ff5c8a;
+    text-shadow: 3px 3px 0 #000, 0px 5px 15px rgba(255, 92, 138, 0.5);
+    margin-bottom: clamp(15px, 3vw, 25px);
+    animation: bonusPulse 1.2s infinite alternate;
+    letter-spacing: 1px;
+}
+
+.splash-bonus-subtitle {
+    font-size: clamp(14px, 3.5vw, 26px);
+    font-family: 'Nunito', sans-serif;
+    font-weight: bold;
+    color: #D4A373;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+    margin-bottom: 10px;
+    letter-spacing: 1.5px;
+}
+
+.splash-bonus-count {
+    font-size: clamp(40px, 10vw, 80px);
+    font-family: 'Fredoka One', cursive;
+    color: #f6d365;
+    text-shadow: 4px 4px 0 #000, 0 10px 20px rgba(246, 211, 101, 0.4);
+    line-height: 1;
+}
+
+.splash-box-normal {
+    background: rgba(0, 0, 0, 0.8);
+    padding: clamp(20px, 5vw, 50px);
+    border-radius: clamp(15px, 4vw, 30px);
+    border: 4px solid #D4A373;
+    display: flex;
+    gap: clamp(15px, 4vw, 50px);
+    transform: scale(0.1);
+    opacity: 0;
+    transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    flex-wrap: wrap;
+    max-width: 90%;
+    justify-content: center;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    box-sizing: border-box;
+}
+
+.splash-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: clamp(70px, 18vw, 120px);
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.splash-emoji, .splash-star-icon {
+    font-size: clamp(40px, 10vw, 80px);
+    filter: drop-shadow(0px 10px 10px rgba(0, 0, 0, 0.5));
+    line-height: 1;
+}
+
+.splash-star-icon {
+    color: gold;
+}
+
+.splash-qty {
+    font-size: clamp(20px, 5vw, 40px);
+    font-family: 'Fredoka One', cursive;
+    margin-top: clamp(8px, 2vw, 15px);
+    color: white;
+    text-shadow: 2px 2px 4px #000;
+}
+
+/* HIDE BACKGROUND MOVING DOTS ON MOBILE/HP/TABLET VIEWPORTS */
+@media (max-width: 1024px) {
+    .luxury-caramel-bg::before,
+    .luxury-pastel-bg::before,
+    .luxury-boss-bg::before {
+        display: none !important;
+        content: none !important;
+    }
+}
+
+/* ============================================================
+   ADVENTURE NORMAL LEVEL: Side-by-side layout
+   Target panel top, board LEFT, pieces RIGHT (vertical)
+   ============================================================ */
+
+/* Outer wrapper for normal level */
+.adv-normal-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;  /* push UP instead of center */
+    gap: 6px;
+    flex: 1;
+    padding: 6px 20px 10px;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+/* Shrink target panel spacing inside adventure normal */
+.adv-normal-wrapper .target-panel {
+    margin-bottom: 2px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+}
+
+/* Row that holds board + pieces side by side */
+.adv-board-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(10px, 2vw, 20px);
+}
+
+/* game-container override when used inside adv-board-row */
+.adv-board-only {
+    gap: 0 !important;
+}
+
+/* Pieces panel — vertical column on the RIGHT of the board */
+.adv-pieces-side {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: clamp(6px, 1.2vh, 12px) !important;
+    height: auto !important;
+    width: auto !important;
+}
+
+/* Slightly smaller block-option boxes in side panel */
+.adv-pieces-side .block-option {
+    width: clamp(68px, 9vw, 90px);
+    height: clamp(68px, 9vw, 90px);
+}
+
+/* On very small screens / phones: fall back to horizontal bottom row */
+@media (max-width: 520px) {
+    .adv-board-row {
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .adv-pieces-side {
+        flex-direction: row !important;
+        height: 85px !important;
+        gap: 8px !important;
+    }
+
+    .adv-pieces-side .block-option {
+        width: clamp(60px, 20vw, 78px);
+        height: clamp(60px, 20vw, 78px);
+    }
+}
+
+/* ==========================================================================
+   UNIVERSAL DESSERT CURSOR (NO REVERT TO WHITE POINTER)
+   ========================================================================== */
+html, body, *, *::before, *::after {
+    cursor: url('/Content/PNG/Cursor32.png') 0 0, url('PNG/Cursor32.png') 0 0, auto !important;
+}
+
+a, button, [role="button"], input[type="button"], input[type="submit"], input[type="reset"], 
+select, label, .btn, .btn-back, .btn-back-pink, .level-node, .level-pin, .area-gate-btn, 
+.block-tray, .draggable-block, .cell, .block-option, .target-item, .audio-control,
+.swal2-confirm, .swal2-cancel, .swal2-close, .swal2-popup, .swal2-html-container * {
+    cursor: url('/Content/PNG/Cursor32.png') 0 0, url('PNG/Cursor32.png') 0 0, pointer !important;
+}
+
+input[type="text"], input[type="password"], input[type="email"], input[type="number"], textarea {
+    cursor: text !important;
+}
+
+
+
+
+

@@ -1,0 +1,277 @@
+﻿@using UAS_C__Lanjutan.Models.Entity
+
+@{
+    var recipes = ViewBag.AllRecipes as List<Recipe>;
+    var unlockedIds = ViewBag.UnlockedRecipes as List<int>;
+    int idSelanjutnyaDapatDibeli = recipes.FirstOrDefault(r => !unlockedIds.Contains(r.RecipeId))?.RecipeId ?? -1;
+}
+
+@functions {
+    public string GetRecipeEmoji(string name)
+    {
+        switch (name)
+        {
+            case "Donat": return "&#x1F369;";
+            case "Es Krim": return "&#x1F366;";
+            case "Cupcake": return "&#x1F9C1;";
+            case "Pancake": return "&#x1F95E;";
+            case "Waffle": return "&#x1F9C7;";
+            case "ShortCake": return "&#x1F370;";
+            case "Pai": return "&#x1F967;";
+            case "Birthday Cake": return "&#x1F382;";
+            default: return "&#x1F36A;";
+        }
+    }
+
+    public string GetIngredientImage(string name)
+    {
+        switch (name)
+        {
+            case "Tepung": return "tepung.png";
+            case "Gula": return "gula.png";
+            case "Mentega": return "mentega.png";
+            case "Ragi": return "ragi.png";
+            case "Susu": return "susu.png";
+            case "Telur": return "telur.png";
+            case "Krim Keju": return "krim-keju.png";
+            default: return "";
+        }
+    }
+}
+
+<style>
+    .rbp-container {
+        padding: 8px;
+    }
+
+    .rbp-header {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: #fff;
+        border-radius: 14px;
+        padding: 12px 16px;
+        text-align: center;
+        font-weight: 800;
+        font-size: 1.2rem;
+        letter-spacing: 1.5px;
+        box-shadow: 0 4px 15px rgba(217, 119, 6, 0.4), inset 0 2px 4px rgba(255,255,255,0.4);
+        margin-bottom: 18px;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        border: 2px solid #fbbf24;
+    }
+
+    .rbp-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 10px;
+        max-height: 420px;
+        overflow-y: auto;
+        padding-right: 4px;
+        scrollbar-width: thin;
+        scrollbar-color: #d4a373 transparent;
+    }
+
+    .rbp-grid::-webkit-scrollbar { width: 5px; }
+    .rbp-grid::-webkit-scrollbar-track { background: transparent; }
+    .rbp-grid::-webkit-scrollbar-thumb { background: #d4a373; border-radius: 10px; }
+
+    .rbp-card {
+        background: linear-gradient(145deg, #fffcf5 0%, #fff6e5 100%);
+        border-radius: 16px;
+        padding: 16px 10px 14px;
+        border: 2px solid #fde68a;
+        box-shadow: 0 4px 12px rgba(217, 119, 6, 0.15), inset 0 2px 0 rgba(255,255,255,0.8);
+        transition: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .rbp-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, transparent, #ffcc80, transparent);
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    .rbp-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(180, 140, 80, 0.2);
+        border-color: #d4a373;
+    }
+
+    .rbp-card:hover::before { opacity: 1; }
+
+    .rbp-card.locked {
+        background: linear-gradient(145deg, #f0ece6, #e8e0d4);
+        border-color: #d5cec3;
+    }
+
+    .rbp-card.locked .rbp-emoji {
+        filter: grayscale(0.5) opacity(0.5);
+    }
+
+    .rbp-emoji {
+        font-size: 2rem;
+        line-height: 1;
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.12));
+    }
+
+    .rbp-name {
+        font-weight: 700;
+        font-size: 0.85rem;
+        color: #5a3e20;
+    }
+
+    .rbp-cost {
+        background: rgba(212, 163, 115, 0.2);
+        padding: 2px 10px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 0.72rem;
+        color: #7b5b3a;
+    }
+
+    .rbp-ingredients {
+        display: flex;
+        justify-content: center;
+        gap: 4px;
+        flex-wrap: wrap;
+        padding: 4px 6px;
+        background: rgba(255,255,255,0.5);
+        border-radius: 10px;
+        width: 100%;
+        min-height: 34px;
+    }
+
+    .rbp-ing-img {
+        width: 26px;
+        height: 26px;
+        object-fit: contain;
+        filter: drop-shadow(0 1px 2px rgba(0,0,0,0.12));
+        transition: transform 0.2s;
+        border-radius: 4px;
+        background: rgba(255,255,255,0.6);
+        padding: 1px;
+    }
+
+    .rbp-ing-img:hover {
+        transform: scale(1.2);
+    }
+
+    .rbp-badge-unlocked {
+        background: linear-gradient(135deg, #4cd964, #34c759);
+        color: white;
+        padding: 3px 12px;
+        border-radius: 16px;
+        font-weight: 700;
+        font-size: 0.7rem;
+        box-shadow: 0 2px 0 #2aa84a;
+    }
+
+    .rbp-btn-unlock {
+        background: linear-gradient(135deg, #ffaa66, #ff8c33);
+        color: white;
+        border: none;
+        padding: 4px 14px;
+        border-radius: 16px;
+        font-weight: 700;
+        font-size: 0.72rem;
+        box-shadow: 0 2px 0 #c26a1a;
+        transition: all 0.1s;
+    }
+
+    .rbp-btn-unlock:hover { transform: translateY(-1px); }
+    .rbp-btn-unlock:active { transform: translateY(1px); box-shadow: none; }
+
+    .rbp-note-eskrim {
+        background: rgba(56, 189, 248, 0.1);
+        border: 1px solid rgba(56, 189, 248, 0.3);
+        border-radius: 10px;
+        padding: 4px 8px;
+        font-size: 0.7rem;
+        color: #0284c7;
+        font-weight: 600;
+        width: 100%;
+        text-align: center;
+    }
+</style>
+
+<div class="rbp-container">
+
+    <div class="rbp-header">&#x1F4DA; Toko Buku Resep</div>
+
+    <div class="rbp-grid">
+
+        @foreach (var recipe in recipes)
+        {
+            bool sudahUnlock = unlockedIds.Contains(recipe.RecipeId);
+            bool bisaDibeli = !sudahUnlock && recipe.RecipeId == idSelanjutnyaDapatDibeli;
+            string emoji = GetRecipeEmoji(recipe.RecipeName);
+
+            <div class="rbp-card @(sudahUnlock ? "" : "locked")">
+                <div class="rbp-emoji">@Html.Raw(emoji)</div>
+                <div class="rbp-name">@recipe.RecipeName</div>
+                <div class="rbp-cost">&#x1F4B0; @recipe.UnlockCost Koin</div>
+
+                @if (sudahUnlock)
+                {
+                    if (recipe.RecipeId == 2)
+                    {
+                        <div class="rbp-note-eskrim">
+                            &#x1F366; Dibuat dari Mesin Es Krim
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="rbp-ingredients">
+                            @foreach (var ingredient in recipe.Ingredients)
+                            {
+                                var img = GetIngredientImage(ingredient.IngredientName);
+                                if (!string.IsNullOrEmpty(img))
+                                {
+                                    <img src="@Url.Content("~/Content/PNG/" + img)"
+                                         class="rbp-ing-img"
+                                         title="@ingredient.IngredientName"
+                                         alt="@ingredient.IngredientName" />
+                                }
+                                else
+                                {
+                                    <span class="rbp-ing-img d-flex align-items-center justify-content-center"
+                                          title="@ingredient.IngredientName"
+                                          style="font-size:0.6rem; color:#7b5b3a; font-weight:600;">
+                                        @ingredient.IngredientName
+                                    </span>
+                                }
+                            }
+                        </div>
+                    }
+
+                    <span class="rbp-badge-unlocked">&#x1F513; Terbuka</span>
+                }
+                else if (bisaDibeli)
+                {
+                    <button class="rbp-btn-unlock btnUnlockRecipe"
+                            data-id="@recipe.RecipeId">
+                        &#x1F512; Unlock
+                    </button>
+                }
+                else
+                {
+                    <button class="rbp-btn-unlock"
+                            style="background: #b0a59a; box-shadow: 0 2px 0 #8b7d6e; opacity: 0.8;"
+                            disabled title="Selesaikan pembelian resep sebelumnya">
+                        &#x1F512; Terkunci
+                    </button>
+                }
+            </div>
+        }
+
+    </div>
+</div>

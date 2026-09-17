@@ -1,0 +1,214 @@
+@{
+    ViewBag.Title = "Mabar 1 vs 1 - KYU'S DESSERT BLOCK";
+    Layout = null;
+    var room = ViewBag.Room as UAS_C__Lanjutan.Models.Entity.MabarRoom;
+    var playerInfo = ViewBag.PlayerInfo as UAS_C__Lanjutan.Models.Entity.User;
+    var opponentInfo = ViewBag.OpponentInfo as UAS_C__Lanjutan.Models.Entity.User;
+    bool isHost = ViewBag.IsHost != null && (bool)ViewBag.IsHost;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mabar 1 vs 1: @(playerInfo != null ? playerInfo.Username : "Player")</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700&family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link href="~/Content/dessert-theme.css?v=@DateTime.Now.Ticks" rel="stylesheet" />
+    <link href="~/Content/puzzle-classic.css?v=@DateTime.Now.Ticks" rel="stylesheet" />
+    <link href="~/Content/puzzle-mabar.css?v=@DateTime.Now.Ticks" rel="stylesheet" />
+    <style>
+        html, body, *, *::before, *::after {
+            cursor: url('@Url.Content("~/Content/PNG/Cursor32.png")') 0 0, auto !important;
+        }
+        a, button, [role="button"], input[type="button"], input[type="submit"], input[type="reset"], 
+        select, label, .btn, .puzzle-btn, .mabar-block-option, .mabar-cell, 
+        .swal2-confirm, .swal2-cancel, .swal2-close, .swal2-popup, .swal2-html-container * {
+            cursor: url('@Url.Content("~/Content/PNG/Cursor32.png")') 0 0, pointer !important;
+        }
+    </style>
+</head>
+<body class="mabar-bg">
+
+    <!-- Held Block Floating Container -->
+    <div id="mabar-held-container"></div>
+
+    <!-- Hidden Server Variables -->
+    <input type="hidden" id="mabarRoomId" value="@(room?.RoomId ?? 0)" />
+    <input type="hidden" id="currentUserId" value="@(playerInfo?.UserId ?? 0)" />
+    <input type="hidden" id="isHostUser" value="@(isHost ? "true" : "false")" />
+    <input type="hidden" id="targetScoreVal" value="@(room?.TargetScore ?? 1000)" />
+    <input type="hidden" id="timeLimitVal" value="@(room?.TimeLimitSeconds ?? 180)" />
+    <input type="hidden" id="initialRoomStatus" value="@(room?.Status ?? "Waiting")" />
+    <input type="hidden" id="urlBackToMenu" value="@Url.Action("Index", "Puzzle")" />
+
+    <!-- Audio Elements -->
+    <audio id="sfxGrab" src="@Url.Content("~/Content/Audio/GrabBlock.mp3")"></audio>
+    <audio id="sfxPlace" src="@Url.Content("~/Content/Audio/BlockPlace.mp3")"></audio>
+    <audio id="sfxGameOver" src="@Url.Content("~/Content/Audio/game over.mp3")"></audio>
+    <audio id="sfxGameSelesai" src="@Url.Content("~/Content/Audio/game selesai.mp3")"></audio>
+    <audio id="sfxStartGame" src="@Url.Content("~/Content/Audio/sound-effect-mulai-game.mp3")"></audio>
+
+    <!-- Combo Audios 1-10 -->
+    @for (int i = 1; i <= 10; i++)
+    {
+        <audio id="sfxCombo@(i)" src="@Url.Content($"~/Content/Audio/Combo {i}.mp3")"></audio>
+    }
+
+    <!-- Praises -->
+    <audio id="sfxGreat" src="@Url.Content("~/Content/Audio/Great.mp3")"></audio>
+    <audio id="sfxAmazing" src="@Url.Content("~/Content/Audio/Amazing.mp3")"></audio>
+    <audio id="sfxExcellent" src="@Url.Content("~/Content/Audio/Excelllent.mp3")"></audio>
+    <audio id="sfxAwesome" src="@Url.Content("~/Content/Audio/Awesome!.mp3")"></audio>
+    <audio id="sfxFantastic" src="@Url.Content("~/Content/Audio/Fantastic!.mp3")"></audio>
+    <audio id="sfxSuperFantastic" src="@Url.Content("~/Content/Audio/Super Fantastic!.mp3")"></audio>
+    <audio id="sfxUnbelievable" src="@Url.Content("~/Content/Audio/Unbelievable!.mp3")"></audio>
+
+    <!-- Background Music -->
+    <audio id="mabarBgm" loop>
+        <source src="@Url.Content("~/Content/Audio/Bgm1_PlayPuzzle.mp3")" type="audio/mpeg">
+    </audio>
+
+    <!-- LOBBY SCREEN OVERLAY (Waiting for Guest / Start) -->
+    <div id="mabarLobbyOverlay" class="mabar-lobby-screen" style="@(room?.Status == "Playing" ? "display:none;" : "")">
+        <div class="mabar-lobby-box">
+            <h2 style="font-family:'Fredoka One', cursive; color:#ffd166; margin:0 0 4px 0; font-size:1.8rem; letter-spacing:1px;">
+                ⚔️ RUANG TANDING 1 VS 1 ⚔️
+            </h2>
+            <div style="font-size:0.9rem; color:#fecfef;">
+                Kode Room: <b style="color:#ffd166; font-size:1.05rem;">@(room?.RoomCode)</b>
+            </div>
+
+            <div class="mabar-matchup-row">
+                <!-- Host Player -->
+                <div class="mabar-lobby-player">
+                    <img id="lobbyHostAvatar" src="@(isHost ? (playerInfo?.Avatar ?? "/Content/Images/default-avatar.png") : (opponentInfo?.Avatar ?? "/Content/Images/default-avatar.png"))" class="mabar-lobby-avatar" />
+                    <div id="lobbyHostName" class="mabar-lobby-name">@(isHost ? playerInfo?.Username : (opponentInfo?.Username ?? "Host"))</div>
+                    <span class="mabar-lobby-role">👑 Pembuat Room</span>
+                </div>
+
+                <div class="mabar-vs-badge">VS</div>
+
+                <!-- Guest Player -->
+                <div class="mabar-lobby-player">
+                    <img id="lobbyGuestAvatar" src="@(!isHost ? (playerInfo?.Avatar ?? "/Content/Images/default-avatar.png") : (opponentInfo?.Avatar ?? "/Content/Images/default-avatar.png"))" class="mabar-lobby-avatar" style="@(opponentInfo == null && isHost ? "opacity:0.4; filter:grayscale(1);" : "")" />
+                    <div id="lobbyGuestName" class="mabar-lobby-name">
+                        @(!isHost ? playerInfo?.Username : (opponentInfo?.Username ?? "Menunggu Lawan..."))
+                    </div>
+                    <span id="lobbyGuestStatus" class="mabar-lobby-role" style="@(opponentInfo == null && isHost ? "background:#495057; color:#ced4da;" : "")">
+                        @(!isHost ? "⚔️ Penantang" : (opponentInfo != null ? "⚔️ Siap Bertanding" : "⏳ Belum Terhubung"))
+                    </span>
+                </div>
+            </div>
+
+            <div style="background:rgba(255,255,255,0.08); padding:10px; border-radius:12px; margin-bottom:15px; font-size:0.92rem; color:#fecfef;">
+                🎯 Target Menang: <b style="color:#ffd166;">@((room?.TargetScore ?? 1000).ToString("N0")) Poin</b> &bull; 
+                ⏱️ Waktu: <b style="color:#06d6a0;">@((room?.TimeLimitSeconds ?? 180) / 60) Menit</b>
+            </div>
+
+            <div id="lobbyControls">
+                @if (isHost)
+                {
+                    <button id="btnStartMabar" type="button" class="btn-mabar-start" @(opponentInfo == null ? "disabled" : "")>
+                        🔥 MULAI PERTANDINGAN! 🔥
+                    </button>
+                    <div id="hostLobbyNotice" style="font-size:0.85rem; color:#ffd166; margin-top:8px; @(opponentInfo != null ? "display:none;" : "")">
+                        Undang teman dari menu puzzle agar lawan dapat bergabung! 💌
+                    </div>
+                }
+                else
+                {
+                    <div style="padding:15px; font-weight:bold; color:#ffd166; font-size:1.1rem; animation:pulseText 1.5s infinite alternate;">
+                        ⏳ Menunggu Pembuat Room memulai pertandingan...
+                    </div>
+                }
+                <button id="btnLeaveMabar" type="button" class="btn-mabar-leave">
+                    🚪 Batal & Keluar ke Menu
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOP BATTLE HUD -->
+    <header class="mabar-hud-header">
+        <div class="mabar-hud-content">
+            <!-- HOST HUD CARD -->
+            <div id="hudCardHost" class="hud-player-card @(isHost ? "is-you" : "")">
+                <div class="hud-avatar-wrap">
+                    <span class="hud-lead-crown">👑</span>
+                    <img id="hudHostAvatar" src="@(isHost ? (playerInfo?.Avatar ?? "/Content/Images/default-avatar.png") : (opponentInfo?.Avatar ?? "/Content/Images/default-avatar.png"))" class="hud-avatar" />
+                </div>
+                <div class="hud-player-info">
+                    <div class="hud-player-name">
+                        <span id="hudHostName">@(isHost ? playerInfo?.Username : (opponentInfo?.Username ?? "Host"))</span>
+                        @if (isHost) { <span class="hud-badge-you">KAMU</span> }
+                    </div>
+                    <div class="hud-player-score"><span id="hudHostScore">0</span> <span style="font-size:0.7rem; color:#fecfef;">pts</span></div>
+                    <div class="hud-score-bar-bg">
+                        <div id="hudHostScoreFill" class="hud-score-bar-fill"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CENTER TIMER & TARGET -->
+            <div class="mabar-center-hud">
+                <div id="mabarTimer" class="mabar-timer-badge">03:00</div>
+                <div class="mabar-target-badge">🎯 TARGET: @((room?.TargetScore ?? 1000).ToString("N0")) PTS</div>
+            </div>
+
+            <!-- GUEST HUD CARD -->
+            <div id="hudCardGuest" class="hud-player-card @(!isHost ? "is-you" : "")">
+                <div class="hud-avatar-wrap">
+                    <span class="hud-lead-crown">👑</span>
+                    <img id="hudGuestAvatar" src="@(!isHost ? (playerInfo?.Avatar ?? "/Content/Images/default-avatar.png") : (opponentInfo?.Avatar ?? "/Content/Images/default-avatar.png"))" class="hud-avatar" />
+                </div>
+                <div class="hud-player-info">
+                    <div class="hud-player-name">
+                        <span id="hudGuestName">@(!isHost ? playerInfo?.Username : (opponentInfo?.Username ?? "Guest"))</span>
+                        @if (!isHost) { <span class="hud-badge-you">KAMU</span> }
+                    </div>
+                    <div class="hud-player-score"><span id="hudGuestScore">0</span> <span style="font-size:0.7rem; color:#fecfef;">pts</span></div>
+                    <div class="hud-score-bar-bg">
+                        <div id="hudGuestScoreFill" class="hud-score-bar-fill"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN BATTLE ARENA -->
+    <main class="mabar-arena-container">
+        <!-- 8x8 PUZZLE BOARD -->
+        <div class="mabar-board-wrap">
+            <div id="mabarBoard" class="mabar-grid-board">
+                <!-- 64 Grid Cells will be generated by JS -->
+            </div>
+        </div>
+
+        <!-- 3 SPAWNABLE BLOCKS -->
+        <div id="mabarBlocksContainer" class="mabar-blocks-container">
+            <div class="mabar-block-option" data-index="0"></div>
+            <div class="mabar-block-option" data-index="1"></div>
+            <div class="mabar-block-option" data-index="2"></div>
+        </div>
+    </main>
+
+    <div id="global-portrait-overlay">
+        <div class="global-portrait-card">
+            <div class="global-phone-icon">
+                <span style="font-size: 60px; display: inline-block;">📱</span>
+            </div>
+            <h2 class="global-portrait-title">Harap Putar Layar ke Posisi Tegak (Portrait) 🔄</h2>
+            <p class="global-portrait-desc">Halaman ini dirancang dalam posisi tegak (Portrait) agar pas dengan genggaman Anda. Silakan putar HP Anda!</p>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <script src="@Url.Content("~/Scripts/bubble-pop.js")?v=@DateTime.Now.Ticks"></script>
+    <script src="~/Scripts/puzzle-mabar.js?v=@DateTime.Now.Ticks"></script>
+</body>
+</html>

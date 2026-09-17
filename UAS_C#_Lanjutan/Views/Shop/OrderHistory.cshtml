@@ -1,0 +1,246 @@
+@model List<UAS_C__Lanjutan.Models.Entity.ShopOrder>
+@using UAS_C__Lanjutan.Models.Entity
+
+@{
+    Layout = null;
+    var user = ViewBag.CurrentUser as User;
+    int cartCount = ViewBag.CartCount ?? 0;
+    string activeStatus = ViewBag.ActiveStatus as string ?? "all";
+}
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>📦 Riwayat Pesanan - Kyu Dessert & Cafe</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="@Url.Content("~/Content/dessert-shop.css")?v=@DateTime.Now.Ticks" />
+</head>
+<body class="shop-body">
+
+    <!-- NAVBAR -->
+    <nav class="shop-navbar">
+        <div class="shop-nav-container">
+            <a href="@Url.Action("Index", "Shop")" class="shop-brand">
+                <span class="shop-brand-icon">☕</span>
+                <span class="shop-brand-name">Kyu Dessert & Cafe</span>
+            </a>
+
+            <div class="shop-nav-links">
+                <a href="@Url.Action("Index", "Shop")" class="nav-shop-btn nav-shop-btn-outline">
+                    <span>🛍️</span>
+                    <span>Katalog Menu</span>
+                </a>
+
+                <a href="@Url.Action("Cart", "Shop")" class="nav-shop-btn nav-shop-btn-primary">
+                    <span>🛒</span>
+                    <span>Keranjang</span>
+                    <span class="cart-counter-badge" id="navCartCount">@cartCount</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ORDER HISTORY CONTAINER -->
+    <div class="shop-page-wrapper">
+        <h1 class="page-header-title">
+            <span>📦</span>
+            <span>Riwayat Pesanan Cafe & Dessert Anda</span>
+        </h1>
+
+        <!-- Status Filter Tabs -->
+        <div class="category-chips-scroll" style="margin-bottom: 25px;">
+            <a href="@Url.Action("OrderHistory", "Shop", new { status = "all" })" 
+               class="cat-chip @(activeStatus == "all" ? "active" : "")">
+                <span>📋</span>
+                <span>Semua Status</span>
+            </a>
+
+            <a href="@Url.Action("OrderHistory", "Shop", new { status = "pending" })" 
+               class="cat-chip @(activeStatus == "pending" ? "active" : "")">
+                <span>⏳</span>
+                <span>Belum Bayar</span>
+            </a>
+
+            <a href="@Url.Action("OrderHistory", "Shop", new { status = "baking" })" 
+               class="cat-chip @(activeStatus == "baking" ? "active" : "")">
+                <span>👨‍🍳</span>
+                <span>Kitchen Baking</span>
+            </a>
+
+            <a href="@Url.Action("OrderHistory", "Shop", new { status = "delivery" })" 
+               class="cat-chip @(activeStatus == "delivery" ? "active" : "")">
+                <span>🛵</span>
+                <span>Sedang Dikirim</span>
+            </a>
+
+            <a href="@Url.Action("OrderHistory", "Shop", new { status = "completed" })" 
+               class="cat-chip @(activeStatus == "completed" ? "active" : "")">
+                <span>✅</span>
+                <span>Pesanan Selesai</span>
+            </a>
+        </div>
+
+        @if (Model == null || !Model.Any())
+        {
+            <div style="text-align: center; padding: 60px 20px; background: var(--cafe-card-bg); border-radius: var(--cafe-radius-lg); border: 1.5px dashed var(--cafe-border-dark);">
+                <div style="font-size: 4rem; margin-bottom: 12px;">🧾</div>
+                <h3 style="color: var(--cafe-espresso); font-weight: 700;">Belum Ada Pesanan</h3>
+                <p style="color: var(--cafe-text-muted); font-size: 0.95rem; margin-bottom: 20px;">Anda belum melakukan pemesanan pada kategori ini.</p>
+                <a href="@Url.Action("Index", "Shop")" class="nav-shop-btn nav-shop-btn-primary">Pesan Menu Cafe Sekarang</a>
+            </div>
+        }
+        else
+        {
+            <div style="display: flex; flex-direction: column; gap: 20px;">
+                @foreach (var ord in Model)
+                {
+                    string badgeColor = "#D49B4B";
+                    string statusText = "Menunggu Pembayaran";
+                    string statusIcon = "⏳";
+
+                    if (ord.OrderStatus == "Baking")
+                    {
+                        badgeColor = "#9E5825";
+                        statusText = "Diproses di Kitchen";
+                        statusIcon = "👨‍🍳";
+                    }
+                    else if (ord.OrderStatus == "On_Delivery")
+                    {
+                        badgeColor = "#5C4A3E";
+                        statusText = "Dalam Perjalanan Kurir";
+                        statusIcon = "🛵";
+                    }
+                    else if (ord.OrderStatus == "Completed")
+                    {
+                        badgeColor = "#2D7A58";
+                        statusText = "Pesanan Selesai";
+                        statusIcon = "✅";
+                    }
+
+                    <div style="background: var(--cafe-card-bg); border-radius: var(--cafe-radius); border: 1.5px solid var(--cafe-border); box-shadow: var(--cafe-shadow-sm); padding: 24px; transition: transform 0.2s;">
+                        <!-- Order Header -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px dashed var(--cafe-border); padding-bottom: 14px; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+                            <div>
+                                <span style="font-family: monospace; font-size: 1.05rem; font-weight: 700; color: var(--cafe-espresso);">@ord.OrderCode</span>
+                                <span style="color: var(--cafe-text-muted); font-size: 0.82rem; margin-left: 8px;">• @ord.CreatedAt.ToString("dd MMM yyyy, HH:mm")</span>
+                            </div>
+                            <span style="background: @badgeColor; color: #fff; font-size: 0.8rem; font-weight: 700; padding: 5px 14px; border-radius: 20px; display: inline-flex; align-items: center; gap: 5px;">
+                                <span>@statusIcon</span>
+                                <span>@statusText</span>
+                            </span>
+                        </div>
+
+                        <!-- Order Items Preview -->
+                        <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px;">
+                            @foreach (var itm in ord.Items)
+                            {
+                                <div style="display: flex; align-items: center; gap: 14px;">
+                                    <img src="@itm.ProductImage" alt="@itm.ProductName" style="width: 52px; height: 52px; border-radius: var(--cafe-radius-sm); object-fit: cover; border: 1.5px solid var(--cafe-border);" />
+                                    <div style="flex: 1;">
+                                        <div style="font-weight: 700; color: var(--cafe-espresso); font-size: 0.95rem;">@itm.ProductName</div>
+                                        <div style="font-size: 0.8rem; color: var(--cafe-text-muted);">
+                                            @itm.Quantity x Rp @itm.Price.ToString("N0")
+                                            @if (!string.IsNullOrEmpty(itm.VariantName))
+                                            {
+                                                <span>(@itm.VariantName)</span>
+                                            }
+                                        </div>
+                                    </div>
+                                    <strong style="color: var(--cafe-espresso); font-size: 0.95rem;">Rp @itm.SubTotal.ToString("N0")</strong>
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Order Footer -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1.5px dashed var(--cafe-border); padding-top: 16px; flex-wrap: wrap; gap: 10px;">
+                            <div>
+                                <span style="font-size: 0.88rem; color: var(--cafe-text-muted);">Total Pembayaran:</span>
+                                <strong style="font-size: 1.3rem; color: var(--cafe-espresso); margin-left: 6px;">Rp @ord.GrandTotal.ToString("N0")</strong>
+                            </div>
+
+                            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                @if (ord.PaymentStatus == "Pending")
+                                {
+                                    <a href="@Url.Action("Payment", "Shop", new { id = ord.Id, orderId = ord.Id })" class="btn-action-cart btn-action-cart-fill" style="padding: 9px 20px; font-size: 0.88rem; text-decoration: none;">
+                                        <span>💳 Bayar Sekarang</span>
+                                    </a>
+                                }
+                                else if (ord.OrderStatus == "Completed")
+                                {
+                                    <button type="button" class="btn-action-cart btn-action-cart-fill" style="padding: 9px 20px; font-size: 0.88rem; border: none;" onclick="reorderItems(@ord.Id)">
+                                        <span>🔁 Pesan Lagi</span>
+                                    </button>
+                                }
+                                <a href="@Url.Action("OrderDetail", "Shop", new { id = ord.Id, orderId = ord.Id })" class="btn-action-cart btn-action-cart-outline" style="padding: 9px 20px; font-size: 0.88rem; text-decoration: none;">
+                                    <span>@(ord.OrderStatus == "Completed" ? "🧾 Struk & Ulas" : "🔍 Lacak Pesanan")</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        function reorderItems(orderId) {
+            if (typeof playBubblePop === 'function') playBubblePop();
+            Swal.fire({
+                title: 'Pesan Lagi?',
+                text: 'Semua menu beserta varian & catatan khusus dari pesanan ini akan dimasukkan kembali ke keranjang belanja Anda.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Masukkan Keranjang 🛒',
+                confirmButtonColor: '#9E5825',
+                cancelButtonText: 'Batal',
+                cancelButtonColor: '#B0A39C'
+            }).then(function(result) {
+                if (result.isConfirmed) {
+                    Swal.showLoading();
+                    var formData = new FormData();
+                    formData.append('orderId', orderId);
+
+                    fetch('@Url.Action("Reorder", "Shop")', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(function(res) { return res.json(); })
+                    .then(function(data) {
+                        Swal.close();
+                        if (data && data.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil Masuk Keranjang! 🛒',
+                                text: data.message,
+                                confirmButtonText: 'Buka Keranjang Sekarang',
+                                confirmButtonColor: '#9E5825',
+                                showCancelButton: true,
+                                cancelButtonText: 'Tetap di Sini'
+                            }).then(function(cRes) {
+                                if (cRes.isConfirmed) {
+                                    window.location.href = data.redirectUrl;
+                                }
+                            });
+                        } else {
+                            Swal.fire('Gagal', (data ? data.message : 'Terjadi kesalahan.'), 'error');
+                        }
+                    })
+                    .catch(function() {
+                        Swal.close();
+                        Swal.fire('Error', 'Gagal memproses pesanan ulang.', 'error');
+                    });
+                }
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,552 @@
+@using UAS_C__Lanjutan.Models.Entity
+
+@{
+
+    Layout = null;
+
+    var player = ViewBag.PlayerInfo as User;
+    var pinList = ViewBag.PinnedAchievements as List<string> ?? new List<string>();
+
+    int userLvl = player?.Level ?? 1;
+    string borderClass = "border-bronze";
+    if (userLvl >= 15) { borderClass = "border-rainbow"; }
+    else if (userLvl >= 10) { borderClass = "border-gold"; }
+    else if (userLvl >= 5) { borderClass = "border-silver"; }
+}
+
+@functions {
+    public string GetAchievementEmoji(string key)
+    {
+        switch (key)
+        {
+            case "ChefMagang": return "🧑‍🍳";
+            case "MasterPastry": return "👑";
+            case "SoClose": return "⚡";
+            case "PlayTime": return "🕰️";
+            case "BintangKejora": return "⭐";
+            case "DewaDessert": return "🏁";
+            case "RajaBlok": return "🧱";
+            default: return "";
+        }
+    }
+}
+
+
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <meta charset="utf-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>&#x1F370; Dessert World - Dashboard</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"> 
+
+    <link rel="stylesheet" href="@Url.Content("~/Content/dessert-theme.css")?v=@DateTime.Now.Ticks" />
+
+    <link rel="stylesheet" href="@Url.Content("~/Content/dessert-menu.css")?v=@DateTime.Now.Ticks" />
+
+    <style>
+        body {
+            cursor: url('@Url.Content("~/Content/PNG/Cursor32.png")') 0 0, auto;
+        }
+        input, textarea {
+            cursor: auto;
+        }
+    </style>
+
+</head>
+
+<body>
+
+
+
+    <div id="floating-container"></div>
+
+
+
+    <audio id="bgmMusic" loop>
+
+        <source src="~/Content/Audio/Main Theme - Dessert.mp3" type="audio/mpeg" />
+
+    </audio>
+
+    <audio id="sfxClick">
+
+        <source src="~/Content/Audio/bubble-pop.mp3" type="audio/mpeg" />
+
+    </audio>
+
+    <audio id="sfxBuyRecipe">
+
+        <source src="~/Content/Audio/sound beli resep.mp3" type="audio/mpeg" />
+
+    </audio>
+
+    <audio id="sfxNewBest">
+
+        <source src="@Url.Content("~/Content/Audio/New High Score.mp3")" type="audio/mpeg" />
+
+    </audio>
+
+
+
+    <!-- HEADER DENGAN PROFIL DI KANAN ATAS -->
+
+    <div class="game-header">
+
+        <div class="game-title-container">
+
+            <h1 class="game-title">&#x1F9C1; KYU'S DESSERT WORLD</h1>
+
+            <p class="game-subtitle">
+                Selamat datang kembali, 
+                <span id="lblDisplayUsername" style="color:#FF5C8A; font-weight:bold;">@ViewBag.PlayerInfo.Username</span>! Sudah siap bermain hari ini?
+                <span id="pinnedBadgesContainer" style="display:none;"></span>
+            </p>
+
+        </div>
+
+
+
+        <!-- Profil Corner & Toko Dessert Button - Pojok Kanan Atas -->
+        <div class="profile-corner" style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+
+            @if (Session["Role"]?.ToString() == "Admin" || player?.Role == "Admin")
+            {
+                <!-- Tombol Admin Panel Khusus Role Admin -->
+                <a href="@Url.Action("Index", "Users")" class="btn-admin-nav-corner" title="Panel Kelola Pengguna (Admin)" style="display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #6C5CE7, #8E44AD); color: #fff; text-decoration: none; padding: 7px 16px; border-radius: 50px; font-weight: 700; font-size: 0.92rem; box-shadow: 0 4px 12px rgba(108, 92, 231, 0.35); border: 2px solid #FFF; transition: all 0.25s;">
+                    <span style="font-size: 1.2rem;">🛡️</span>
+                    <span>Kelola User</span>
+                </a>
+            }
+
+            <!-- Tombol Toko E-Commerce Dessert -->
+            <a href="@Url.Action("Index", "Shop")" class="btn-store-nav-corner" title="Kunjungi Kyu Dessert Shop" style="display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #FF5C8A, #D93B65); color: #fff; text-decoration: none; padding: 7px 16px; border-radius: 50px; font-weight: 700; font-size: 0.92rem; box-shadow: 0 4px 12px rgba(217, 59, 101, 0.35); border: 2px solid #FFF; transition: all 0.25s;">
+                <span style="font-size: 1.2rem;">🛍️</span>
+                <span>Toko Dessert</span>
+            </a>
+
+            <div id="btnProfilCorner" class="profile-avatar @borderClass" style="position: relative;">
+                <div class="level-badge-avatar" id="lblPlayerLevel">@userLvl</div>
+
+                @if (string.IsNullOrEmpty(ViewBag.PlayerInfo.Avatar))
+
+                {
+
+                    <span class="profile-emoji" id="profileCornerEmoji">&#x1F464;</span>
+
+                    <img src="" alt="Avatar" id="profileCornerImg" class="profile-avatar-img" style="display: none;" />
+
+                }
+
+                else
+
+                {
+
+                    <span class="profile-emoji" id="profileCornerEmoji" style="display: none;">&#x1F464;</span>
+
+                    <img src="@Url.Content(ViewBag.PlayerInfo.Avatar)" alt="Avatar" id="profileCornerImg" class="profile-avatar-img" />
+
+                }
+
+                <span class="profile-name" id="profileNameDisplay">@ViewBag.PlayerInfo.Username</span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- CENTRAL DASHBOARD PANEL -->
+    <div class="main-dashboard-wrapper">
+
+        <!-- DAILY MISSIONS PANEL -->
+        <div class="main-dashboard-card daily-missions-card">
+            <div class="dashboard-header-cute" style="margin-bottom: 15px;">
+                <h3 style="color: #D93B65;">📅 MISI HARIAN</h3>
+                <p style="font-size: 0.75rem; color: #8B6B42; margin-top: -5px; font-weight: bold;">Selesaikan untuk koin ekstra! (Reset 00:00)</p>
+            </div>
+            
+            <div id="dailyMissionsContainer" style="display: flex; flex-direction: column; gap: 10px; max-height: 260px; overflow-y: auto; padding-right: 4px;">
+                <div style="text-align: center; color: #8B6B42; font-size: 0.85rem; padding: 20px 0;">
+                    Memuat misi harian... 🧁
+                </div>
+            </div>
+        </div>
+
+        <!-- CENTRAL DASHBOARD PANEL -->
+        <div class="main-dashboard-card">
+            <div class="dashboard-header-cute">
+                <h3>DASHBOARD UTAMA</h3>
+            </div>
+
+            <!-- XP Progress Bar & Level -->
+            <div class="xp-level-container" style="padding: 8px 14px; text-align: left; background: rgba(255, 248, 235, 0.7); border-radius: 12px; margin: 8px 4px 0 4px; border: 1.5px solid #E6CCB2; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);">
+                <div style="display: flex; justify-content: space-between; align-items: center; font-weight: bold; color: #7B5B3A; font-size: 0.82rem; margin-bottom: 4px;">
+                    <span>⭐ Level Akun: <strong id="lblDashboardLevel">@ViewBag.PlayerInfo.Level</strong></span>
+                    <span style="font-size: 0.75rem; color: #8B6B42;" id="lblDashboardXp">@ViewBag.PlayerInfo.Xp / 300 XP</span>
+                </div>
+                <div class="xp-bar" style="width: 100%; height: 7px; background: #FAEDCD; border-radius: 4px; overflow: hidden; border: 1px solid #D4A373;">
+                    <div class="xp-bar-fill" id="xpBarFill" style="width: @((ViewBag.PlayerInfo.Xp / 300.0) * 100)%; height: 100%; background: linear-gradient(90deg, #FFB3B3, #FF5C8A); transition: width 0.5s ease-in-out;"></div>
+                </div>
+            </div>
+
+            <!-- Informasi Progress Player (STATS) -->
+            <div class="stats-bar">
+                <div class="stat-badge">&#x1F4B0; Koin Toko: <span id="lblTotalCoins">@ViewBag.PlayerInfo.TotalCoins</span></div>
+                <div class="stat-badge">&#x1F3C6; High Score: <span id="lblHighScore">@ViewBag.PlayerInfo.HighScoreBb</span></div>
+            </div>
+
+            <hr class="dashboard-divider">
+
+            <!-- Penataan Menu Utama -->
+            <div class="menu-buttons-container">
+                <a href="/MainMenu/Cooking"
+                   class="btn-game-menu"
+                   id="btnStartSelling">
+                    Mulai Menjual
+                </a>
+
+                <a href="@Url.Action("Index", "Puzzle")"
+                   class="btn-game-menu"
+                   id="btnPlayPuzzle">
+                    Main Puzzle
+                </a>
+
+                <a href="javascript:void(0)"
+                   class="btn-game-menu"
+                   id="btnOpenShopMenu"
+                   style="background: linear-gradient(135deg, #FFB3B3, #FF9999); color: #7B5B3A; margin-top: 12px;">
+                    Buku & Toko Resep
+                </a>
+            </div>
+        </div>
+
+        <!-- FIND PLAYERS PANEL (FORMERLY LEADERBOARD) -->
+        <div class="main-dashboard-card leaderboard-card">
+            <div class="dashboard-header-cute" style="margin-bottom: 15px;">
+                <h3 style="color: #E65100; display: inline-flex; align-items: center; justify-content: center; gap: 8px;">
+                    <span>🔍 TEMUKAN PLAYER</span>
+                    <span id="badgeCardPendingFriends" class="badge-pending-circle" style="display:none;" title="Permintaan Pertemanan Masuk">0</span>
+                </h3>
+                <p style="font-size: 0.75rem; color: #8B6B42; margin-top: -5px; font-weight: bold;">Cari dan tambahkan teman bermain</p>
+            </div>
+
+            <!-- Search Player Input -->
+            <div style="margin-bottom: 12px; display:flex; gap:6px;">
+                <input type="text" id="txtSearchPlayer" placeholder="Cari username..." style="flex:1; border-radius:12px; border:1.5px solid #FFCC80; padding:6px 12px; font-size:0.8rem; outline:none; background:#FFFDF9;" />
+                <button type="button" id="btnSearchPlayer" style="background:#E65100; border:none; color:white; border-radius:12px; padding:6px 12px; font-size:0.8rem; font-weight:bold; cursor:pointer;">Cari</button>
+            </div>
+
+            <!-- Tabs Find Players, Requests vs Friends -->
+            <div style="display:flex; justify-content:center; gap:6px; margin-bottom:10px; border-bottom:1.5px solid #FAEDCD; padding-bottom:8px; flex-wrap:wrap;">
+                <span id="tabFindPlayersAll" class="leaderboard-tab active" style="font-size:0.7rem; font-weight:bold; color:#E65100; cursor:pointer; padding:3px 8px; border-radius:8px; background:#FFEAD2; white-space:nowrap;">Cari Player</span>
+                <span id="tabFindPlayersRequests" class="leaderboard-tab" style="font-size:0.7rem; font-weight:bold; color:#8B6B42; cursor:pointer; padding:3px 8px; border-radius:8px; white-space:nowrap; display:inline-flex; align-items:center; gap:4px;">
+                    <span>Permintaan</span>
+                    <span id="badgeFriendRequests" class="badge-pending-circle" style="display:none;" title="Permintaan Belum Di-acc">0</span>
+                </span>
+                <span id="tabFindPlayersFriends" class="leaderboard-tab" style="font-size:0.7rem; font-weight:bold; color:#8B6B42; cursor:pointer; padding:3px 8px; border-radius:8px; white-space:nowrap;">Teman Saya</span>
+            </div>
+            
+            <div id="leaderboardListContainer" style="display: flex; flex-direction: column; gap: 8px; max-height: 260px; overflow-y: auto; padding-right: 5px;">
+                <div style="text-align: center; color: #8B6B42; font-size: 0.85rem; padding: 20px 0;">
+                    Memuat daftar player... 🔍
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+
+    <!-- TEMPLATE MODAL PROFIL -->
+
+    <template id="tplProfilModal">
+
+        <div class="profile-modal-container text-center" style="font-family: 'Fredoka', sans-serif;">
+
+            <!-- Tabs Navigation -->
+            <div class="modal-tabs" style="display: flex; justify-content: center; gap: 8px; border-bottom: 2px solid #E6CCB2; padding-bottom: 8px; margin-bottom: 12px;">
+                <button type="button" class="modal-tab-btn active" id="btnTabAccount" style="background: #D4A373; border: none; color: white; border-radius: 20px; padding: 5px 14px; font-weight: bold; font-size: 0.78rem; cursor: pointer; transition: 0.2s;">Pengaturan Akun</button>
+                <button type="button" class="modal-tab-btn" id="btnTabAchievements" style="background: rgba(230, 204, 178, 0.4); border: none; color: #7B5B3A; border-radius: 20px; padding: 5px 14px; font-weight: bold; font-size: 0.78rem; cursor: pointer; transition: 0.2s;">Buku Pencapaian</button>
+            </div>
+
+            <!-- Tab 1: Account Settings -->
+            <div id="sectionAccountTab">
+                <!-- Avatar Section -->
+
+                <div class="profile-avatar-section mb-2">
+
+                    <div class="avatar-preview-wrapper position-relative mx-auto" style="width: 100px; height: 100px;">
+
+                        <img id="modalAvatarPreview" src="@(string.IsNullOrEmpty(ViewBag.PlayerInfo.Avatar) ? Url.Content("~/Content/PNG/avatar/avatar_1.png") : Url.Content(ViewBag.PlayerInfo.Avatar))" 
+
+                             alt="Avatar Preview" class="modal-avatar-preview-img" />
+
+                        <button type="button" id="btnTriggerUpload" class="btn-avatar-upload-badge" title="Unggah Foto Kustom">
+
+                            &#x1F4F8;
+
+                        </button>
+
+                        <input type="file" id="inputCustomAvatar" accept="image/*" style="display: none;" />
+
+                    </div>
+
+                    <p class="small text-muted mt-1 mb-2" style="font-size: 0.72rem;">Klik tombol &#x1F4F8; untuk unggah foto sendiri (Maks. 150MB)</p>
+
+                    
+
+                    <!-- Pre-made Avatars Gallery -->
+
+                    <div class="avatar-gallery-title fw-bold" style="color: #7B5B3A; font-size: 0.78rem; margin-top: 4px;">Pilih Avatar Karakter &#x1F9C1;</div>
+
+                    <div class="avatar-gallery-container d-flex justify-content-start align-items-center gap-2 py-1 px-1 overflow-x-auto" style="max-width: 100%; white-space: nowrap;">
+
+                        @for (int i = 1; i <= 10; i++)
+
+                        {
+
+                            var avName = $"avatar_{i}.png";
+
+                            var avPath = $"/Content/PNG/avatar/{avName}";
+
+                            <img src="@Url.Content(avPath)" alt="@avName" class="avatar-thumbnail-option" data-filename="@avName" />
+
+                        }
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- Profile Info Form -->
+
+                <div class="profile-info-form text-start">
+
+                <!-- Username Field -->
+
+                <div class="mb-2">
+
+                    <label class="form-label fw-bold" style="color: #7B5B3A; font-size: 0.78rem; margin-bottom: 3px;">Nama Toko / Username:</label>
+
+                    <div class="input-group">
+
+                        <input type="text" id="txtEditUsername" class="form-control fw-bold" 
+
+                               value="@ViewBag.PlayerInfo.Username" style="border-radius: 10px 0 0 10px; border: 1.5px solid #D4A373; font-size: 0.82rem; padding: 4px 10px;">
+
+                        <button type="button" id="btnSimpanUsername" class="btn fw-bold text-white px-3" style="background-color: #D4A373; border-radius: 0 10px 10px 0; font-size: 0.82rem; padding: 4px 12px;">
+
+                            Simpan
+
+                        </button>
+
+                    </div>
+
+                    <small class="text-danger-emphasis d-block mt-1" style="font-size: 0.68rem;">
+
+                        Hanya dapat diubah sekali seminggu.
+
+                    </small>
+
+                </div>
+
+
+
+                <!-- Email Field -->
+
+                <div class="mb-2" id="emailDisplaySection">
+
+                    <label class="form-label fw-bold" style="color: #7B5B3A; font-size: 0.78rem; margin-bottom: 3px;">Email Aktif:</label>
+
+                    <div class="input-group">
+
+                        <input type="email" id="txtDisplayEmail" class="form-control" 
+
+                               value="@ViewBag.PlayerInfo.Email" disabled style="border-radius: 10px 0 0 10px; border: 1.5px solid #D4A373; background-color: #FDFBEE; font-size: 0.82rem; padding: 4px 10px;">
+
+                        <button type="button" id="btnMintaOtpEmail" class="btn fw-bold text-white px-3" style="background-color: #B5835A; border-radius: 0 10px 10px 0; font-size: 0.82rem; padding: 4px 12px;">
+
+                            Ganti
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- OTP & New Email Section (Initially Hidden) -->
+
+                <div class="mb-2 p-2 border rounded shadow-sm" id="emailSectionOtp" style="display: none; background-color: #FFFDF9; border-color: #E6CCB2 !important;">
+
+                    <div class="text-center mb-1 fw-bold" style="color: #FF5C8A; font-size: 0.82rem;">&#x1F511; Verifikasi Perubahan Email</div>
+
+                    <div class="text-center mb-2 p-1 px-2 rounded d-flex justify-content-between align-items-center" style="background: #FFF2E2; border: 1px dashed #FF5C8A;">
+                        <span style="font-size: 0.72rem; color: #7B5B3A; font-weight: 600;">
+                            ⏰ Sisa Waktu: <strong id="emailOtpCountdown" style="font-size: 0.85rem; color: #FF5C8A; font-weight: 800;">02:00</strong>
+                        </span>
+                        <button type="button" id="btnResendEmailOtp" class="btn btn-sm py-0 px-2 fw-bold" style="display: none; background: #FF5C8A; color: white; border: 1px solid #FF5C8A; border-radius: 12px; font-size: 0.72rem; cursor: pointer; box-shadow: 0 2px 5px rgba(255, 92, 138, 0.3);">
+                            🔄 Kirim Ulang
+                        </button>
+                    </div>
+
+                    <div class="mb-2">
+
+                        <label class="form-label small fw-bold text-muted" style="font-size: 0.72rem;">Kode OTP (6 Digit):</label>
+
+                        <input type="text" id="txtEmailOtpCode" class="form-control text-center fw-bold" placeholder="Masukkan OTP" maxlength="6" style="border-radius: 8px; border: 1.5px solid #E6CCB2; font-size: 0.82rem; padding: 4px 8px;">
+
+                    </div>
+
+                    
+
+                    <div class="mb-2">
+
+                        <label class="form-label small fw-bold text-muted" style="font-size: 0.72rem;">Alamat Email Baru:</label>
+
+                        <input type="email" id="txtNewEmailAddress" class="form-control" placeholder="namaemail@gmail.com" style="border-radius: 8px; border: 1.5px solid #E6CCB2; font-size: 0.82rem; padding: 4px 8px;">
+
+                    </div>
+
+                    
+
+                    <button type="button" id="btnVerifyAndSaveEmail" class="btn btn-sm w-100 fw-bold text-white mt-1 py-1" style="background-color: #FF5C8A; border-radius: 8px; font-size: 0.8rem;">
+
+                        Verifikasi & Ubah Email &#x2728;
+
+                    </button>
+
+                    <button type="button" id="btnBatalGantiEmail" class="btn btn-sm w-100 fw-bold text-muted mt-1" style="background: transparent; border: none; font-size:0.75rem;">
+
+                        Batal
+
+                    </button>
+
+                </div>
+
+
+
+                <!-- Registration Date -->
+
+                <div class="mb-2 d-flex justify-content-between align-items-center p-2 rounded" style="background-color: #F9F5EC; border: 1px solid #E6CCB2;">
+
+                    <span class="fw-bold" style="color: #7B5B3A; font-size: 0.76rem;">Tanggal Daftar:</span>
+
+                    <span class="fw-bold text-muted" style="font-size: 0.76rem;">
+
+                        @(ViewBag.PlayerInfo.CreatedAt != null ? ((DateTime)ViewBag.PlayerInfo.CreatedAt).ToString("dd MMM yyyy HH:mm") : "-")
+
+                    </span>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 2: Achievements and Level Details -->
+            <div id="sectionAchievementsTab" style="display: none; text-align: left;">
+                <div class="ach-lvl-status mb-2 p-2 rounded" style="background:#F9F5EC; border:1px solid #E6CCB2; text-align:center;">
+                    <div style="font-size: 0.92rem; font-weight: bold; color: #7B5B3A;">⭐ Level Akun: <span id="modalLevelVal">@ViewBag.PlayerInfo.Level</span></div>
+                    <div style="font-size: 0.72rem; color: #8B6B42; margin-top: 1px;" id="modalXpVal">@ViewBag.PlayerInfo.Xp / 300 XP</div>
+                    <div class="xp-bar" style="width: 100%; height: 6px; background: #FAEDCD; border-radius: 3px; overflow: hidden; margin-top: 4px; border: 1px solid #D4A373;">
+                        <div class="xp-bar-fill" id="modalXpFill" style="width: @((ViewBag.PlayerInfo.Xp / 300.0) * 100)%; height: 100%; background: linear-gradient(90deg, #FFB3B3, #FF5C8A);"></div>
+                    </div>
+                </div>
+                
+                <div class="fw-bold mb-1" style="color: #7B5B3A; font-size: 0.78rem;">🏅 Lencana Pencapaian (Pilih untuk dipajang):</div>
+                <div id="achievementsGridList" class="ach-cards-grid">
+                    <div class="text-muted text-center py-2" style="font-size:0.75rem; grid-column: span 3;">Loading lencana... 🏅</div>
+                </div>
+                
+                <div class="fw-bold mb-1 mt-2" style="color: #7B5B3A; font-size: 0.78rem;">🎫 Voucher Diskon E-Commerce:</div>
+                <div id="vouchersListContainer" style="max-height: 95px; overflow-y: auto; background: #FFFEF9; border: 1.5px solid #E6CCB2; border-radius: 10px; padding: 6px 8px; font-size: 0.75rem; color: #7B5B3A;">
+                    <div class="text-muted text-center py-1">Belum ada voucher diskon yang terbuka.</div>
+                </div>
+            </div>
+
+            <hr style="border-top: 1px dashed #D4A373; margin: 10px 0;">
+
+            @if (Session["Role"] != null && Session["Role"].ToString().Equals("Admin", System.StringComparison.OrdinalIgnoreCase))
+            {
+                <!-- Admin Only Panel Link -->
+                <a href="@Url.Action("Index", "Users")" class="btn w-100 fw-bold text-white py-2 mb-2" style="background: linear-gradient(135deg, #f39c12, #d35400); border-radius: 30px; border: none; font-size: 0.82rem; text-decoration: none; display: block; text-align: center; box-shadow: 0 4px 10px rgba(243, 156, 18, 0.3);">
+                    👑 Kelola Pengguna (Admin)
+                </a>
+            }
+
+            <!-- Logout Button -->
+            <button id="btnModalLogout" class="btn w-100 fw-bold text-white py-2" style="background: linear-gradient(135deg, #FF5C8A, #D93B65); border-radius: 30px; border: none; font-size: 0.82rem; box-shadow: 0 4px 10px rgba(255, 92, 138, 0.2);">
+                Keluar dari Game
+            </button>
+        </div>
+
+    </template>
+
+
+
+
+
+
+
+    <!-- AUDIO CONTROL DI POJOK KANAN BAWAH -->
+
+    <div class="audio-control fw-bold" id="musicToggle">&#x1F3B5; Musik: OFF</div>
+
+
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+
+    <div id="global-portrait-overlay">
+        <div class="global-portrait-card">
+            <div class="global-phone-icon">
+                <span style="font-size: 60px; display: inline-block;">📱</span>
+            </div>
+            <h2 class="global-portrait-title">Harap Putar Layar ke Posisi Tegak (Portrait) 🔄</h2>
+            <p class="global-portrait-desc">Halaman ini dirancang dalam posisi tegak (Portrait) agar pas dengan genggaman Anda. Silakan putar HP Anda!</p>
+        </div>
+    </div>
+
+    <script src="@Url.Content("~/Scripts/bubble-pop.js")?v=@DateTime.Now.Ticks"></script>
+
+    <script src="@Url.Content("~/Scripts/main-menu.js")?v=@DateTime.Now.Ticks"></script>
+
+    <script src="@Url.Content("~/Scripts/dessert-menu.js")?v=@DateTime.Now.Ticks"></script>
+
+
+
+    <template id="tplRecipeBook">
+
+
+
+        <div id="recipeBookContent">
+
+
+
+        </div>
+
+
+
+    </template>
+
+</body>
+
+</html>

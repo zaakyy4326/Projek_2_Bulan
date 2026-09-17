@@ -1,0 +1,130 @@
+@{
+    ViewBag.Title = "Puzzle Menu";
+    Layout = null;
+    var playerInfo = ViewBag.PlayerInfo as UAS_C__Lanjutan.Models.Entity.User;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dessert Puzzle BlockBlast</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/Content/dessert-theme.css?v=@DateTime.Now.Ticks" />
+    <link href="~/Content/puzzle-menu.css?v=@DateTime.Now.Ticks" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <style>
+        html, body, *, *::before, *::after {
+            cursor: url('@Url.Content("~/Content/PNG/Cursor32.png")') 0 0, auto !important;
+        }
+        a, button, [role="button"], input[type="button"], input[type="submit"], input[type="reset"], 
+        select, label, .btn, .puzzle-btn, .puzzle-card, .leaderboard-card, .btn-back-pink, 
+        .block-option, .draggable-block, .cell, .btn-ocean-mode, .level-node, .level-pin, 
+        .swal2-confirm, .swal2-cancel, .swal2-close, .swal2-popup, .swal2-html-container * {
+            cursor: url('@Url.Content("~/Content/PNG/Cursor32.png")') 0 0, pointer !important;
+        }
+        input[type="text"], input[type="password"], input[type="email"], input[type="number"], textarea {
+            cursor: text !important;
+        }
+    </style>
+</head>
+<body>
+    <div id="floating-container"></div>
+
+    <div class="puzzle-header">
+        <div class="player-profile">
+            @if (string.IsNullOrEmpty(playerInfo.Avatar))
+            {
+                <div class="avatar player-avatar-fallback">&#x1F464;</div>
+            }
+            else
+            {
+                <img src="@Url.Content(playerInfo.Avatar)" alt="Avatar" class="avatar player-avatar-img" />
+            }
+            <div class="player-profile-text">
+                <strong class="player-username">@playerInfo.Username</strong><br />
+                <span class="player-stats-line">
+                    <span style="color:#ffd700;">&#x1F4B0; @playerInfo.TotalCoins</span> | 
+                    <span style="color:#4facfe;">&#x1F3C6; High Score: @playerInfo.HighScoreBb</span>
+                </span>
+            </div>
+        </div>
+        <div class="header-controls">
+            <!-- Audio toggle button, logic should be handled in JS -->
+            <button id="btnToggleBgm" class="puzzle-btn puzzle-btn-bgm">&#x1F3B5; BGM ON</button>
+        </div>
+    </div>
+
+    <div class="puzzle-main-layout">
+        <!-- CENTER: MENU -->
+        <div class="puzzle-menu-side">
+            <div class="puzzle-title-container">
+                <h1 class="puzzle-title">KYU'S DESSERT BLOCK</h1>
+                <p class="puzzle-subtitle">Puzzle Adventure!</p>
+            </div>
+
+            <div class="puzzle-menu-container">
+                <div class="puzzle-menu-grid">
+                    <a href="@Url.Action("Classic", "Puzzle")" class="puzzle-btn puzzle-btn-classic">
+                        <span class="puzzle-btn-icon">🎮</span>
+                        <span class="puzzle-btn-text">Main Klasik</span>
+                    </a>
+                    <a href="@Url.Action("Adventure", "Puzzle")" class="puzzle-btn puzzle-btn-adventure">
+                        <span class="puzzle-btn-icon">🗺️</span>
+                        <span class="puzzle-btn-text">Main Petualang</span>
+                    </a>
+                    <button type="button" id="btnOpenMabar" class="puzzle-btn puzzle-btn-mabar">
+                        <span class="puzzle-btn-icon">👥</span>
+                        <span class="puzzle-btn-text">Main dengan Teman</span>
+                    </button>
+                    <button type="button" id="btnOpenLeaderboard" class="puzzle-btn puzzle-btn-leaderboard">
+                        <span class="puzzle-btn-icon">🏆</span>
+                        <span class="puzzle-btn-text">Peringkat</span>
+                    </button>
+                </div>
+                <a href="@Url.Action("Index", "MainMenu")" class="puzzle-btn btn-back">⬅️ Kembali ke Menu Utama</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio Element for Puzzle BGM -->
+    <audio id="puzzleBgm" loop>
+        <source src="@Url.Content("~/Content/Audio/Bgm_Puzzle.mp3")" type="audio/mpeg">
+    </audio>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <div id="global-portrait-overlay">
+        <div class="global-portrait-card">
+            <div class="global-phone-icon">
+                <span style="font-size: 60px; display: inline-block;">📱</span>
+            </div>
+            <h2 class="global-portrait-title">Harap Putar Layar ke Posisi Tegak (Portrait) 🔄</h2>
+            <p class="global-portrait-desc">Halaman ini dirancang dalam posisi tegak (Portrait) agar pas dengan genggaman Anda. Silakan putar HP Anda!</p>
+        </div>
+    </div>
+
+    <script src="@Url.Content("~/Scripts/bubble-pop.js")?v=@DateTime.Now.Ticks"></script>
+    <script src="~/Scripts/puzzle-menu.js?v=@DateTime.Now.Ticks"></script>
+    <script>
+        // Intro Animation
+        (function () {
+            const overlay = document.createElement('div');
+            overlay.className = 'ready-go-overlay';
+            overlay.innerHTML = '';
+            document.body.appendChild(overlay);
+
+            overlay.addEventListener('animationend', function() {
+                overlay.remove();
+            });
+
+            // Using the same animation styles defined in puzzle-classic.css
+            // We should ensure puzzle-classic.css or the overlay CSS is loaded
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', () => setTimeout(() => {}, 500));
+            }
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,144 @@
+@model IEnumerable<UAS_C__Lanjutan.Models.Entity.User>
+
+@{
+    ViewBag.Title = "Panel Kelola Pengguna (Admin)";
+}
+
+<div class="admin-card">
+    <!-- Header Card -->
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4 pb-3 border-bottom">
+        <div>
+            <h2 class="fw-bold mb-1" style="color: #D93B65;">
+                <span>🛡️</span> Manajemen Data Pengguna
+            </h2>
+            <p class="text-muted mb-0" style="font-size: 0.9rem;">
+                Kelola dan pantau seluruh data pemain aktif di Kyu's Dessert World.
+            </p>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge" style="background: #FFE5EC; color: #D93B65; font-size: 0.95rem; padding: 8px 14px; border-radius: 50px; border: 1.5px solid #FFCCD5;">
+                👥 Total User: @Model.Count()
+            </span>
+            <a href="@Url.Action("Index", "MainMenu")" class="btn btn-outline-secondary" style="border-radius: 50px; font-weight: 600;">
+                ⬅ Menu Utama
+            </a>
+        </div>
+    </div>
+
+    <!-- Search Box -->
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <div class="input-group">
+                <span class="input-group-text bg-light border-end-0" style="border-radius: 50px 0 0 50px;">🔍</span>
+                <input type="text" id="userTableSearch" class="form-control border-start-0" placeholder="Cari berdasarkan username atau email..." style="border-radius: 0 50px 50px 0;" />
+            </div>
+        </div>
+    </div>
+
+    <!-- Table Container -->
+    <div class="table-responsive" style="border-radius: 16px; overflow: hidden; border: 1.5px solid #FFE4E8;">
+        <table class="table table-hover align-middle mb-0" id="usersTable">
+            <thead style="background: linear-gradient(135deg, #FFE5EC, #FFF0F5); color: #8B4513;">
+                <tr>
+                    <th class="ps-3 py-3">Pengguna</th>
+                    <th class="py-3">Role</th>
+                    <th class="py-3">Saldo Koin</th>
+                    <th class="py-3">High Score</th>
+                    <th class="py-3">Terdaftar</th>
+                    <th class="text-center pe-3 py-3" style="min-width: 180px;">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="6" class="text-center py-4 text-muted">
+                            Belum ada data pengguna yang terdaftar.
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    foreach (var item in Model)
+                    {
+                        var isAdmin = string.Equals(item.Role, "Admin", StringComparison.OrdinalIgnoreCase);
+                        <tr class="user-row">
+                            <td class="ps-3 py-3">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div style="width: 42px; height: 42px; border-radius: 50%; overflow: hidden; background: #FFE0E6; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; border: 2px solid #FFB6C1;">
+                                        @if (!string.IsNullOrEmpty(item.Avatar))
+                                        {
+                                            <img src="@Url.Content(item.Avatar)" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover;" />
+                                        }
+                                        else
+                                        {
+                                            <span>@(isAdmin ? "👑" : "🧑‍🍳")</span>
+                                        }
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold" style="color: #5D4037;">@item.Username</div>
+                                        <div class="text-muted small">@(string.IsNullOrEmpty(item.Email) ? "-" : item.Email)</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                @if (isAdmin)
+                                {
+                                    <span class="badge bg-danger rounded-pill px-3 py-2" style="font-size: 0.78rem;">
+                                        👑 Administrator
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary rounded-pill px-3 py-2" style="font-size: 0.78rem; background-color: #A08060 !important;">
+                                        🧑‍🍳 Pemain
+                                    </span>
+                                }
+                            </td>
+                            <td>
+                                <span class="fw-semibold text-warning-emphasis">
+                                    💰 @item.TotalCoins.ToString("N0")
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark border px-2 py-1">
+                                    🏆 @item.HighScoreBb
+                                </span>
+                            </td>
+                            <td class="text-muted small">
+                                @item.CreatedAt.ToString("dd MMM yyyy, HH:mm")
+                            </td>
+                            <td class="text-center pe-3">
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a href="@Url.Action("Details", "Users", new { id = item.UserId })" class="btn btn-outline-info" title="Detail Pengguna" style="border-radius: 8px 0 0 8px;">
+                                        👁️ Detail
+                                    </a>
+                                    <a href="@Url.Action("Edit", "Users", new { id = item.UserId })" class="btn btn-outline-warning" title="Edit Pengguna">
+                                        ✏️ Edit
+                                    </a>
+                                    <a href="@Url.Action("Delete", "Users", new { id = item.UserId })" class="btn btn-outline-danger" title="Nonaktifkan Akun" style="border-radius: 0 8px 8px 0;">
+                                        🗑️ Hapus
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            // Live Search Filter for Users Table
+            $("#userTableSearch").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                $("#usersTable tbody tr.user-row").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+                });
+            });
+        });
+    </script>
+}

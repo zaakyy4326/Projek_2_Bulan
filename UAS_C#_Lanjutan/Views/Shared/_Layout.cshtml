@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewBag.Title - Kyu's Dessert World</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap 5 & SweetAlert2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="@Url.Content("~/Content/dessert-theme.css")?v=@DateTime.Now.Ticks" />
+    
+    <style>
+        body {
+            font-family: 'Fredoka', cursive, sans-serif;
+            background: linear-gradient(135deg, #FFF9F2 0%, #FFF0F5 50%, #FFEBEF 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: #5D4037;
+            cursor: url('@Url.Content("~/Content/PNG/Cursor32.png")') 0 0, auto;
+        }
+        input, textarea, select {
+            cursor: auto;
+        }
+        .admin-navbar {
+            background: linear-gradient(135deg, #FF6B8B, #FF8E53);
+            box-shadow: 0 4px 20px rgba(255, 107, 139, 0.25);
+            padding: 12px 0;
+            border-bottom: 3px solid #FFF;
+        }
+        .admin-brand {
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: #FFF !important;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .admin-nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: #FFF !important;
+            border: 1.5px solid rgba(255, 255, 255, 0.5);
+            border-radius: 50px;
+            padding: 6px 16px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.25s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .admin-nav-btn:hover {
+            background: #FFF;
+            color: #FF6B8B !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .admin-nav-btn.btn-logout {
+            background: #FFF;
+            color: #D9383A !important;
+            border-color: #FFF;
+        }
+        .admin-nav-btn.btn-logout:hover {
+            background: #FFE5E5;
+            color: #C02628 !important;
+        }
+        .admin-card {
+            background: #FFFFFF;
+            border-radius: 24px;
+            border: 2px solid #FFE4E8;
+            box-shadow: 0 12px 35px rgba(255, 107, 139, 0.08);
+            padding: 28px;
+            margin-top: 24px;
+            margin-bottom: 24px;
+        }
+        .admin-footer {
+            margin-top: auto;
+            background: rgba(255, 255, 255, 0.8);
+            border-top: 1.5px solid #FFE4E8;
+            padding: 16px 0;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #8B6B42;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header / Navbar Dessert Theme -->
+    <header class="admin-navbar">
+        <div class="container d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <a href="@Url.Action("Index", "MainMenu")" class="admin-brand">
+                <span>🧁</span>
+                <span>KYU'S DESSERT WORLD</span>
+                <span class="badge bg-light text-danger rounded-pill ms-2" style="font-size: 0.75rem; padding: 4px 10px;">ADMIN PORTAL</span>
+            </a>
+            <div class="d-flex align-items-center gap-2">
+                <a href="@Url.Action("Index", "MainMenu")" class="admin-nav-btn">
+                    <span>🏠</span> Menu Utama
+                </a>
+                <a href="@Url.Action("Index", "Shop")" class="admin-nav-btn">
+                    <span>🛍️</span> Toko Dessert
+                </a>
+                <a href="@Url.Action("Logout", "Account")" class="admin-nav-btn btn-logout">
+                    <span>🚪</span> Logout
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Content Area -->
+    <main class="container body-content flex-grow-1">
+        @RenderBody()
+    </main>
+
+    <!-- Footer Dessert Theme -->
+    <footer class="admin-footer">
+        <div class="container">
+            <p class="mb-0">🍰 &copy; @DateTime.Now.Year <strong>Kyu's Dessert World & Boutique Cafe</strong> — Seluruh Hak Cipta Dilindungi.</p>
+        </div>
+    </footer>
+
+    <!-- Global Screen Portrait Overlay (Mobile) -->
+    <div id="global-portrait-overlay">
+        <div class="global-portrait-card">
+            <div class="global-phone-icon">
+                <span style="font-size: 60px; display: inline-block;">📱</span>
+            </div>
+            <h2 class="global-portrait-title">Harap Putar Layar ke Posisi Tegak (Portrait) 🔄</h2>
+            <p class="global-portrait-desc">Halaman ini dirancang dalam posisi tegak (Portrait) agar pas dengan genggaman Anda. Silakan putar HP Anda!</p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="@Url.Content("~/Scripts/client-router.js")?v=@DateTime.Now.Ticks"></script>
+    <script src="@Url.Content("~/Scripts/bubble-pop.js")?v=@DateTime.Now.Ticks"></script>
+    @RenderSection("scripts", required: false)
+</body>
+</html>

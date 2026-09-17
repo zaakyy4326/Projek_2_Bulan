@@ -1,0 +1,272 @@
+@model UAS_C__Lanjutan.Models.Entity.ShopOrder
+@using UAS_C__Lanjutan.Models.Entity
+
+@{
+    Layout = null;
+    string vaNumber = "88001" + Model.Id.ToString().PadLeft(7, '0');
+}
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>💳 Pembayaran - Kyu Dessert & Cafe</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="@Url.Content("~/Content/dessert-shop.css")?v=@DateTime.Now.Ticks" />
+</head>
+<body class="shop-body">
+
+    <!-- NAVBAR -->
+    <nav class="shop-navbar">
+        <div class="shop-nav-container">
+            <a href="@Url.Action("Index", "Shop")" class="shop-brand">
+                <span class="shop-brand-icon">☕</span>
+                <span class="shop-brand-name">Kyu Dessert & Cafe</span>
+            </a>
+
+            <div class="shop-nav-links">
+                <a href="@Url.Action("OrderHistory", "Shop")" class="nav-shop-btn nav-shop-btn-outline">
+                    <span>📦</span>
+                    <span>Pesanan Saya</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- PAYMENT PAGE CONTAINER -->
+    <div class="shop-page-wrapper" style="max-width: 680px;">
+        <div style="background: var(--cafe-card-bg); border-radius: var(--cafe-radius-lg); border: 1.5px solid var(--cafe-border); box-shadow: var(--cafe-shadow-md); padding: 38px 32px; text-align: center;">
+            
+            <div style="font-size: 3rem; margin-bottom: 10px;">⏳</div>
+            <h1 style="font-size: 1.85rem; font-weight: 700; color: var(--cafe-espresso); margin: 0 0 6px 0;">Menunggu Pembayaran</h1>
+            <p style="color: var(--cafe-text-muted); font-size: 0.95rem; margin-bottom: 22px;">
+                Selesaikan pembayaran sebelum batas waktu berakhir agar pesanan segera disiapkan oleh barista & chef kami!
+            </p>
+
+            <!-- Countdown Timer -->
+            <div style="display: inline-flex; align-items: center; gap: 8px; background: var(--cafe-gold-light); border: 1.5px solid var(--cafe-border-dark); padding: 9px 24px; border-radius: 30px; font-weight: 700; color: var(--cafe-toffee); font-size: 1.15rem; margin-bottom: 25px;">
+                <span>⏱️ Sisa Waktu:</span>
+                <span id="paymentTimer">14:59</span>
+            </div>
+
+            <!-- Amount & Order Info Card -->
+            <div style="background: var(--cafe-cream-soft); border: 1.5px dashed var(--cafe-border-dark); border-radius: var(--cafe-radius); padding: 22px; margin-bottom: 25px; text-align: left;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="color: var(--cafe-text-muted); font-size: 0.9rem;">Nomor Pesanan:</span>
+                    <strong style="font-family: monospace; font-size: 1rem; color: var(--cafe-espresso);">@Model.OrderCode</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="color: var(--cafe-text-muted); font-size: 0.9rem;">Metode Bayar:</span>
+                    <strong style="color: var(--cafe-toffee);">@Model.PaymentMethod</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; border-top: 1.5px dashed var(--cafe-border); padding-top: 12px; margin-top: 12px;">
+                    <span style="font-weight: 700; color: var(--cafe-espresso);">Total Tagihan:</span>
+                    <strong style="font-size: 1.45rem; color: var(--cafe-espresso);">Rp @Model.GrandTotal.ToString("N0")</strong>
+                </div>
+            </div>
+
+            <!-- Specific Payment Gateway Details -->
+            <div id="paymentActiveContainer">
+                @if (Model.PaymentMethod == "QRIS")
+                {
+                    <div style="background: #fff; border: 1.5px solid var(--cafe-border); border-radius: var(--cafe-radius); padding: 24px; margin-bottom: 22px;">
+                        <div style="display: inline-flex; align-items: center; gap: 6px; background: #E8F5E9; color: #2E7D32; padding: 4px 14px; border-radius: 20px; font-size: 0.78rem; font-weight: 700; margin-bottom: 14px;">
+                            <span style="font-size: 0.9rem;">🟢</span> QRIS Standar Nasional
+                        </div>
+                        <div style="font-weight: 700; color: var(--cafe-espresso); font-size: 1.05rem; margin-bottom: 14px;">
+                            Scan Kode QRIS
+                        </div>
+                        
+                        <div style="display: inline-block;">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=KYU-DESSERT-@Model.OrderCode-@Model.GrandTotal" alt="QRIS QR Code" style="border-radius: 14px; border: 2px solid var(--cafe-border); display: block;" />
+                        </div>
+
+                        <!-- Catatan Simulasi Sesuai Permintaan User -->
+                        <div style="background: #FFF8E1; border: 1.5px dashed #FFB300; border-radius: 14px; padding: 12px 16px; margin: 18px auto 0 auto; max-width: 440px; text-align: center;">
+                            <p style="margin: 0; font-size: 0.84rem; color: #795548; line-height: 1.45; font-style: italic;">
+                                ⚠️ <strong>Catatan:</strong> QR ini hanya simulasi dan tidak akan bekerja saat di-scan aplikasi bank. Silakan lanjutkan dengan menekan tombol <strong>"Konfirmasi Pembayaran"</strong> di bawah.
+                            </p>
+                        </div>
+
+                        <p style="font-size: 0.8rem; color: var(--cafe-text-muted); margin: 12px 0 0 0;">
+                            Mendukung GoPay, OVO, Dana, ShopeePay, BCA Mobile, Livin' by Mandiri, BRImo, dll.
+                        </p>
+                    </div>
+                }
+                else if (Model.PaymentMethod.Contains("VA"))
+                {
+                    <div style="background: #fff; border: 1.5px solid var(--cafe-border); border-radius: var(--cafe-radius); padding: 24px; margin-bottom: 22px;">
+                        <div style="font-weight: 700; color: var(--cafe-espresso); font-size: 1.05rem; margin-bottom: 8px;">
+                            Nomor Virtual Account (@Model.PaymentMethod)
+                        </div>
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 10px; background: var(--cafe-cream-soft); padding: 12px; border-radius: 14px; border: 1.5px solid var(--cafe-border); margin-bottom: 10px;">
+                            <span style="font-family: monospace; font-size: 1.35rem; font-weight: 700; letter-spacing: 2px; color: var(--cafe-espresso);" id="vaNumberDisplay">@vaNumber</span>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="copyVA()" style="border-radius: 10px;">📋 Salin</button>
+                        </div>
+                        <div style="background: #FFF8E1; border: 1.5px dashed #FFB300; border-radius: 14px; padding: 12px 16px; margin: 14px auto 0 auto; max-width: 440px; text-align: center;">
+                            <p style="margin: 0; font-size: 0.84rem; color: #795548; line-height: 1.45; font-style: italic;">
+                                ⚠️ <strong>Catatan:</strong> Nomor VA ini adalah simulasi. Silakan lanjutkan dengan menekan tombol <strong>"Konfirmasi Pembayaran"</strong> di bawah.
+                            </p>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div style="background: #fff; border: 1.5px solid var(--cafe-border); border-radius: var(--cafe-radius); padding: 24px; margin-bottom: 22px;">
+                        <div style="font-weight: 700; color: var(--cafe-espresso); font-size: 1.05rem; margin-bottom: 8px;">
+                            Pembayaran via @Model.PaymentMethod
+                        </div>
+                        <p style="font-size: 0.88rem; color: var(--cafe-text-muted);">Silakan verifikasi pembayaran pesanan Anda sejumlah <strong>Rp @Model.GrandTotal.ToString("N0")</strong>.</p>
+                        <div style="background: #FFF8E1; border: 1.5px dashed #FFB300; border-radius: 14px; padding: 12px 16px; margin: 14px auto 0 auto; max-width: 440px; text-align: center;">
+                            <p style="margin: 0; font-size: 0.84rem; color: #795548; line-height: 1.45; font-style: italic;">
+                                ⚠️ <strong>Catatan:</strong> Metode ini bersifat simulasi. Silakan lanjutkan dengan menekan tombol <strong>"Konfirmasi Pembayaran"</strong> di bawah.
+                            </p>
+                        </div>
+                    </div>
+                }
+
+                <!-- Tombol Konfirmasi Pembayaran Langsung -->
+                <div style="margin-top: 10px;">
+                    <button type="button" class="btn-action-cart btn-action-cart-fill" style="width: 100%; max-width: 440px; margin: 0 auto; display: block; font-size: 1.05rem; padding: 13px 24px;" onclick="confirmPaymentDirect()">
+                        <span>✅ Konfirmasi Pembayaran</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- EXPIRED STATE CARD (Muncul saat timer habis) -->
+            <div id="paymentExpiredContainer" style="display: none; background: #FFF5F5; border: 2px dashed #EF5350; border-radius: var(--cafe-radius); padding: 32px 24px; text-align: center;">
+                <div style="font-size: 3.5rem; margin-bottom: 10px;">⏰</div>
+                <h3 style="color: #C62828; font-weight: 800; font-size: 1.4rem; margin-bottom: 8px;">Waktu Pembayaran Telah Habis</h3>
+                <p style="font-size: 0.9rem; color: #5D4037; max-width: 480px; margin: 0 auto 22px auto; line-height: 1.45;">
+                    Sesi QRIS transaksi ini telah ditutup otomatis demi keamanan data perbankan. Anda dapat memperpanjang waktu pembayaran atau memeriksa status di Riwayat Pesanan.
+                </p>
+                <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                    <button type="button" class="btn-action-cart btn-action-cart-fill" style="padding: 10px 24px; font-size: 0.9rem;" onclick="renewTimer()">
+                        <span>🔄 Perpanjang Waktu (15 Menit)</span>
+                    </button>
+                    <a href="@Url.Action("OrderHistory", "Shop")" class="btn-action-cart btn-action-cart-outline" style="padding: 10px 24px; font-size: 0.9rem; text-decoration: none;">
+                        <span>📦 Ke Pesanan Saya</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        // 15 Min Timer
+        var secondsLeft = 15 * 60;
+        var timerInterval = setInterval(function() {
+            secondsLeft--;
+            if (secondsLeft <= 0) {
+                clearInterval(timerInterval);
+                document.getElementById('paymentTimer').innerText = '00:00 (Kedaluwarsa)';
+                document.getElementById('paymentActiveContainer').style.display = 'none';
+                document.getElementById('paymentExpiredContainer').style.display = 'block';
+            } else {
+                var m = Math.floor(secondsLeft / 60);
+                var s = secondsLeft % 60;
+                document.getElementById('paymentTimer').innerText = 
+                    (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
+            }
+        }, 1000);
+
+        function renewTimer() {
+            Swal.showLoading();
+            fetch('@Url.Action("RenewPaymentTimer", "Shop")', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'orderId=@Model.Id'
+            })
+            .then(res => res.json())
+            .then(data => {
+                Swal.close();
+                if (data.success) {
+                    secondsLeft = 15 * 60;
+                    document.getElementById('paymentActiveContainer').style.display = 'block';
+                    document.getElementById('paymentExpiredContainer').style.display = 'none';
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Waktu Diperpanjang!',
+                        text: 'Silakan lanjutkan pembayaran Anda.',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                }
+            });
+        }
+
+        function copyVA() {
+            var vaText = document.getElementById('vaNumberDisplay').innerText;
+            navigator.clipboard.writeText(vaText).then(function() {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Disalin!',
+                    text: 'Nomor Virtual Account berhasil disalin ke clipboard.',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+            });
+        }
+
+        // KONFIRMASI PEMBAYARAN LANGSUNG (Sesuai Permintaan User)
+        function confirmPaymentDirect() {
+            if (typeof playBubblePop === 'function') playBubblePop();
+
+            Swal.fire({
+                title: 'Konfirmasi Pembayaran',
+                text: 'Pastikan Anda telah melakukan pembayaran simulasi untuk Pesanan #@Model.OrderCode sejumlah Rp @Model.GrandTotal.ToString("N0"). Lanjutkan sekarang?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Saya Sudah Bayar ✅',
+                cancelButtonText: 'Batal',
+                confirmButtonColor: '#9E5825',
+                cancelButtonColor: '#BCAAA4'
+            }).then(function(result) {
+                if (result.isConfirmed) {
+                    Swal.showLoading();
+                    var orderId = @Model.Id;
+                    var formData = new FormData();
+                    formData.append('orderId', orderId);
+
+                    fetch('@Url.Action("SimulatePay", "Shop")', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        Swal.close();
+                        if (data && data.success) {
+                            if (typeof playBubblePop === 'function') playBubblePop();
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Pembayaran Berhasil! 🎉',
+                                text: data.message || 'Pesanan Anda langsung diteruskan ke dapur Kyu Dessert.',
+                                timer: 1500,
+                                showConfirmButton: false
+                            }).then(function() {
+                                window.location.href = data.redirectUrl;
+                            });
+                        } else {
+                            Swal.fire('Gagal', (data ? data.message : 'Terjadi kesalahan.'), 'error');
+                        }
+                    })
+                    .catch(function() {
+                        Swal.close();
+                        Swal.fire('Error', 'Terjadi kesalahan sistem saat memproses konfirmasi.', 'error');
+                    });
+                }
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,404 @@
+@{
+    ViewBag.Title = "Adventure Puzzle";
+    Layout = null;
+    var playerInfo = ViewBag.PlayerInfo as UAS_C__Lanjutan.Models.Entity.User;
+    var levels = ViewBag.Levels as List<UAS_C__Lanjutan.Models.Entity.PuzzleLevel>;
+    var userProgress = ViewBag.UserProgress as List<UAS_C__Lanjutan.Models.Entity.UserPuzzleLevel>;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adventure Mode - Kyu's Dessert World</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="~/Content/dessert-theme.css?v=@DateTime.Now.Ticks" />
+    <link rel="stylesheet" href="~/Content/puzzle-adventure.css?v=@DateTime.Now.Ticks" />
+    <style>
+        html, body, *, *::before, *::after {
+            cursor: url('@Url.Content("~/Content/PNG/Cursor32.png")') 0 0, auto !important;
+        }
+        a, button, [role="button"], input[type="button"], input[type="submit"], input[type="reset"], 
+        select, label, .btn, .btn-back, .level-node, .level-pin, .area-gate-btn, .puzzle-btn, 
+        .swal2-confirm, .swal2-cancel, .swal2-close, .swal2-popup, .swal2-html-container * {
+            cursor: url('@Url.Content("~/Content/PNG/Cursor32.png")') 0 0, pointer !important;
+        }
+        html {
+            overflow-x: hidden;
+            overflow-y: auto !important;
+        }
+        body.adventure-map-body {
+            height: auto !important;
+            min-height: 100vh !important;
+            overflow-x: hidden !important;
+            overflow-y: auto !important;
+            -webkit-overflow-scrolling: touch;
+        }
+    </style>
+</head>
+<body class="adventure-map-body">
+
+    @{
+        var unlockedRecipes = ViewBag.UnlockedRecipes as List<UAS_C__Lanjutan.Models.Entity.Recipe>;
+        if (unlockedRecipes == null) { unlockedRecipes = new List<UAS_C__Lanjutan.Models.Entity.Recipe>(); }
+
+        int totalAccumulatedStars = userProgress != null ? userProgress.Sum(p => p.Stars) : 0;
+        bool previousLevelCompleted = true; // Level 1 is always unlocked
+
+        int maxUnlockedLevel = 1;
+        if (userProgress != null && userProgress.Count > 0)
+        {
+            var highestCompleted = levels.OrderByDescending(l => l.LevelNumber).FirstOrDefault(l => {
+                var p = userProgress.FirstOrDefault(x => x.LevelId == l.LevelId);
+                return p != null && (p.IsCompleted || (l.IsBonusLevel && p.HighScore >= l.TargetScore));
+            });
+            if (highestCompleted != null && highestCompleted.LevelNumber < 150)
+            {
+                maxUnlockedLevel = highestCompleted.LevelNumber + 1; 
+            }
+        }
+        int playerArea = ((maxUnlockedLevel - 1) / 20) + 1;
+
+        string GetAreaEmoji(int lvl) {
+            if (lvl <= 20) return "&#x1F369;"; // Donat
+            if (lvl <= 40) return "&#x1F9C1;"; // Cupcake
+            if (lvl <= 60) return "&#x1F95E;"; // Pancake
+            if (lvl <= 80) return "&#x1F9C7;"; // Waffle
+            if (lvl <= 100) return "&#x1F370;"; // Shortcake
+            if (lvl <= 120) return "&#x1F382;"; // Birthday cake
+            if (lvl <= 140) return "&#x1F967;"; // Pai
+            return "&#x1F3C1;"; // Checkered flag
+        }
+    }
+
+    <div class="header">
+        <a href="@Url.Action("Index", "Puzzle")" class="btn-back"><i class="fas fa-arrow-left"></i> Kembali</a>
+        <div class="total-stars">
+            <i class="fas fa-star"></i> Total Bintang: @totalAccumulatedStars
+        </div>
+    </div>
+
+    <div class="map-container" id="mapContainer">
+        <svg class="path-svg" id="mapPathSvg"><path class="path-line" id="mapPathLine" d="M 0 0"></path></svg>
+        
+        @if (levels != null && levels.Count > 0)
+        {
+            int index = 0;
+            foreach (var level in levels)
+            {
+                int nodeArea = ((level.LevelNumber - 1) / 20) + 1;
+                if (nodeArea > playerArea + 1)
+                {
+                    continue; // Fog of War: completely hide areas beyond the next one
+                }
+
+                var progress = userProgress?.FirstOrDefault(p => p.LevelId == level.LevelId);
+                bool isCompleted = progress != null && (progress.IsCompleted || (level.IsBonusLevel && progress.HighScore >= level.TargetScore));
+                int stars = progress != null ? progress.Stars : 0;
+                
+                bool isLocked = false;
+                string lockReason = "";
+
+                if (!isCompleted && level.LevelNumber > 1)
+                {
+                    if (!previousLevelCompleted)
+                    {
+                        isLocked = true;
+                        lockReason = "Selesaikan level sebelumnya";
+                    }
+                    else if (level.RequiredStars > 0 && totalAccumulatedStars < level.RequiredStars)
+                    {
+                        isLocked = true;
+                        lockReason = $"Butuh {level.RequiredStars} Bintang";
+                    }
+                }
+
+                bool isEvenTen = false;
+                bool hasRecipe = false;
+                string requiredRecipeName = "";
+                int requiredRecipeId = 0;
+
+                if (level.LevelNumber % 10 == 0)
+                {
+                    int tens = level.LevelNumber / 10;
+                    if (tens % 2 == 0)
+                    {
+                        isEvenTen = true;
+                        // Level 20 (tens=2) requires Cupcake (Id 4) -> (2/2)+3 = 4
+                        // Level 40 (tens=4) requires Pancake (Id 5) -> (4/2)+3 = 5
+                        requiredRecipeId = (tens / 2) + 3; 
+
+                        if (requiredRecipeId <= 9)
+                        {
+                            hasRecipe = unlockedRecipes.Any(r => r.RecipeId == requiredRecipeId);
+                            
+                            string[] recipeNames = { "", "", "Es Krim", "Donat", "Cupcake", "Pancake", "Waffle", "ShortCake", "Birthday Cake", "Pai" };
+                            requiredRecipeName = requiredRecipeId < recipeNames.Length ? recipeNames[requiredRecipeId] : "Resep Baru";
+
+                            if (!isCompleted && !isLocked && !hasRecipe)
+                            {
+                                isLocked = true;
+                                lockReason = $"Buka resep {requiredRecipeName} di Dapur";
+                            }
+                        }
+                        else
+                        {
+                            // No more recipes to unlock after Pai (ID 9)
+                            isEvenTen = false;
+                        }
+                    }
+                }
+
+                // A level unlocks the next one if it was completed, or if it's currently unlocked (like Level 1)
+                previousLevelCompleted = isCompleted || (!isLocked && level.LevelNumber == 1);
+
+                <a href="@(isLocked ? "javascript:void(0)" : Url.Action("PlayAdventure", "Puzzle", new { id = level.LevelId }))" 
+                   class="level-node @(isLocked ? "locked-node" : "unlocked-node")" 
+                   data-index="@index" 
+                   data-area="@nodeArea"
+                   data-completed="@isCompleted.ToString().ToLower()">
+                   
+                    <div class="level-island @(isLocked ? "locked" : "") @(level.IsBonusLevel ? "area-bonus" : "") @(level.LevelNumber == 150 ? "super-bonus" : "")">
+                        @if (level.IsBonusLevel)
+                        {
+                            <div class="bonus-flag">
+                                <div class="flag-pole"></div>
+                                <div class="flag-triangle"></div>
+                            </div>
+                            <div class="bonus-island-emoji">@Html.Raw(GetAreaEmoji(level.LevelNumber))</div>
+                        }
+                        
+                        @if (isLocked)
+                        {
+                            <i class="fas fa-lock locked-icon"></i>
+                            <div class="requirement-tooltip">
+                                <i class="fas fa-info-circle"></i> @lockReason
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="level-number">@level.LevelNumber</div>
+                            if (!level.IsBonusLevel)
+                            {
+                                <div class="stars-display">
+                                    @for (int i = 0; i < 3; i++)
+                                    {
+                                        if (i < stars) { <i class="fas fa-star" style="color: gold;"></i> }
+                                        else { <i class="fas fa-star" style="color: rgba(255,255,255,0.5);"></i> }
+                                    }
+                                </div>
+                            }
+                        }
+                    </div>
+
+                    @if (level.IsBonusLevel)
+                    {
+                        <div class="bonus-req-display">
+                            <div class="star-req">
+                                <i class="fas fa-star" style="color:gold;"></i> @totalAccumulatedStars / @level.RequiredStars
+                            </div>
+                            @if (isEvenTen)
+                            {
+                                <div class="recipe-req @(hasRecipe ? "unlocked" : "locked")">
+                                    <span class="emoji">
+                                        @if (requiredRecipeId == 2) { @Html.Raw("&#x1F366;") }
+                                        else if (requiredRecipeId == 3) { @Html.Raw("&#x1F369;") }
+                                        else if (requiredRecipeId == 4) { @Html.Raw("&#x1F9C1;") }
+                                        else if (requiredRecipeId == 5) { @Html.Raw("&#x1F95E;") }
+                                        else if (requiredRecipeId == 6) { @Html.Raw("&#x1F9C7;") }
+                                        else if (requiredRecipeId == 7) { @Html.Raw("&#x1F370;") }
+                                        else if (requiredRecipeId == 8) { @Html.Raw("&#x1F382;") }
+                                        else if (requiredRecipeId == 9) { @Html.Raw("&#x1F967;") }
+                                        else { @Html.Raw("&#x1F37D;") }
+                                    </span>
+                                    @if (!hasRecipe)
+                                    {
+                                        <i class="fas fa-lock overlay-lock"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="fas fa-check-circle overlay-check"></i>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+                </a>
+
+                previousLevelCompleted = isCompleted;
+                index++;
+            }
+        }
+        else
+        {
+            <div style="text-align:center; padding: 50px; background: rgba(0,0,0,0.5); border-radius: 15px; position:relative; z-index:10;">
+                <h2>Peta belum siap!</h2>
+                <p>Jalankan script Seeder SQL untuk memuat level.</p>
+            </div>
+        }
+    </div>
+
+    <!-- AUDIO BGM -->
+    <audio id="bgmMap" src="@Url.Content("~/Content/Audio/Bgm_Peta_Level.mp3")" loop></audio>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var bgm = document.getElementById('bgmMap');
+            if(bgm) {
+                bgm.volume = 0.3;
+                var playPromise = bgm.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(function(error) {});
+                }
+            }
+            document.body.addEventListener('click', function() {
+                if (bgm && bgm.paused) bgm.play().catch(function(e){});
+            }, { once: true });
+
+            // --- DESSERT ISLAND MAP LOGIC ---
+            const container = document.getElementById('mapContainer');
+            const nodes = Array.from(document.querySelectorAll('.level-node'));
+            const pathLine = document.getElementById('mapPathLine');
+            const svg = document.getElementById('mapPathSvg');
+            
+            if (nodes.length === 0) return;
+
+            const ySpacing = 140; 
+            const amplitude = 35; 
+            const startY = 120; 
+            const PLAYER_AREA = @playerArea;
+
+            let totalHeight = startY + (nodes.length * ySpacing) + 100;
+            container.style.minHeight = totalHeight + 'px';
+
+            let points = [];
+            let firstCurrentNode = null;
+
+            nodes.forEach((node, idx) => {
+                let yPos = totalHeight - (startY + (idx * ySpacing));
+                let xOffset = Math.sin(idx * 0.8) * amplitude;
+                let xPos = 50 + xOffset; 
+
+                node.style.top = yPos + 'px';
+                node.style.left = xPos + '%';
+
+                points.push({ x: xPos, y: yPos });
+
+                if (node.classList.contains('unlocked-node') && node.dataset.completed === "false" && !firstCurrentNode) {
+                    firstCurrentNode = node;
+                    node.querySelector('.level-island').classList.add('current');
+                }
+            });
+
+            // Fog of War Overlay
+            let lockedAreaNodes = nodes.filter(n => parseInt(n.dataset.area) === (PLAYER_AREA + 1));
+            if (lockedAreaNodes.length > 0) {
+                let lowestLockedNode = lockedAreaNodes[0];
+                let highestLockedNode = lockedAreaNodes[lockedAreaNodes.length - 1];
+                let lowestY = parseInt(lowestLockedNode.style.top);
+                let overlayHeight = lowestY + 60; // Just enough to cover the locked node, not the previous one
+                
+                let fogOverlay = document.createElement('div');
+                fogOverlay.className = 'fog-of-war-overlay';
+                fogOverlay.style.height = overlayHeight + 'px';
+                
+                let giantIcon = document.createElement('div');
+                giantIcon.className = 'giant-locked-dessert';
+                let areaNum = PLAYER_AREA + 1;
+                let emojis = ["", "&#x1F369;", "&#x1F9C1;", "&#x1F95E;", "&#x1F9C7;", "&#x1F370;", "&#x1F382;", "&#x1F967;", "&#x1F3C1;"];
+                let emojiIdx = Math.min(areaNum, emojis.length - 1);
+                giantIcon.innerHTML = emojis[emojiIdx] + '<i class="fas fa-lock overlay-lock"></i>';
+                
+                fogOverlay.appendChild(giantIcon);
+                container.appendChild(fogOverlay);
+            }
+
+            // Fallback for current node if all completed
+            if (!firstCurrentNode) {
+                let unlockedNodes = nodes.filter(n => n.classList.contains('unlocked-node'));
+                if (unlockedNodes.length > 0) {
+                    firstCurrentNode = unlockedNodes[unlockedNodes.length - 1];
+                    firstCurrentNode.querySelector('.level-island').classList.add('current');
+                }
+            }
+
+            // Decor: Floating Clouds (Optimized count for smooth performance)
+            const cloudCount = 4;
+            for (let i = 0; i < cloudCount; i++) {
+                let cloud = document.createElement('div');
+                cloud.className = 'cloud';
+                cloud.style.width = (Math.random() * 100 + 60) + 'px';
+                cloud.style.height = (Math.random() * 30 + 20) + 'px';
+                cloud.style.top = (Math.random() * totalHeight) + 'px';
+                cloud.style.animationDuration = (Math.random() * 30 + 30) + 's';
+                cloud.style.animationDelay = '-' + (Math.random() * 30) + 's';
+                container.appendChild(cloud);
+            }
+
+            // Level node click protection against double-click freeze
+            let isNodeNavigating = false;
+            document.querySelectorAll('.unlocked-node').forEach(function(node) {
+                node.addEventListener('click', function(e) {
+                    if (isNodeNavigating) {
+                        e.preventDefault();
+                        e.stopImmediatePropagation();
+                        return false;
+                    }
+                    isNodeNavigating = true;
+                    setTimeout(function() { isNodeNavigating = false; }, 2000);
+                });
+            });
+
+
+            function drawPath() {
+                const width = container.clientWidth;
+                const height = container.clientHeight;
+                svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+                
+                if (points.length < 2) return;
+                
+                let d = `M ${points[0].x * width / 100} ${points[0].y}`;
+                for (let i = 1; i < points.length; i++) {
+                    let prevX = points[i-1].x * width / 100;
+                    let prevY = points[i-1].y;
+                    let currX = points[i].x * width / 100;
+                    let currY = points[i].y;
+                    
+                    let cp1x = prevX;
+                    let cp1y = prevY - (ySpacing / 2);
+                    let cp2x = currX;
+                    let cp2y = currY + (ySpacing / 2);
+                    
+                    d += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${currX} ${currY}`;
+                }
+                pathLine.setAttribute('d', d);
+            }
+
+            drawPath();
+            window.addEventListener('resize', drawPath);
+
+            if (firstCurrentNode) {
+                setTimeout(() => {
+                    const y = firstCurrentNode.getBoundingClientRect().top + window.scrollY;
+                    window.scrollTo({
+                        top: y - (window.innerHeight / 2) + 100,
+                        behavior: 'smooth'
+                    });
+                }, 300);
+            }
+        });
+    </script>
+    <div id="global-portrait-overlay">
+        <div class="global-portrait-card">
+            <div class="global-phone-icon">
+                <span style="font-size: 60px; display: inline-block;">📱</span>
+            </div>
+            <h2 class="global-portrait-title">Harap Putar Layar ke Posisi Tegak (Portrait) 🔄</h2>
+            <p class="global-portrait-desc">Halaman ini dirancang dalam posisi tegak (Portrait) agar pas dengan genggaman Anda. Silakan putar HP Anda!</p>
+        </div>
+    </div>
+
+    <script src="@Url.Content("~/Scripts/bubble-pop.js")?v=@DateTime.Now.Ticks"></script>
+</body>
+</html>

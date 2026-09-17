@@ -1,0 +1,311 @@
+{
+	"info": {
+		"_postman_id": "c479c485-70aa-43d9-868f-814ccb90a7b0",
+		"name": "Kyu's Dessert World & Cafe API",
+		"description": "Dokumentasi API lengkap untuk pengujian projek UAS C# Lanjutan sesuai Ketentuan S1.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authentication & Akun",
+			"item": [
+				{
+					"name": "1. Login (Token Auth)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"Username\": \"zakysetiawan\",\n    \"Password\": \"zakyAdmin\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "auth", "login"]
+						}
+					}
+				},
+				{
+					"name": "2. Request OTP Lupa Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\"zakytesting@gmail.com\""
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/request-otp",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "auth", "request-otp"]
+						}
+					}
+				},
+				{
+					"name": "3. Reset Password dengan OTP",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"Email\": \"zakytesting@gmail.com\",\n    \"Otp\": \"123456\",\n    \"NewPassword\": \"Aedza1234\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/reset-password",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "auth", "reset-password"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "E-Commerce Kafe (Shop)",
+			"item": [
+				{
+					"name": "1. Katalog Menu (Paginasi, Filter & Sort A-Z)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/Shop/Index?cat=&search=&sort=name_asc&page=1&pageSize=8",
+							"host": ["{{baseUrl}}"],
+							"path": ["Shop", "Index"],
+							"query": [
+								{ "key": "cat", "value": "" },
+								{ "key": "search", "value": "" },
+								{ "key": "sort", "value": "name_asc" },
+								{ "key": "page", "value": "1" },
+								{ "key": "pageSize", "value": "8" }
+							]
+						}
+					}
+				},
+				{
+					"name": "2. Detail Produk Dessert",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/Shop/ProductDetail/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["Shop", "ProductDetail", "1"]
+						}
+					}
+				},
+				{
+					"name": "3. Tambah Item ke Keranjang",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/x-www-form-urlencoded" }
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{ "key": "productId", "value": "1", "type": "text" },
+								{ "key": "variant", "value": "Original", "type": "text" },
+								{ "key": "qty", "value": "1", "type": "text" },
+								{ "key": "customNote", "value": "Less sugar", "type": "text" }
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/Shop/AddToCart",
+							"host": ["{{baseUrl}}"],
+							"path": ["Shop", "AddToCart"]
+						}
+					}
+				},
+				{
+					"name": "4. Hitung Jumlah Item Keranjang",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/Shop/GetCartCount",
+							"host": ["{{baseUrl}}"],
+							"path": ["Shop", "GetCartCount"]
+						}
+					}
+				},
+				{
+					"name": "5. Update Kuantitas Item Keranjang",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/x-www-form-urlencoded" }
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{ "key": "cartItemId", "value": "1", "type": "text" },
+								{ "key": "qty", "value": "2", "type": "text" }
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/Shop/UpdateCartQty",
+							"host": ["{{baseUrl}}"],
+							"path": ["Shop", "UpdateCartQty"]
+						}
+					}
+				},
+				{
+					"name": "6. Cek Status Pelacakan Pesanan Real-time",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/Shop/GetOrderStatus/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["Shop", "GetOrderStatus", "1"]
+						}
+					}
+				},
+				{
+					"name": "7. Soft Delete Produk (Admin)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/x-www-form-urlencoded" }
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{ "key": "id", "value": "1", "type": "text" }
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/Shop/DeleteProduct/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["Shop", "DeleteProduct", "1"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "REST API Products (Ketentuan S1)",
+			"item": [
+				{
+					"name": "1. GET Products (Search, Filter, Sort & Pagination)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/products?page=1&limit=10&search=cake&status=active&sort=name_asc&category=1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "products"],
+							"query": [
+								{ "key": "page", "value": "1" },
+								{ "key": "limit", "value": "10" },
+								{ "key": "search", "value": "cake" },
+								{ "key": "status", "value": "active" },
+								{ "key": "sort", "value": "name_asc" },
+								{ "key": "category", "value": "1" }
+							]
+						}
+					}
+				},
+				{
+					"name": "2. GET Product Detail By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/products/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "products", "1"]
+						}
+					}
+				},
+				{
+					"name": "3. POST Create Product (Server-side Validation)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"CategoryId\": 1,\n    \"Name\": \"Artisan Strawberry Shortcake\",\n    \"Description\": \"Kue bolu lembut dengan lapisan krim vanila dan stroberi segar pilihan.\",\n    \"Price\": 45000,\n    \"OriginalPrice\": 55000,\n    \"Stock\": 50,\n    \"Badge\": \"New\",\n    \"ImageUrl\": \"/Content/Shop/artisan_strawberry.jpg\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/products",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "products"]
+						}
+					}
+				},
+				{
+					"name": "4. PUT Update Product Full",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"CategoryId\": 1,\n    \"Name\": \"Artisan Strawberry Shortcake Royal\",\n    \"Description\": \"Edisi diperbarui dengan double berry compote.\",\n    \"Price\": 48000,\n    \"OriginalPrice\": 60000,\n    \"Stock\": 45,\n    \"Badge\": \"Bestseller\",\n    \"IsActive\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/products/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "products", "1"]
+						}
+					}
+				},
+				{
+					"name": "5. PATCH Partial Update Product",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"Price\": 42000,\n    \"Stock\": 30,\n    \"IsActive\": true,\n    \"Badge\": \"Promo\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/products/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "products", "1"]
+						}
+					}
+				},
+				{
+					"name": "6. DELETE Soft Delete Product",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/products/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "products", "1"]
+						}
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "https://localhost:44350"
+		}
+	]
+}

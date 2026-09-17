@@ -1,0 +1,229 @@
+@model List<UAS_C__Lanjutan.Models.Entity.ShopCartItem>
+@using UAS_C__Lanjutan.Models.Entity
+
+@{
+    Layout = null;
+    var user = ViewBag.CurrentUser as User;
+    int cartCount = ViewBag.CartCount ?? 0;
+    var availableVouchers = ViewBag.AvailableVouchers as List<ShopVoucher> ?? new List<ShopVoucher>();
+
+    decimal initialSubTotal = 0;
+    if (Model != null)
+    {
+        foreach (var ci in Model)
+        {
+            decimal p = ci.Product.Price;
+            if (!string.IsNullOrEmpty(ci.SelectedVariant) && ci.SelectedVariant.Contains("+Rp"))
+            {
+                // Variant extra price logic
+            }
+            initialSubTotal += (p * ci.Quantity);
+        }
+    }
+}
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🛒 Keranjang Belanja - Kyu Dessert & Cafe</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="@Url.Content("~/Content/dessert-shop.css")?v=@DateTime.Now.Ticks" />
+</head>
+<body class="shop-body">
+
+    <!-- NAVBAR -->
+    <nav class="shop-navbar">
+        <div class="shop-nav-container">
+            <a href="@Url.Action("Index", "Shop")" class="shop-brand">
+                <span class="shop-brand-icon">☕</span>
+                <span class="shop-brand-name">Kyu Dessert & Cafe</span>
+            </a>
+
+            <div class="shop-nav-links">
+                <a href="@Url.Action("Index", "Shop")" class="nav-shop-btn nav-shop-btn-outline">
+                    <span>🛍️</span>
+                    <span>Lanjut Pilih Menu</span>
+                </a>
+
+                <a href="@Url.Action("OrderHistory", "Shop")" class="nav-shop-btn nav-shop-btn-outline">
+                    <span>📦</span>
+                    <span>Pesanan Saya</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN CART WRAPPER -->
+    <div class="shop-page-wrapper">
+        <h1 class="page-header-title">
+            <span>🛒</span>
+            <span>Keranjang Belanja (@(Model?.Count ?? 0) Menu)</span>
+        </h1>
+
+        @if (Model == null || !Model.Any())
+        {
+            <div style="text-align: center; padding: 70px 20px; background: var(--cafe-card-bg); border-radius: var(--cafe-radius-lg); border: 1.5px dashed var(--cafe-border-dark);">
+                <div style="font-size: 4rem; margin-bottom: 15px;">☕</div>
+                <h2 style="color: var(--cafe-espresso); font-weight: 700; margin-bottom: 8px;">Keranjang Belanja Anda Kosong</h2>
+                <p style="color: var(--cafe-text-muted); font-size: 1rem; margin-bottom: 24px;">Belum ada sajian lezat yang Anda masukkan ke keranjang.</p>
+                <a href="@Url.Action("Index", "Shop")" class="nav-shop-btn nav-shop-btn-primary" style="padding: 12px 32px; font-size: 1.05rem;">
+                    <span>✨ Jelajahi Menu Kafe & Patisserie</span>
+                </a>
+            </div>
+        }
+        else
+        {
+            <div class="cart-layout-grid">
+                <!-- Left: Cart Items List -->
+                <div class="cart-items-card">
+                    <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--cafe-espresso); margin-bottom: 18px; border-bottom: 1.5px solid var(--cafe-border); padding-bottom: 12px;">
+                        Daftar Pilihan Dessert & Cafe
+                    </h3>
+
+                    <div id="cartItemsList">
+                        @foreach (var item in Model)
+                        {
+                            <div class="cart-item-row" id="cartRow_@item.Id">
+                                <img src="@item.Product.ImageUrl" alt="@item.Product.Name" class="cart-item-thumb" />
+                                
+                                <div class="cart-item-info">
+                                    <h4 class="cart-item-title">@item.Product.Name</h4>
+                                    
+                                    @if (!string.IsNullOrEmpty(item.SelectedVariant))
+                                    {
+                                        <span class="cart-item-variant-tag">🏷️ @item.SelectedVariant</span>
+                                    }
+                                    
+                                    @if (!string.IsNullOrEmpty(item.CustomNote))
+                                    {
+                                        <span class="cart-item-note-tag">✍️ Note: "@item.CustomNote"</span>
+                                    }
+
+                                    <div class="cart-item-price" style="margin-top: 4px;">
+                                        Rp @item.Product.Price.ToString("N0")
+                                    </div>
+                                </div>
+
+                                <div class="qty-stepper-wrapper">
+                                    <button type="button" class="btn-stepper" onclick="updateQty(@item.Id, @(item.Quantity - 1))">-</button>
+                                    <input type="number" class="input-stepper-qty" value="@item.Quantity" readonly />
+                                    <button type="button" class="btn-stepper" onclick="updateQty(@item.Id, @(item.Quantity + 1))">+</button>
+                                </div>
+
+                                <button type="button" class="btn-remove-item" onclick="removeItem(@item.Id)" title="Hapus Item">
+                                    🗑️
+                                </button>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Right: Summary & Vouchers -->
+                <div class="summary-card">
+                    <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--cafe-espresso); margin-bottom: 18px; border-bottom: 1.5px solid var(--cafe-border); padding-bottom: 12px;">
+                        Ringkasan Pesanan
+                    </h3>
+
+                    <!-- Available Achievement Vouchers -->
+                    @if (availableVouchers.Any())
+                    {
+                        <div style="background: var(--cafe-gold-light); border: 1.5px dashed var(--cafe-border-dark); border-radius: var(--cafe-radius-sm); padding: 14px; margin-bottom: 18px;">
+                            <div style="font-weight: 700; color: var(--cafe-espresso); font-size: 0.9rem; margin-bottom: 6px;">
+                                🎟️ Voucher Game Milik Anda:
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 6px;">
+                                @foreach (var v in availableVouchers)
+                                {
+                                    <div style="display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 6px 12px; border-radius: 8px; font-size: 0.82rem; border: 1px solid var(--cafe-border);">
+                                        <div>
+                                            <strong style="color: var(--cafe-toffee);">@v.Code</strong>
+                                            <span style="color: var(--cafe-text-muted);"> - @v.Name</span>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                            <small style="color: var(--cafe-text-muted); font-size: 0.74rem; margin-top: 6px; display: block;">*Pilih atau terapkan voucher pada halaman Checkout.</small>
+                        </div>
+                    }
+
+                    <div class="summary-row">
+                        <span>Total Harga Menu:</span>
+                        <strong id="lblSubTotal" style="color: var(--cafe-espresso);">Rp @initialSubTotal.ToString("N0")</strong>
+                    </div>
+
+                    <div class="summary-row">
+                        <span>Estimasi Pengiriman:</span>
+                        <span style="color: var(--cafe-success); font-weight: 600;">Dihitung saat Checkout</span>
+                    </div>
+
+                    <div class="summary-row total-row">
+                        <span>Subtotal Sementara:</span>
+                        <span id="lblGrandTotal" style="color: var(--cafe-espresso);">Rp @initialSubTotal.ToString("N0")</span>
+                    </div>
+
+                    <a href="@Url.Action("Checkout", "Shop")" class="btn-action-cart btn-action-cart-fill" style="width: 100%; margin-top: 20px; text-decoration: none; text-align: center;">
+                        <span>Lanjut ke Checkout ➡️</span>
+                    </a>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        function updateQty(cartItemId, newQty) {
+            var formData = new FormData();
+            formData.append('cartItemId', cartItemId);
+            formData.append('qty', newQty);
+
+            fetch('@Url.Action("UpdateCartQty", "Shop")', {
+                method: 'POST',
+                body: formData
+            })
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                if (data.success) {
+                    if (newQty <= 0) {
+                        var row = document.getElementById('cartRow_' + cartItemId);
+                        if (row) row.remove();
+                    }
+                    
+                    if (data.cartCount <= 0) {
+                        window.location.reload();
+                    } else {
+                        document.getElementById('lblSubTotal').innerText = data.formattedSubTotal;
+                        document.getElementById('lblGrandTotal').innerText = data.formattedSubTotal;
+                    }
+                }
+            });
+        }
+
+        function removeItem(cartItemId) {
+            Swal.fire({
+                title: 'Hapus Sajian?',
+                text: 'Item ini akan dikeluarkan dari keranjang belanja Anda.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#9E5825',
+                cancelButtonColor: '#6F5E53',
+                confirmButtonText: 'Ya, Hapus',
+                cancelButtonText: 'Batal'
+            }).then(function(result) {
+                if (result.isConfirmed) {
+                    updateQty(cartItemId, 0);
+                }
+            });
+        }
+    </script>
+</body>
+</html>

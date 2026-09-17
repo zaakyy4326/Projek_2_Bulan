@@ -1,0 +1,287 @@
+@{
+
+    ViewBag.Title = "Classic Puzzle";
+
+    Layout = null;
+
+    var playerInfo = ViewBag.PlayerInfo as UAS_C__Lanjutan.Models.Entity.User;
+
+}
+
+
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Classic Mode - Dessert Blocks</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700&family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+    <link href="~/Content/dessert-theme.css?v=@DateTime.Now.Ticks" rel="stylesheet" />
+
+    <link href="~/Content/puzzle-classic.css?v=@DateTime.Now.Ticks" rel="stylesheet" />
+
+    <style>
+        html, body, *, *::before, *::after {
+            cursor: url('@Url.Content("~/Content/PNG/Cursor32.png")') 0 0, auto !important;
+        }
+        a, button, [role="button"], input[type="button"], input[type="submit"], input[type="reset"], 
+        select, label, .btn, .puzzle-btn, .puzzle-card, .leaderboard-card, .btn-back-pink, 
+        .block-option, .draggable-block, .cell, .btn-ocean-mode, .level-node, .level-pin, 
+        .swal2-confirm, .swal2-cancel, .swal2-close, .swal2-popup, .swal2-html-container * {
+            cursor: url('@Url.Content("~/Content/PNG/Cursor32.png")') 0 0, pointer !important;
+        }
+        input[type="text"], input[type="password"], input[type="email"], input[type="number"], textarea {
+            cursor: text !important;
+        }
+    </style>
+
+</head>
+
+<body class="puzzle-dark-bg">
+
+    <!-- <div id="floating-container"></div> removed via JS but let's remove it from HTML entirely just in case -->
+
+    <div id="held-block-container"></div>
+
+    <input type="hidden" id="urlSaveScore" value="@Url.Action("SaveScore", "Puzzle")" />
+
+    <input type="hidden" id="urlGetSkins" value="@Url.Action("GetUnlockedBlocks", "Puzzle")" />
+
+    <input type="hidden" id="urlBack" value="@Url.Action("Index", "Puzzle")" />
+
+
+
+    <!-- Audio Elements -->
+
+    <audio id="sfxGrab" src="@Url.Content("~/Content/Audio/GrabBlock.mp3")" preload="auto"></audio>
+
+    <audio id="sfxPlace" src="@Url.Content("~/Content/Audio/BlockPlace.mp3")" preload="auto"></audio>
+
+    <audio id="sfxGameOver" src="@Url.Content("~/Content/Audio/game over.mp3")" preload="auto"></audio>
+
+    <audio id="sfxGameSelesai" src="@Url.Content("~/Content/Audio/game selesai.mp3")" preload="auto"></audio>
+
+    <audio id="sfxNewBest" src="@Url.Content("~/Content/Audio/New High Score.mp3")" preload="auto"></audio>
+
+    <audio id="sfxStartGame" src="@Url.Content("~/Content/Audio/sound-effect-mulai-game.mp3")" preload="auto"></audio>
+
+    
+
+    <!-- Combo Audios -->
+
+    @for (int i = 1; i <= 10; i++)
+
+    {
+
+        <audio id="sfxCombo@(i)" src="@Url.Content($"~/Content/Audio/Combo {i}.mp3")" preload="auto"></audio>
+
+    }
+
+
+
+    <!-- Praise Audios -->
+
+    <audio id="sfxGreat" src="@Url.Content("~/Content/Audio/Great.mp3")" preload="auto"></audio>
+
+    <audio id="sfxAmazing" src="@Url.Content("~/Content/Audio/Amazing.mp3")" preload="auto"></audio>
+
+    <audio id="sfxExcellent" src="@Url.Content("~/Content/Audio/Excelllent.mp3")" preload="auto"></audio>
+
+    <audio id="sfxAwesome" src="@Url.Content("~/Content/Audio/Awesome!.mp3")" preload="auto"></audio>
+
+    <audio id="sfxFantastic" src="@Url.Content("~/Content/Audio/Fantastic!.mp3")" preload="auto"></audio>
+
+    <audio id="sfxSuperFantastic" src="@Url.Content("~/Content/Audio/Super Fantastic!.mp3")" preload="auto"></audio>
+
+    <audio id="sfxUnbelievable" src="@Url.Content("~/Content/Audio/Unbelievable!.mp3")" preload="auto"></audio>
+
+
+
+    <!-- BGMs -->
+
+    <audio id="bgmMusic" loop></audio>
+
+    <input type="hidden" id="bgm1Src" value="@Url.Content("~/Content/Audio/Bgm1_PlayPuzzle.mp3")" />
+
+    <input type="hidden" id="bgm2Src" value="@Url.Content("~/Content/Audio/Bgm2_PlayPuzzle.mp3")" />
+
+
+
+    <div class="top-nav-bar">
+
+        <div class="nav-left">
+
+            <a href="#" id="btnBackToMenu" class="btn-back-pink"><span style="font-size:0.9rem;">⬅️</span> <span>Kembali</span></a>
+
+        </div>
+
+        <div class="nav-center">
+
+            <div class="score-title">SCORE: <span id="currentScore">0</span></div>
+
+            <div class="best-score">BEST: <span id="displayBestScore">@playerInfo.HighScoreBb</span></div>
+
+            <input type="hidden" id="bestScore" value="@playerInfo.HighScoreBb" />
+
+        </div>
+
+        <div class="nav-right" style="text-align:right;">
+
+            <div class="audio-control fw-bold" id="musicToggle" style=" color:white; background:rgba(0,0,0,0.5); padding:5px 15px; border-radius:20px; display:inline-block;">&#x1F3B5; Musik: ON</div>
+
+        </div>
+
+    </div>
+
+
+
+    <div class="game-wrapper">
+
+        <div class="game-container">
+
+            <!-- 8x8 Grid -->
+
+            <div class="grid-board" id="gridBoard">
+
+                <!-- JS will generate 64 cells -->
+
+            </div>
+
+
+
+            <!-- 3 Spawned Blocks -->
+
+            <div class="blocks-container" id="blocksContainer">
+
+                <div class="block-option">Block 1</div>
+
+                <div class="block-option">Block 2</div>
+
+                <div class="block-option">Block 3</div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+
+        var unlockedRecipesList = [];
+
+        @if(ViewBag.UnlockedRecipes != null) {
+
+            foreach(var r in ViewBag.UnlockedRecipes) {
+
+                <text>unlockedRecipesList.push("@r.RecipeName");</text>
+
+            }
+
+        }
+
+        // Ensure defaults exist for new players
+
+        if (!unlockedRecipesList.includes("Donat")) unlockedRecipesList.push("Donat");
+
+        if (!unlockedRecipesList.includes("Es Krim")) unlockedRecipesList.push("Es Krim");
+
+        window.UnlockedDesserts = unlockedRecipesList;
+
+    </script>
+
+    <div id="global-portrait-overlay">
+        <div class="global-portrait-card">
+            <div class="global-phone-icon">
+                <span style="font-size: 60px; display: inline-block;">📱</span>
+            </div>
+            <h2 class="global-portrait-title">Harap Putar Layar ke Posisi Tegak (Portrait) 🔄</h2>
+            <p class="global-portrait-desc">Halaman ini dirancang dalam posisi tegak (Portrait) agar pas dengan genggaman Anda. Silakan putar HP Anda!</p>
+        </div>
+    </div>
+
+    <script src="@Url.Content("~/Scripts/bubble-pop.js")?v=@DateTime.Now.Ticks"></script>
+
+    <script src="~/Scripts/puzzle-classic.js?v=@DateTime.Now.Ticks"></script>
+
+
+
+    <script>
+
+        // Intro Animation
+
+        (function () {
+
+            const overlay = document.createElement('div');
+
+            overlay.className = 'ready-go-overlay';
+
+            overlay.innerHTML = '<div class="ready-text">READY?</div><div class="go-text">GO!</div>';
+
+            document.body.appendChild(overlay);
+
+
+
+            overlay.addEventListener('animationend', function(event) {
+
+                if (event.target === overlay) {
+
+                    overlay.remove();
+
+                }
+
+            });
+
+
+
+            function startGameIntro() {
+
+                const sfx = document.getElementById('sfxStartGame');
+
+                if (sfx) {
+
+                    sfx.volume = 0.5;
+
+                    sfx.play().catch(e => console.log("Audio play blocked:", e));
+
+                }
+
+            }
+
+
+
+            if (document.readyState === 'loading') {
+
+                document.addEventListener('DOMContentLoaded', startGameIntro);
+
+            } else {
+
+                startGameIntro();
+
+            }
+
+        })();
+
+    </script>
+
+</body>
+
+</html>
+

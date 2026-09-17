@@ -1,0 +1,593 @@
+@{
+    Layout = null;
+    var player = ViewBag.PlayerInfo as UAS_C__Lanjutan.Models.Entity.User;
+}
+
+@using UAS_C__Lanjutan.Models.Entity
+
+@{
+    var baseNames = new[] { "Tepung", "Gula", "Mentega", "Susu", "Ragi", "Telur", "Krim Keju" };
+
+    var unlockedRecipes = ViewBag.UnlockedRecipes as List<UAS_C__Lanjutan.Models.Entity.Recipe> ?? new List<UAS_C__Lanjutan.Models.Entity.Recipe>();
+    
+    // Derive unlocked base ingredients from unlocked recipes
+    var unlockedBahanDasar = new HashSet<string>();
+    foreach (var recipe in unlockedRecipes)
+    {
+        if (recipe.Ingredients != null)
+        {
+            foreach (var ing in recipe.Ingredients)
+            {
+                if (baseNames.Contains(ing.IngredientName) && ing.IngredientName != "Es Batu")
+                {
+                    unlockedBahanDasar.Add(ing.IngredientName);
+                }
+            }
+        }
+    }
+
+    // Safety fallback: Ensure standard base ingredients are always available
+    if (!unlockedBahanDasar.Any())
+    {
+        unlockedBahanDasar.Add("Tepung");
+        unlockedBahanDasar.Add("Gula");
+        unlockedBahanDasar.Add("Mentega");
+        unlockedBahanDasar.Add("Ragi");
+        unlockedBahanDasar.Add("Telur");
+        unlockedBahanDasar.Add("Susu");
+    }
+    
+    // Topping is always available
+    var unlockedTopping = new List<string> { "Stroberi", "Cokelat", "Ceri", "Vanilla", "Anggur" };
+}
+
+@functions {
+    public string GetIngredientImage(string name)
+    {
+        switch (name)
+        {
+            case "Tepung": return "tepung.png";
+            case "Gula": return "gula.png";
+            case "Mentega": return "mentega.png";
+            case "Susu": return "susu.png";
+            case "Ragi": return "ragi.png";
+            case "Telur": return "telur.png";
+            case "Krim Keju": return "krim-keju.png";
+            case "Stroberi": return "stroberi.png";
+            case "Cokelat": return "coklat.png";
+            case "Coklat": return "coklat.png";
+            case "Ceri": return "ceri.png";
+            case "Vanilla": return "vanila.png";
+            case "Anggur": return "anggur.png";
+            case "Matcha": return "matcha.png";
+            default: return "";
+        }
+    }
+    public string GetRecipeEmoji(string name)
+    {
+        switch (name)
+        {
+            case "Donat": return "&#x1F369;";
+            case "Es Krim": return "&#x1F366;";
+            case "Cupcake": return "&#x1F9C1;";
+            case "Pancake": return "&#x1F95E;";
+            case "Waffle": return "&#x1F9C7;";
+            case "ShortCake": return "&#x1F370;";
+            case "Birthday Cake": return "&#x1F382;";
+            case "Pai": return "&#x1F967;";
+            default: return "&#x1F37D;";
+        }
+    }
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <title>&#x1F370; Dessert World - Dapur</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="@Url.Content("~/Content/dessert-cooking-table.css")?v=@DateTime.Now.Ticks" />
+    <style>
+        body.cooking-body,
+        body.cooking-body *,
+        body.cooking-body *::before,
+        body.cooking-body *::after {
+            cursor: url('@Url.Content("~/Content/PNG/Cursor32.png")') 0 0, auto !important;
+        }
+
+        body.cooking-body button,
+        body.cooking-body .btn,
+        body.cooking-body a,
+        body.cooking-body .item-adonan,
+        body.cooking-body .item-topping,
+        body.cooking-body .tool-station,
+        body.cooking-body .btn-open-shop,
+        body.cooking-body .btn-back-cooking-prep,
+        body.cooking-body .audio-control,
+        body.cooking-body .stat-badge,
+        body.cooking-body .prep-overlay,
+        body.cooking-body .prep-overlay *,
+        body.cooking-body .prep-board,
+        body.cooking-body .prep-board *,
+        body.cooking-body .order-card,
+        body.cooking-body .order-card *,
+        body.cooking-body .swal2-popup,
+        body.cooking-body .swal2-popup *,
+        body.cooking-body .swal2-confirm,
+        body.cooking-body .swal2-cancel {
+            cursor: url('@Url.Content("~/Content/PNG/Cursor32.png")') 0 0, pointer !important;
+        }
+
+        input, textarea {
+            cursor: auto !important;
+        }
+
+        .small-toast-title {
+            font-size: 1rem !important;
+            font-weight: bold !important;
+        }
+    </style>
+</head>
+<body class="cooking-body">
+    <!-- OVERLAY DETEKSI ROTASI MOBILE -->
+    <div class="rotate-overlay">
+        <div class="phone-icon-wrapper">
+            <span class="phone-emoji" style="font-size: 70px; display: inline-block;">&#x1F4F1;</span>
+        </div>
+        <h2 class="rotate-title">Harap Putar Layar Anda! 🔄</h2>
+        <p class="rotate-desc">Dapur membutuhkan ruang mendatar (Landscape) agar kamu bisa memasak dessert dengan leluasa. Silakan putar HP Anda atau perlebar jendela browser Anda!</p>
+    </div>
+
+    <!-- OVERLAY DETEKSI ROTASI MOBILE SAAT KELUAR -->
+    <div class="exit-rotate-overlay" id="exitRotateOverlay">
+        <div class="phone-icon-wrapper-exit">
+            <span class="phone-emoji-exit" style="font-size: 70px; display: inline-block;">&#x1F4F1;</span>
+        </div>
+        <h2 class="rotate-title">Silakan Putar Layar Kembali ke Tegak (Portrait) 🔄</h2>
+        <p class="rotate-desc">Halaman Menu Utama dirancang dalam posisi tegak (Portrait) agar pas dengan genggaman Anda. Silakan putar HP Anda!</p>
+    </div>
+
+    <div id="floating-container"></div>
+    <div class="game-container">
+
+        <!-- LAYAR PERSIAPAN BUKA TOKO -->
+        <div class="prep-overlay" id="cookingPrepOverlay">
+            <div class="prep-board">
+                <div class="prep-header">
+                    <h2 class="prep-title">&#x1F4CB; PERSIAPAN BUKA TOKO &#x1F370;</h2>
+                    <p class="prep-subtitle">Siapkan resep tokomu sebelum melayani pelanggan!</p>
+                </div>
+                
+                <div class="prep-content">
+                    <!-- Kiri: Menu Hari Ini -->
+                    <div class="prep-section menu-section">
+                        <h3 class="section-title">&#x1F369; Menu Hari Ini</h3>
+                        <div class="prep-menu-list">
+                            @if (unlockedRecipes != null && unlockedRecipes.Any())
+                            {
+                                foreach (var recipe in unlockedRecipes)
+                                {
+                                    <div class="prep-menu-item">
+                                        <span class="prep-menu-emoji">@Html.Raw(GetRecipeEmoji(recipe.RecipeName))</span>
+                                        <div class="prep-menu-info">
+                                            <div class="prep-menu-name">@recipe.RecipeName</div>
+                                            <div class="prep-menu-ingredients">
+                                                Bahan: 
+                                                @if (recipe.Ingredients != null && recipe.Ingredients.Any())
+                                                {
+                                                    foreach (var ing in recipe.Ingredients)
+                                                    {
+                                                        if (ing.IngredientName == "Es Batu") { continue; }
+                                                        var ingName = ing.IngredientName;
+                                                        var ingImg = GetIngredientImage(ingName);
+                                                        if (!string.IsNullOrEmpty(ingImg))
+                                                        {
+                                                            <img src="@Url.Content("~/Content/PNG/" + ingImg)" class="prep-menu-ing-img" alt="@ingName" title="@ingName" />
+                                                        }
+                                                    }
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="text-center text-muted py-3">Belum ada resep terbuka. Buka di Toko Resep!</div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Kanan: Cara Bermain -->
+                    <div class="prep-section tutorial-section">
+                        <h3 class="section-title">&#x1F4D6; Panduan Cepat Bermain</h3>
+                        <div class="tutorial-steps">
+                            <div class="tutorial-step">
+                                <div class="step-num">1</div>
+                                <div class="step-desc">
+                                    <strong>Pilih Bahan Dasar:</strong> Klik bahan di rak atas (misal: Tepung &#x1F33E;, Gula &#x1F36C;, dll.) untuk dimasukkan ke mangkuk &#x1F963;.
+                                </div>
+                            </div>
+                            <div class="tutorial-step">
+                                <div class="step-num">2</div>
+                                <div class="step-desc">
+                                    <strong>Proses Masak:</strong> Setelah bahan terkumpul, klik <strong>Oven</strong> &#x1F39B;&#xFE0F; (atau <strong>Mesin Es Krim</strong> &#x1F366;) untuk mematangkan kue.
+                                </div>
+                            </div>
+                            <div class="tutorial-step">
+                                <div class="step-num">3</div>
+                                <div class="step-desc">
+                                    <strong>Kemasan & Topping:</strong> Kue yang matang akan ditaruh di piring. **Klik bungkusan kue** tersebut, lalu pilih rasa/topping &#x1F353; sesuai pesanan.
+                                </div>
+                            </div>
+                            <div class="tutorial-step">
+                                <div class="step-num">4</div>
+                                <div class="step-desc">
+                                    <strong>Sajikan:</strong> Klik tombol **Sajikan** &#x1F37D;&#xFE0F; sebelum batas waktu pelanggan di panel kiri habis!
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="prep-footer" style="display: flex; justify-content: space-between; align-items: center; gap: 15px; width: 100%;">
+                    <div class="prep-highscore">
+                        <span>&#x1F4B0; Koin Tokomu: <strong>@player.TotalCoins</strong></span>
+                    </div>
+                    <div class="prep-actions-group" style="display: flex; gap: 10px;">
+                        <a href="/MainMenu/Index" class="btn-open-shop btn-back-cooking-prep" style="background: linear-gradient(135deg, #FF8F8F, #FF5C5C); color: white; text-decoration: none; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; box-shadow: 0 4px 6px rgba(0,0,0,0.2);">
+                            &#x1F6AA; Keluar
+                        </a>
+                        <button id="btnStartShop" class="btn-open-shop">
+                            &#x1F514; Buka Toko Sekarang!
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TOP BAR: Koin, Timer, Setting -->
+        <div class="top-bar-game">
+            <button class="stat-badge" id="btnPause" style="position: absolute; left: 3%; background: rgba(0,0,0,0.5); padding: 5px 15px; border-radius: 20px; color: white; border: none; display: flex; align-items: center; justify-content: center; font-family: inherit;">
+                <span class="btn-icon" style="display:inline-block; margin-right:5px; font-size: 1.2em;">&#x23F8;&#xFE0F;</span> Pause
+            </button>
+            <div class="stat-badge" style="position: absolute; left: 32%; background: rgba(0,0,0,0.5); padding: 5px 15px; border-radius: 20px; color: white;"><span class="btn-icon" style="display:inline-block; margin-right:5px;">&#x1F4B0;</span> <span id="lblKoinSesi" data-total="@player.TotalCoins">@player.TotalCoins</span></div>
+            <div class="stat-badge" style="position: absolute; left: 62%; background: rgba(0,0,0,0.5); padding: 5px 15px; border-radius: 20px; color: white;"><span class="btn-icon" style="display:inline-block; margin-right:5px; font-size: 1.2em;">&#x23F0;</span> <span id="lblWaktuGame">300</span> s</div>
+            <div class="audio-control fw-bold" id="musicToggle">&#x1F3B5; Musik: OFF</div>
+        </div>
+
+        <!-- LEFT PANEL: ORDER MONITOR -->
+        <div class="left-panel-container">
+            <div class="order-panel" id="orderQueueContainer">
+                <!-- Rendered by JS -->
+            </div>
+        </div>
+
+        <!-- KITCHEN SHELVES -->
+        <!-- Rak Atas: Bahan Dasar -->
+        <div class="shelf-bahan">
+            @foreach (var bahan in unlockedBahanDasar)
+            {
+                <button class="ingredient-btn item-adonan" data-adonan="@bahan">
+                    <img src="@Url.Content("~/Content/PNG/" + GetIngredientImage(bahan))" class="btn-icon-img" alt="@bahan" />
+                    <span class="item-label">@bahan</span>
+                </button>
+            }
+        </div>
+
+        <!-- Rak Tengah: Alat -->
+        <div class="shelf-alat">
+            <!-- Mangkuk -->
+            <div class="tool-station" id="areaMangkok">
+                <div class="visual-inside-bowl" id="wadahBahanVisual"></div>
+                <img src="@Url.Content("~/Content/PNG/mangkuk.png")" class="tool-img" alt="Mangkuk" id="imgBowl">
+            </div>
+
+            <!-- Oven -->
+            <div class="tool-station" id="btnBakeOven">
+                <img src="@Url.Content("~/Content/PNG/oven_before.png")" class="tool-img" alt="Oven" id="imgOven">
+                <div class="tool-progress d-none" id="progressOvenContainer">
+                    <div class="tool-progress-fill" id="progressOvenFill"></div>
+                </div>
+            </div>
+
+            <!-- Mesin Es Krim -->
+            <div class="tool-station" id="btnMesinEsKrim">
+                <img src="@Url.Content("~/Content/PNG/mesin_eskrim_before.png")" class="tool-img" alt="Mesin Es Krim" id="imgIceCreamMaker">
+                <div class="tool-progress d-none" id="progressIceCreamContainer">
+                    <div class="tool-progress-fill" id="progressIceCreamFill"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rak Bawah: Topping -->
+        <div class="shelf-topping">
+            @foreach (var top in unlockedTopping)
+            {
+                <button class="topping-btn item-topping" data-topping="@top">
+                    <img src="@Url.Content("~/Content/PNG/" + GetIngredientImage(top))" class="btn-icon-img" alt="@top" />
+                    <span class="item-label">@top</span>
+                </button>
+            }
+        </div>
+
+        <!-- SERVING AREA (KIRI BAWAH) -->
+        <div class="serving-area">
+            <div class="serving-plate-zone" id="servingPlateZone">
+                <div class="kue-on-plate" id="visualKuePiring"></div>
+                <div class="topping-container-on-plate" id="visualToppingPiring"></div>
+                
+                <div id="packerInlineLoading" style="display:none; position:absolute; top:35%; left:50%; transform:translateX(-50%); width: 140%; text-align: center; z-index: 50;">
+                    <div style="font-size:0.8rem; font-weight:bold; color:#fff; text-shadow:1px 1px 2px #000; margin-bottom: 4px;">Sedang Membungkus...</div>
+                    <div style="width: 100%; background:rgba(0,0,0,0.5); border-radius:10px; border: 2px solid #5a412d; overflow:hidden; height:12px; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                        <div id="packerInlineProgress" style="width:0%; height:100%; background:linear-gradient(90deg, #fcd34d, #f59e0b);"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="serving-status">
+            <div class="serving-status-text" id="lblPiringStatusEmoji">(Masih Kosong)</div>
+        </div>
+
+        <!-- Action Buttons -->
+        <!-- Packer Button - Shown dynamically after bake -->
+        <button id="btnSerahkanPacker" class="btn-desainer" title="Bungkus" style="display:none;">
+            &#x1F4E6;
+        </button>
+
+        <button id="btnSajikan" class="btn-sajikan" title="Sajikan" disabled>
+            &#x1F37D;&#xFE0F;
+        </button>
+
+        <button id="btnBuang" class="btn-buang" title="Buang Masakan">
+            &#x1F5D1;&#xFE0F;
+        </button>
+
+        <!-- RIGHT PANEL: RESEP TERBUKA -->
+        <div class="right-panel-container">
+            <div class="recipe-list" id="cookingRecipeList">
+                @if (unlockedRecipes != null)
+                {
+                    foreach (var recipe in unlockedRecipes)
+                    {
+                        if (recipe.RecipeName == "Es Krim") { continue; }
+                        <div class="recipe-item paginate-recipe-item">
+                            <div class="recipe-header">
+                                <span class="recipe-emoji">@Html.Raw(GetRecipeEmoji(recipe.RecipeName))</span>
+                                <div class="recipe-name">@recipe.RecipeName</div>
+                            </div>
+                            <div class="recipe-ingredients">
+                                @if (recipe.Ingredients != null && recipe.Ingredients.Any())
+                                {
+                                    foreach(var ing in recipe.Ingredients)
+                                    {
+                                        <img src="@Url.Content("~/Content/PNG/" + GetIngredientImage(ing.IngredientName))" class="recipe-ingredient-icon" alt="@ing.IngredientName" title="@ing.IngredientName" />
+                                    }
+                                }
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+            
+            <button id="btnPrevRecipePage" style="display:none; position:absolute; top:50%; left:-15px; transform:translateY(-50%); background:#d97706; color:white; border:2px solid #fff; border-radius:50%; width:30px; height:30px; font-weight:bold; box-shadow:0 2px 4px rgba(0,0,0,0.3); z-index:100; align-items:center; justify-content:center;">&#x25C0;</button>
+            <button id="btnNextRecipePage" style="display:none; position:absolute; top:50%; right:-15px; transform:translateY(-50%); background:#d97706; color:white; border:2px solid #fff; border-radius:50%; width:30px; height:30px; font-weight:bold; box-shadow:0 2px 4px rgba(0,0,0,0.3); z-index:100; align-items:center; justify-content:center;">&#x25B6;</button>
+        </div>
+
+        <!-- Packer Flavor Modal -->
+        <div id="packerFlavorModal" class="packer-modal">
+            <div class="packer-modal-content">
+                <h3 style="color:#5a412d; font-weight:700; margin-bottom:15px;">Pilih Rasa Bungkusan!</h3>
+                <div class="packer-flavor-list">
+                    @foreach (var topping in unlockedTopping)
+                    {
+                        <button class="packer-flavor-btn" data-flavor="@topping">
+                            <img src="@Url.Content("~/Content/PNG/" + GetIngredientImage(topping))" alt="@topping" />
+                            <span>@topping</span>
+                        </button>
+                    }
+                </div>
+                <button class="btn btn-secondary mt-3" id="btnCancelPacker" style="background:#5a412d; color:#fff; border:none; padding:8px 16px; border-radius:8px; font-weight:bold;">Batal</button>
+            </div>
+        </div>
+
+    </div>
+
+    <audio id="bgmMusic" loop>
+        <source src="@Url.Content("~/Content/Audio/Main Theme - Dessert.mp3")" type="audio/mpeg">
+    </audio>
+    <audio id="sfxClick">
+        <source src="@Url.Content("~/Content/Audio/bubble-pop.mp3")" type="audio/mpeg">
+    </audio>
+    <audio id="sfxStartGame">
+        <source src="@Url.Content("~/Content/Audio/sound-effect-mulai-game.mp3")" type="audio/mpeg">
+    </audio>
+
+    <audio id="sfxNewBest">
+        <source src="@Url.Content("~/Content/Audio/New High Score.mp3")" type="audio/mpeg">
+    </audio>
+
+    <audio id="sfxPutIngredient">
+        <source src="@Url.Content("~/Content/Audio/Put ingredient.mp3")" type="audio/mpeg">
+    </audio>
+    <audio id="sfxOven">
+        <source src="@Url.Content("~/Content/Audio/Suara oven.mp3")" type="audio/mpeg">
+    </audio>
+    <audio id="sfxMesinEskrim">
+        <source src="@Url.Content("~/Content/Audio/Suara mesin eskrim.mp3")" type="audio/mpeg">
+    </audio>
+    <audio id="sfxNgebungkus">
+        <source src="@Url.Content("~/Content/Audio/Ngebungkus sound.mp3")" type="audio/mpeg">
+    </audio>
+    <audio id="sfxPelangganKecewa">
+        <source src="@Url.Content("~/Content/Audio/pelanggan kecewa sound.mp3")" type="audio/mpeg">
+    </audio>
+    <audio id="sfxSajikan">
+        <source src="@Url.Content("~/Content/Audio/sajikan sound.mp3")" type="audio/mpeg">
+    </audio>
+    <audio id="sfxGameSelesai">
+        <source src="@Url.Content("~/Content/Audio/game selesai.mp3")" type="audio/mpeg">
+    </audio>
+    <audio id="sfxGameOver">
+        <source src="@Url.Content("~/Content/Audio/game over.mp3")" type="audio/mpeg">
+    </audio>
+    <audio id="sfxCountdownPelanggan">
+        <source src="@Url.Content("~/Content/Audio/suara countdown pelanggan.mp3")" type="audio/mpeg">
+    </audio>
+    <audio id="sfxTimer10DetikLagi">
+        <source src="@Url.Content("~/Content/Audio/timer 10 detik lagi.mp3")" type="audio/mpeg">
+    </audio>
+    <audio id="sfxSoClose">
+        <source src="@Url.Content("~/Content/Audio/So Close(for cooking).mp3")" type="audio/mpeg">
+    </audio>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        window.UserUnlockedAchievements = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.UnlockedAchievements as List<string> ?? new List<string>()));
+
+        (function() {
+            var defaultIngredientsMap = {
+                "Donat": ["Tepung", "Gula", "Mentega", "Ragi"],
+                "Es Krim": [],
+                "Cupcake": ["Tepung", "Gula", "Telur", "Susu"],
+                "Pancake": ["Tepung", "Telur", "Susu"],
+                "Waffle": ["Tepung", "Telur", "Susu", "Mentega"],
+                "ShortCake": ["Tepung", "Telur", "Susu", "Krim Keju"],
+                "Birthday Cake": ["Tepung", "Telur", "Krim Keju", "Gula"],
+                "Pai": ["Tepung", "Mentega", "Krim Keju"]
+            };
+
+            var rawRecipes = [
+                @if(unlockedRecipes != null && unlockedRecipes.Any()) {
+                    foreach(var r in unlockedRecipes) {
+                        var bahanString = r.Ingredients != null && r.Ingredients.Any() 
+                            ? string.Join(",", r.Ingredients.Select(i => "\"" + i.IngredientName + "\"")) 
+                            : "";
+                        <text> { nama: "@r.RecipeName", harga: @r.CoinReward, bahan: [@Html.Raw(bahanString)] }, </text>
+                    }
+                } else {
+                    <text>
+                        { nama: "Donat", harga: 15, bahan: ["Tepung", "Gula", "Mentega", "Ragi"] },
+                        { nama: "Es Krim", harga: 10, bahan: [] }
+                    </text>
+                }
+            ];
+
+            // Fill missing ingredients from default map if necessary
+            rawRecipes.forEach(function(rec) {
+                if ((!rec.bahan || rec.bahan.length === 0) && rec.nama !== "Es Krim" && defaultIngredientsMap[rec.nama]) {
+                    rec.bahan = defaultIngredientsMap[rec.nama];
+                }
+            });
+
+            window.AvailableRecipesData = rawRecipes;
+        })();
+    </script>
+    <script src="@Url.Content("~/Scripts/bubble-pop.js")?v=@DateTime.Now.Ticks"></script>
+    <script src="@Url.Content("~/Scripts/dessert-cooking.js")?v=@DateTime.Now.Ticks"></script>
+
+    <script>
+        $(document).ready(function () {
+            const gameContainer = document.querySelector('.game-container');
+            if (gameContainer) {
+                gameContainer.classList.add('game-visible');
+            }
+            const startSfx = document.getElementById('sfxStartGame');
+            if (startSfx) {
+                startSfx.volume = 0.6;
+            }
+
+            $('#btnStartShop').on('click', function () {
+                Swal.fire({
+                    title: "Mulai dengan Panduan? &#x1F4D6;",
+                    text: "Apakah kamu ingin mengikuti tutorial memasak interaktif (langkah-demi-langkah)?",
+                    icon: "question",
+                    showCancelButton: true,
+                    confirmButtonText: "Ya, Pandu Aku! &#x1F393;",
+                    cancelButtonText: "Tidak, Langsung Main! &#x26A1;",
+                    confirmButtonColor: "#10b981",
+                    cancelButtonColor: "#D4A373",
+                    allowOutsideClick: false
+                }).then((result) => {
+                    var sfxMuted = localStorage.getItem('game_sfx_muted') === 'true';
+                    if (startSfx && !sfxMuted) {
+                        var sfxVol = parseFloat(localStorage.getItem('game_sfx_volume'));
+                        if (!isNaN(sfxVol) && sfxVol >= 0) startSfx.volume = sfxVol;
+                        startSfx.currentTime = 0;
+                        startSfx.play().catch(e => console.log(e));
+                    }
+
+                    // Mulai BGM memasak (mematuhi volume dan mute di pengaturan)
+                    if (typeof window.startCookingBgm === 'function') {
+                        window.startCookingBgm();
+                    }
+
+                    $('#cookingPrepOverlay').fadeOut(400, function () {
+                        $(this).addClass('hidden');
+                        
+                        if (result.isConfirmed) {
+                            if (typeof window.startInteractiveTutorial === 'function') {
+                                window.startInteractiveTutorial();
+                            }
+                        } else {
+                            if (typeof window.mulaiGameVisual === 'function') {
+                                window.mulaiGameVisual();
+                            } else if (typeof window.startCookingGame === 'function') {
+                                window.startCookingGame();
+                            }
+                        }
+                    });
+                });
+            });
+        });
+
+        // Pagination for Recipe Book
+        document.addEventListener("DOMContentLoaded", function() {
+            const items = document.querySelectorAll('.paginate-recipe-item');
+            const itemsPerPage = window.innerHeight <= 480 ? 2 : 3;
+            let currentPage = 0;
+            const totalPages = Math.ceil(items.length / itemsPerPage);
+            
+            const btnPrev = document.getElementById('btnPrevRecipePage');
+            const btnNext = document.getElementById('btnNextRecipePage');
+            const listContainer = document.getElementById('cookingRecipeList');
+            
+            if (items.length > itemsPerPage) {
+                listContainer.style.overflowY = 'hidden';
+                
+                function showPage(page) {
+                    items.forEach((item, index) => {
+                        if (index >= page * itemsPerPage && index < (page + 1) * itemsPerPage) {
+                            item.style.display = 'flex';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                    
+                    btnPrev.style.display = page > 0 ? 'flex' : 'none';
+                    btnNext.style.display = page < totalPages - 1 ? 'flex' : 'none';
+                }
+                
+                btnPrev.addEventListener('click', function() {
+                    if (currentPage > 0) {
+                        currentPage--;
+                        showPage(currentPage);
+                    }
+                });
+                
+                btnNext.addEventListener('click', function() {
+                    if (currentPage < totalPages - 1) {
+                        currentPage++;
+                        showPage(currentPage);
+                    }
+                });
+                
+                showPage(0);
+            }
+        });
+    </script>
+</body>
+</html>

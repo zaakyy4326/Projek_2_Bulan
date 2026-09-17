@@ -1,0 +1,1118 @@
+/* --- CUSTOM SCROLLBAR BERGAYA BAGUETTE --- */
+::-webkit-scrollbar {
+    width: 14px;
+    height: 14px;
+}
+::-webkit-scrollbar-track {
+    background: #FDFBEE; /* Warna cream adonan roti */
+    border-left: 2px dashed #D4A373;
+}
+::-webkit-scrollbar-thumb {
+    /* Warna cokelat emas baguette dengan potongan khas roti */
+    background: linear-gradient(135deg, 
+        #C49A6C 0%, #C49A6C 25%, 
+        #A87B51 25%, #A87B51 50%, 
+        #C49A6C 50%, #C49A6C 75%, 
+        #A87B51 75%, #A87B51 100%
+    );
+    background-size: 15px 15px; /* Memberikan pola potongan roti diagonal baguette */
+    border: 2.5px solid #FDFBEE;
+    border-radius: 10px;
+    box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.2);
+}
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, 
+        #D4A87A 0%, #D4A87A 25%, 
+        #B88B5E 25%, #B88B5E 50%, 
+        #D4A87A 50%, #D4A87A 75%, 
+        #B88B5E 75%, #B88B5E 100%
+    );
+    background-size: 15px 15px;
+}
+
+/* Firefox scrollbar support */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #A87B51 #FDFBEE;
+}
+
+/* --- TATA LETAK UTAMA MAIN MENU --- */
+body {
+    position: relative;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* HEADER DENGAN PROFIL DI KANAN */
+.game-header {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 24px 0 24px;
+    flex-wrap: wrap;
+}
+
+.game-title-container {
+    text-align: left;
+    flex: 1;
+}
+
+.game-title {
+    font-size: clamp(1.4rem, 2.6vw, 2.1rem);
+    font-weight: 900;
+    color: #B5835A;
+    text-shadow: 2px 2px 0px #FAEDCD, 4px 4px 0px #D4A373;
+    letter-spacing: 1.5px;
+    margin-bottom: 3px;
+}
+
+.game-subtitle {
+    color: #8B6B42;
+    font-size: clamp(0.78rem, 1.2vw, 0.88rem);
+    font-weight: 600;
+    margin-bottom: 0;
+}
+
+/* --- PROFIL CORNER - POJOK KANAN ATAS (MODERN & RAPI) --- */
+.profile-corner {
+    margin-top: 0;
+}
+
+.profile-avatar {
+    background: linear-gradient(135deg, #FFFEF7, #FAEDCD);
+    border: 2px solid #D4A373;
+    border-radius: 50px;
+    padding: 3px 12px 3px 3px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    box-shadow: 0 3px 6px rgba(123, 91, 58, 0.1);
+}
+
+.profile-avatar:hover {
+    transform: translateY(-2px);
+    background: #FFFEF7;
+    border-color: #C49A6C;
+    box-shadow: 0 5px 10px rgba(123, 91, 58, 0.14);
+}
+
+.profile-emoji {
+    font-size: 1.15rem;
+    background: #FFF;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid #FFF;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.profile-name {
+    font-weight: 600;
+    color: #7B5B3A;
+    font-size: 0.88rem;
+    max-width: 110px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* --- CENTRAL DASHBOARD PANEL --- */
+.main-dashboard-wrapper {
+    position: relative;
+    z-index: 10;
+    display: grid;
+    grid-template-columns: minmax(280px, 330px) minmax(330px, 420px) minmax(280px, 330px);
+    grid-template-areas: "missions dashboard players";
+    justify-content: center;
+    align-items: start;
+    max-width: 1200px;
+    margin: 15px auto 25px auto;
+    padding: 0 16px;
+    gap: 20px;
+    box-sizing: border-box;
+}
+
+.daily-missions-card {
+    grid-area: missions;
+}
+
+.main-dashboard-wrapper > .main-dashboard-card:nth-child(2) {
+    grid-area: dashboard;
+}
+
+.leaderboard-card {
+    grid-area: players;
+}
+
+.main-dashboard-card {
+    position: relative;
+    z-index: 10;
+    background: rgba(255, 254, 247, 0.96);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 2.5px solid #D4A373;
+    border-radius: 20px;
+    padding: 18px 16px;
+    width: 100%;
+    box-sizing: border-box;
+    box-shadow: 0 10px 24px rgba(123, 91, 58, 0.1);
+    border-bottom: 6px solid #D4A373;
+    display: flex;
+    flex-direction: column;
+}
+
+.daily-missions-card {
+    border-color: #FF9999 !important;
+    border-bottom-color: #FF9999 !important;
+    box-shadow: 0 10px 24px rgba(255, 153, 153, 0.12) !important;
+}
+
+.leaderboard-card {
+    border-color: #FFCC80 !important;
+    border-bottom-color: #FFCC80 !important;
+    box-shadow: 0 10px 24px rgba(255, 204, 128, 0.12) !important;
+}
+
+.dashboard-header-cute {
+    text-align: center;
+    margin-bottom: 12px;
+}
+
+.dashboard-header-cute h3 {
+    font-size: 1.12rem;
+    font-weight: 800;
+    color: #8B6B42;
+    margin: 0;
+    letter-spacing: 0.5px;
+    text-shadow: 1px 1px 0px #FAEDCD;
+}
+
+.dashboard-divider {
+    border: none;
+    border-top: 1.5px dashed #E6CCB2;
+    margin: 12px 0;
+    opacity: 0.8;
+}
+
+/* --- BADGE STATS (KOIN & HIGHSCORE) --- */
+.stats-bar {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin: 6px 0 0 0;
+    flex-wrap: wrap;
+}
+
+.stat-badge {
+    background-color: #FFFEF7;
+    border: 1.5px solid #D4A373;
+    padding: 4px 10px;
+    border-radius: 30px;
+    font-weight: bold;
+    color: #7B5B3A;
+    box-shadow: 0 2px 0 #D4A373;
+    font-size: 0.8rem;
+    flex: 1;
+    min-width: 120px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+/* --- TOMBOL MENU --- */
+.menu-buttons-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+}
+
+.btn-game-menu {
+    width: 100%;
+    max-width: 280px;
+    padding: 9px 0;
+    font-size: 0.95rem;
+    font-weight: bold;
+    color: #FFFFFF !important;
+    text-align: center;
+    text-decoration: none !important;
+    border-radius: 50px;
+    border: 2px solid #E8D5B5;
+    transition: all 0.1s ease;
+    letter-spacing: 0.8px;
+    background: linear-gradient(to bottom, #C49A6C, #A87B51);
+    box-shadow: 0 5px 0 #7B5B3A;
+    display: block;
+}
+
+.btn-game-menu:hover {
+    background: linear-gradient(to bottom, #D4A87A, #B88B5E);
+    color: white !important;
+    text-decoration: none !important;
+}
+
+.btn-game-menu:active {
+    transform: translateY(3px);
+    box-shadow: 0 3px 0 #7B5B3A;
+}
+
+.btn-game-menu-reset {
+    width: 180px;
+    padding: 8px 0;
+    font-size: 0.88rem;
+    font-weight: bold;
+    color: #A85151 !important;
+    text-align: center;
+    text-decoration: none !important;
+    border-radius: 50px;
+    border: 1.5px dashed #A85151;
+    background: #FFF5F5;
+    transition: all 0.15s ease;
+    display: inline-block;
+    margin-top: 5px;
+}
+
+.btn-game-menu-reset:hover {
+    background: #FFE5E5;
+    color: #8B3A3A !important;
+    border-style: solid;
+}
+
+.btn-game-menu-reset:active {
+    transform: scale(0.96);
+}
+
+/* --- AUDIO CONTROL - POJOK KANAN BAWAH --- */
+.audio-control {
+    position: fixed !important;
+    bottom: 20px !important;
+    right: 20px !important;
+    z-index: 9999 !important;
+    background: rgba(210, 180, 140, 0.9) !important;
+    padding: 6px 14px !important;
+    border-radius: 30px !important;
+    font-size: 0.85rem !important;
+    color: #5C3E1F !important;
+    font-weight: 600 !important;
+    backdrop-filter: blur(5px) !important;
+    font-family: 'Fredoka', sans-serif !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+    .audio-control:hover {
+        background: rgba(180, 140, 100, 0.95) !important;
+        color: white !important;
+        transform: scale(1.02);
+    }
+
+/* Responsive untuk layar kecil */
+@media (max-width: 650px) {
+    .game-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 15px;
+    }
+
+    .game-title-container {
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .game-title {
+        font-size: 2rem;
+    }
+
+    .profile-corner {
+        align-self: center;
+    }
+
+    .main-dashboard-card {
+        padding: 20px;
+    }
+
+    .btn-game-menu {
+        max-width: 280px;
+        font-size: 1rem;
+        padding: 10px 0;
+    }
+
+    .stat-badge {
+        font-size: 0.78rem;
+        padding: 5px 10px;
+        min-width: 120px;
+    }
+}
+
+/* --- FLOATING SHOP BUTTON --- */
+.floating-shop-btn, #btnShopFloating {
+    display: none !important;
+}
+
+/* --- PROFIL CUSTOMIZATION & AVATAR GALLERY --- */
+.profile-avatar-img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #D4A373;
+    background-color: #FFF;
+}
+
+.avatar-preview-wrapper {
+    position: relative;
+    border-radius: 50%;
+    padding: 3px;
+    background: linear-gradient(135deg, #FF5C8A, #D4A373);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.modal-avatar-preview-img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #FFF;
+    background-color: #FFF;
+}
+
+.btn-avatar-upload-badge {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: #FFFEF7;
+    border: 2px solid #D4A373;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    transition: all 0.2s ease;
+}
+
+.btn-avatar-upload-badge:hover {
+    transform: scale(1.1);
+    background-color: #FAEDCD;
+    border-color: #C49A6C;
+}
+
+.avatar-gallery-container {
+    background-color: #FDFBEE;
+    border: 1.5px dashed #D4A373;
+    border-radius: 12px;
+    padding: 8px;
+    scrollbar-width: thin;
+    scrollbar-color: #D4A373 #FDFBEE;
+}
+
+.avatar-gallery-container::-webkit-scrollbar {
+    height: 6px;
+}
+
+.avatar-gallery-container::-webkit-scrollbar-thumb {
+    background-color: #D4A373;
+    border-radius: 10px;
+}
+
+.avatar-thumbnail-option {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid transparent;
+    cursor: pointer;
+    background-color: #FFF;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.avatar-thumbnail-option:hover {
+    transform: scale(1.1) translateY(-2px);
+    border-color: #FF5C8A;
+    box-shadow: 0 2px 8px rgba(255, 92, 138, 0.3);
+}
+
+.avatar-thumbnail-option.active {
+    border-color: #FF5C8A;
+    box-shadow: 0 0 0 3px rgba(255, 92, 138, 0.4);
+    transform: scale(1.05);
+}
+
+.profile-info-form .input-group .form-control:focus {
+    border-color: #FF5C8A !important;
+    box-shadow: 0 0 0 3px rgba(255, 92, 138, 0.25) !important;
+}
+
+.profile-info-form .btn:active {
+    transform: scale(0.98);
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* --- LEVEL AVATAR BORDERS & ACH STYLING --- */
+.profile-avatar.border-bronze {
+    border: 3.5px solid #C49A6C !important;
+}
+.profile-avatar.border-silver {
+    border: 3.5px solid #cbd5e1 !important;
+    box-shadow: 0 4px 10px rgba(203, 213, 225, 0.4);
+}
+.profile-avatar.border-gold {
+    border: 3.5px solid #fbbf24 !important;
+    box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4);
+}
+.profile-avatar.border-rainbow {
+    border: 3.5px solid #ff5c8a !important;
+    animation: rainbowPulse 2.5s ease-in-out infinite alternate;
+}
+
+@keyframes rainbowPulse {
+    0% { border-color: #ff5c8a; box-shadow: 0 0 6px rgba(255, 92, 138, 0.5); }
+    50% { border-color: #fbbf24; box-shadow: 0 0 14px rgba(251, 191, 36, 0.7); }
+    100% { border-color: #3b82f6; box-shadow: 0 0 6px rgba(59, 130, 246, 0.5); }
+}
+
+.level-badge-avatar {
+    position: absolute;
+    bottom: -6px;
+    left: 12px;
+    background: #FF5C8A;
+    color: white;
+    font-size: 0.68rem;
+    font-weight: bold;
+    padding: 1px 6px;
+    border-radius: 10px;
+    border: 1.5px solid white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    z-index: 10;
+}
+
+/* Modal Tab Styling */
+.modal-tab-btn:hover {
+    filter: brightness(1.05);
+}
+.modal-tab-btn:active {
+    transform: scale(0.95);
+}
+
+/* Achievements grid rows styling */
+.achievement-row-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border-radius: 10px;
+    background: white;
+    border: 1.5px solid #E6CCB2;
+    margin-bottom: 6px;
+    transition: all 0.2s ease;
+}
+.achievement-row-item.locked {
+    opacity: 0.6;
+    background: #F1EFE9;
+}
+.achievement-row-item:hover:not(.locked) {
+    border-color: #D4A373;
+    background: #FFFDF9;
+}
+.achievement-checkbox-pin {
+    width: 18px;
+    height: 18px;
+    accent-color: #FF5C8A;
+    cursor: pointer;
+}
+.voucher-item-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #FFF;
+    border: 1.5px dashed #FF9999;
+    padding: 5px 8px;
+    border-radius: 8px;
+    margin-bottom: 4px;
+}
+.voucher-code-text {
+    font-family: monospace;
+    font-weight: bold;
+    background: #FFEBEB;
+    color: #D93B65;
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-size: 0.72rem;
+}
+/* Card Achievement Grid Styles (Like the second image) */
+.ach-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    max-height: 195px;
+    overflow-y: auto;
+    padding: 8px 6px;
+    background: #FFFEF9;
+    border: 1.5px solid #E6CCB2;
+    border-radius: 14px;
+}
+.ach-card-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    background: white;
+    border: 1px solid #EAE2D5;
+    border-radius: 10px;
+    padding: 6px 3px;
+    transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+.ach-card-item:hover:not(.locked) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(123, 91, 58, 0.1);
+    border-color: #D4A373;
+}
+.ach-card-item.locked {
+    background: #F4F1EA;
+    opacity: 0.65;
+}
+.ach-card-badge-circle {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem;
+    margin-bottom: 4px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.08);
+    position: relative;
+    border: 1.5px solid white;
+}
+.ach-card-badge-circle.locked {
+    background: linear-gradient(135deg, #BDC3C7, #2C3E50) !important;
+    filter: grayscale(1);
+    box-shadow: none;
+}
+/* Individual Colorful gradients for achievements */
+.badge-chefmagang { background: linear-gradient(135deg, #FF9F43, #FF6B6B); }
+.badge-masterpastry { background: linear-gradient(135deg, #A29BFE, #6C5CE7); }
+.badge-soclose { background: linear-gradient(135deg, #FFEAA7, #FDCB6E); }
+.badge-playtime { background: linear-gradient(135deg, #81ECEC, #00CEC9); }
+.badge-bintangkejora { background: linear-gradient(135deg, #FAB1A0, #E17055); }
+.badge-dewadessert { background: linear-gradient(135deg, #FF7675, #D63031); }
+.badge-rajablok { background: linear-gradient(135deg, #55EFC4, #00B894); }
+
+.ach-card-title {
+    font-size: 0.65rem;
+    font-weight: bold;
+    color: #7B5B3A;
+    margin-bottom: 2px;
+    line-height: 1.1;
+    min-height: 20px; /* Ensure 2 lines alignment */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.ach-card-status {
+    font-size: 0.58rem;
+    font-weight: bold;
+    margin-top: auto;
+}
+.ach-card-pin-label {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 0.58rem;
+    color: #FF5C8A;
+    cursor: pointer;
+    font-weight: bold;
+}
+.ach-card-pin-label input {
+    margin: 0;
+    cursor: pointer;
+}
+
+/* Leaderboard List Row Styling */
+.leaderboard-row-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: white;
+    border: 1.5px solid #E6CCB2;
+    border-radius: 14px;
+    transition: all 0.2s;
+}
+.leaderboard-row-item:hover {
+    border-color: #D4A373;
+    background: #FFFDF9;
+}
+.leaderboard-rank-badge {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.78rem;
+}
+.leaderboard-rank-1 { background: #FFD700; color: #7B5B00; }
+.leaderboard-rank-2 { background: #C0C0C0; color: #404040; }
+.leaderboard-rank-3 { background: #CD7F32; color: #5C3A1A; }
+.leaderboard-rank-default { background: #FAEDCD; color: #7B5B3A; }
+
+.leaderboard-btn-visit {
+    background: #D4A373;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 4px 10px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.leaderboard-btn-visit:hover {
+    background: #B5835A;
+}
+
+/* Public Profile Styles */
+.public-profile-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1.5px dashed #E6CCB2;
+}
+.public-profile-badges-title {
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: #7B5B3A;
+    margin-bottom: 10px;
+    text-align: left;
+}
+.public-profile-badges-grid {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    background: #FFFEF9;
+    border: 1.5px solid #E6CCB2;
+    border-radius: 16px;
+    padding: 15px;
+}
+.public-profile-badge-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 80px;
+    text-align: center;
+}
+
+/* Circle Avatar Display */
+.profile-avatar-circle {
+    display: inline-block;
+    border-radius: 50%;
+    position: relative;
+    box-sizing: border-box;
+    overflow: visible;
+    background: white;
+}
+.profile-avatar-circle img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
+}
+
+.profile-avatar-circle.border-bronze {
+    border: 3.5px solid #C49A6C !important;
+}
+.profile-avatar-circle.border-silver {
+    border: 3.5px solid #cbd5e1 !important;
+    box-shadow: 0 4px 10px rgba(203, 213, 225, 0.4);
+}
+.profile-avatar-circle.border-gold {
+    border: 3.5px solid #fbbf24 !important;
+    box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4);
+}
+.profile-avatar-circle.border-rainbow {
+    border: 3.5px solid #ff5c8a !important;
+    animation: rainbowPulseCircle 2.5s ease-in-out infinite alternate;
+}
+
+@keyframes rainbowPulseCircle {
+    0% { border-color: #ff5c8a; box-shadow: 0 0 6px rgba(255, 92, 138, 0.5); }
+    50% { border-color: #fbbf24; box-shadow: 0 0 14px rgba(251, 191, 36, 0.7); }
+    100% { border-color: #3b82f6; box-shadow: 0 0 6px rgba(59, 130, 246, 0.5); }
+}
+
+/* ==========================================================================
+   UNIVERSAL DESSERT CURSOR (PREVENTS DEFAULT WHITE ARROW POINTER)
+   ========================================================================== */
+html, body, *, *::before, *::after {
+    cursor: url('/Content/PNG/Cursor32.png') 0 0, url('PNG/Cursor32.png') 0 0, auto !important;
+}
+
+a, button, [role="button"], input[type="button"], input[type="submit"], input[type="reset"], 
+select, label, .btn, .btn-game-menu, .profile-avatar, .clickable, .tab, .leaderboard-tab, 
+.modal-tab-btn, .leaderboard-btn-visit, .leaderboard-btn-friend-action, .leaderboard-btn-request-action, 
+.btn-claim-mission-reward, .ach-card-item, .avatar-thumbnail-option, .btn-avatar-upload-badge, 
+.audio-control, .swal2-confirm, .swal2-cancel, .swal2-close, .swal2-popup, .swal2-html-container * {
+    cursor: url('/Content/PNG/Cursor32.png') 0 0, url('PNG/Cursor32.png') 0 0, pointer !important;
+}
+
+input[type="text"], input[type="password"], input[type="email"], input[type="number"], textarea {
+    cursor: text !important;
+}
+
+/* ==========================================================================
+   SWEETALERT PROFILE & PROGRESS POPUP COMPACT STYLES
+   ========================================================================== */
+.swal-profile-popup {
+    padding: 12px 14px !important;
+    border-radius: 20px !important;
+    border: 3px solid #D4A373 !important;
+}
+.swal-profile-popup .swal2-title {
+    font-size: 1.12rem !important;
+    padding: 0 !important;
+    margin: 8px 0 6px 0 !important;
+    color: #7B5B3A !important;
+}
+.swal-profile-popup .swal2-close {
+    font-size: 1.4rem !important;
+    color: #8B6B42 !important;
+}
+
+/* ==========================================================================
+   RESPONSIVE & MOBILE DESIGN STYLES
+   ========================================================================== */
+
+/* --- TABLETS & MEDIUM SCREENS (<= 1080px and > 680px, including Nexus 10 800px) --- */
+@media (max-width: 1080px) {
+    .game-header {
+        padding: 10px 16px 0 16px;
+        gap: 8px;
+    }
+
+    .main-dashboard-wrapper {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-areas:
+            "dashboard dashboard"
+            "missions players";
+        max-width: 840px;
+        gap: 16px;
+        margin: 12px auto 25px auto;
+        padding: 0 16px;
+    }
+
+    /* Central dashboard card sits prominently centered at the top */
+    .main-dashboard-wrapper > .main-dashboard-card:nth-child(2) {
+        max-width: 520px;
+        width: 100%;
+        margin: 0 auto;
+        justify-self: center;
+    }
+
+    .daily-missions-card,
+    .leaderboard-card {
+        max-width: 100% !important;
+        width: 100% !important;
+    }
+}
+
+/* --- MOBILE DEVICES (<= 680px) --- */
+@media (max-width: 680px) {
+    body {
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        min-height: 100vh;
+        height: auto;
+    }
+
+    .game-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 8px;
+        padding: 10px 12px 0 12px;
+    }
+
+    .game-title-container {
+        text-align: center;
+    }
+
+    .game-title {
+        font-size: clamp(1.3rem, 5.5vw, 1.8rem);
+        letter-spacing: 1px;
+        text-shadow: 2px 2px 0px #FAEDCD, 3px 3px 0px #D4A373;
+        margin-bottom: 2px;
+    }
+
+    .game-subtitle {
+        font-size: 0.78rem;
+        line-height: 1.3;
+    }
+
+    .profile-corner {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        margin-top: 4px;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .profile-avatar {
+        padding: 4px 12px 4px 4px;
+    }
+
+    .main-dashboard-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 14px;
+        margin: 10px auto 20px auto;
+        padding: 0 12px;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* Vertical stacking order on mobile: Dashboard first, then Missions, then Players */
+    .main-dashboard-wrapper > .main-dashboard-card:nth-child(2) {
+        order: 1;
+        max-width: 100% !important;
+        width: 100% !important;
+    }
+
+    .daily-missions-card {
+        order: 2;
+        max-width: 100% !important;
+        width: 100% !important;
+    }
+
+    .leaderboard-card {
+        order: 3;
+        max-width: 100% !important;
+        width: 100% !important;
+    }
+
+    .main-dashboard-card,
+    .daily-missions-card,
+    .leaderboard-card {
+        max-width: 100% !important;
+        width: 100% !important;
+        padding: 16px 14px;
+        border-radius: 18px;
+        box-sizing: border-box;
+        border-bottom-width: 5px;
+    }
+
+    .dashboard-header-cute {
+        margin-bottom: 12px;
+    }
+
+    .dashboard-header-cute h3 {
+        font-size: 1.1rem;
+    }
+
+    .xp-level-container {
+        margin: 10px 0 0 0 !important;
+        padding: 10px 12px !important;
+        border-radius: 12px !important;
+    }
+
+    .stats-bar {
+        gap: 8px;
+        margin-top: 10px;
+    }
+
+    .stat-badge {
+        min-width: 120px;
+        font-size: 0.8rem;
+        padding: 5px 10px;
+    }
+
+    .dashboard-divider {
+        margin: 12px 0;
+    }
+
+    .menu-buttons-container {
+        gap: 10px;
+    }
+
+    .btn-game-menu {
+        font-size: 0.95rem;
+        padding: 12px 15px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .mission-item {
+        padding: 8px 10px;
+        border-radius: 12px;
+    }
+
+    .leaderboard-row-item {
+        padding: 6px 8px;
+        gap: 6px;
+    }
+
+    .leaderboard-rank-badge {
+        width: 20px;
+        height: 20px;
+        font-size: 0.7rem;
+    }
+
+    .profile-avatar-circle {
+        width: 32px !important;
+        height: 32px !important;
+    }
+
+    .audio-control {
+        bottom: 12px;
+        right: 12px;
+        padding: 6px 12px;
+        font-size: 0.8rem;
+    }
+}
+
+/* --- SMALL MOBILE & MODALS (<= 576px) --- */
+@media (max-width: 576px) {
+    .swal2-popup {
+        max-width: 95vw !important;
+        width: 95vw !important;
+        padding: 14px 10px !important;
+        border-radius: 20px !important;
+        box-sizing: border-box !important;
+    }
+
+    .swal2-title {
+        font-size: 1.1rem !important;
+    }
+
+    .modal-tabs {
+        gap: 5px !important;
+        margin-bottom: 10px !important;
+    }
+
+    .modal-tab-btn {
+        padding: 5px 10px !important;
+        font-size: 0.75rem !important;
+        border-radius: 14px !important;
+    }
+
+    .ach-cards-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 8px !important;
+        padding: 8px !important;
+        max-height: 220px !important;
+        border-radius: 12px !important;
+    }
+
+    .ach-card-item {
+        padding: 8px 4px !important;
+        border-radius: 10px !important;
+    }
+
+    .ach-card-badge-circle {
+        width: 44px !important;
+        height: 44px !important;
+        font-size: 1.3rem !important;
+        margin-bottom: 4px !important;
+    }
+
+    .ach-card-title {
+        font-size: 0.68rem !important;
+        min-height: 20px !important;
+        margin-bottom: 2px !important;
+    }
+
+    .ach-card-item div[style*="font-size:0.58rem"] {
+        font-size: 0.54rem !important;
+        min-height: 22px !important;
+        line-height: 1.15 !important;
+    }
+
+    .ach-card-pin-label {
+        font-size: 0.6rem !important;
+    }
+
+    .public-profile-badges-grid {
+        gap: 8px !important;
+        padding: 10px !important;
+    }
+
+    .public-profile-badge-item {
+        width: 70px !important;
+    }
+
+    .public-profile-badge-item .ach-card-badge-circle {
+        width: 44px !important;
+        height: 44px !important;
+        font-size: 1.3rem !important;
+    }
+}
+
+/* --- ULTRA SMALL DEVICES (<= 380px) --- */
+@media (max-width: 380px) {
+    .stat-badge {
+        min-width: 100px;
+        font-size: 0.75rem;
+        padding: 4px 8px;
+    }
+
+    .leaderboard-tab {
+        font-size: 0.62rem !important;
+        padding: 2px 4px !important;
+    }
+}
+
+/* Pending Friend Requests Notification Badge */
+.badge-pending-circle {
+    background: linear-gradient(135deg, #FF3B30, #E63946);
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 800;
+    border-radius: 50%;
+    min-width: 19px;
+    height: 19px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    box-shadow: 0 2px 6px rgba(230, 57, 70, 0.45);
+    border: 1.5px solid #fff;
+    line-height: 1;
+    animation: pulseBadge 1.8s infinite;
+}
+
+@keyframes pulseBadge {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+    100% { transform: scale(1); }
+}
+

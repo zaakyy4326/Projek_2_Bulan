@@ -1,0 +1,343 @@
+body {
+    background: linear-gradient(180deg, #56CCF2 0%, #2F80ED 100%);
+    background-attachment: fixed;
+    color: #fff;
+    min-height: 100vh;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Nunito', sans-serif;
+    overflow-x: hidden;
+}
+
+/* Adventure Map Styles - Dessert Island Theme */
+.header {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 20px;
+    background: rgba(0, 0, 0, 0.3);
+    align-items: center;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 100;
+    box-sizing: border-box;
+    backdrop-filter: blur(10px);
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn-back {
+    background: #ff6b6b;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-family: 'Fredoka One', cursive;
+    text-decoration: none;
+    transition: 0.2s;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.btn-back:hover {
+    background: #ff5252;
+    transform: scale(1.05);
+}
+
+.total-stars {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.5rem;
+    color: #ffd700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.map-container {
+    position: relative;
+    width: 100%;
+    min-height: 100vh; /* Will be expanded by JS */
+    overflow: hidden; /* Hide horizontal overflow of paths */
+    padding-bottom: 100px;
+}
+
+.path-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.path-line {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.8);
+    stroke-width: 16px;
+    stroke-linecap: round;
+    stroke-dasharray: 24, 24;
+    animation: dash 3s linear infinite reverse;
+}
+
+@keyframes dash {
+    to {
+        stroke-dashoffset: 48;
+    }
+}
+
+.level-node {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+/* Island visual for nodes */
+.level-island {
+    background: radial-gradient(circle at 30% 30%, #fceabb 0%, #f8b500 100%);
+    border: 6px solid #8b4513;
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: inset -5px -5px 15px rgba(0,0,0,0.3), 0 15px 25px rgba(0,0,0,0.4);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.3s;
+    position: relative;
+}
+
+.level-node:hover .level-island {
+    transform: scale(1.15) translateY(-10px);
+    filter: brightness(1.1);
+}
+
+.level-island.bonus {
+    background: radial-gradient(circle at 30% 30%, #e0c3fc 0%, #8ec5fc 100%);
+    border-color: #ffd700;
+    width: 100px;
+    height: 100px;
+}
+
+.level-island.locked {
+    background: #7f8c8d;
+    border-color: #2c3e50;
+    box-shadow: inset -5px -5px 15px rgba(0,0,0,0.5), 0 5px 10px rgba(0,0,0,0.2);
+}
+
+.level-island.current {
+    animation: pulseGlow 2s infinite alternate;
+}
+
+@keyframes pulseGlow {
+    0% { box-shadow: inset -5px -5px 15px rgba(0,0,0,0.3), 0 0 10px #fff, 0 0 20px #f8b500; }
+    100% { box-shadow: inset -5px -5px 15px rgba(0,0,0,0.3), 0 0 25px #fff, 0 0 40px #fceabb; transform: scale(1.1); }
+}
+
+/* Island Decorations (Palm trees, starfish, etc.) */
+.unlocked-node:nth-child(2n) .level-island::after {
+    content: "🌴";
+    position: absolute;
+    top: -15px;
+    left: -15px;
+    font-size: 32px;
+    transform: rotate(-15deg);
+    filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.5));
+    pointer-events: none;
+}
+.unlocked-node:nth-child(3n) .level-island::before {
+    content: "🐚";
+    position: absolute;
+    bottom: -10px;
+    right: -10px;
+    font-size: 24px;
+    transform: rotate(30deg);
+    pointer-events: none;
+}
+
+/* Bonus Flag */
+.bonus-flag {
+    position: absolute;
+    top: -25px;
+    right: 5px;
+    width: 30px;
+    height: 40px;
+    z-index: 10;
+    transform: rotate(15deg);
+    pointer-events: none;
+}
+.flag-pole {
+    width: 4px;
+    height: 45px;
+    background: #8b4513;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    border-radius: 2px;
+    box-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+}
+.flag-triangle {
+    width: 0;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-left: 22px solid #ff3b30;
+    position: absolute;
+    left: 3px;
+    top: 2px;
+    transform-origin: left center;
+    animation: flutter 0.5s ease-in-out infinite alternate;
+    filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.3));
+}
+@keyframes flutter {
+    0% { transform: rotateY(0deg) skewY(-5deg); }
+    100% { transform: rotateY(40deg) skewY(5deg); }
+}
+
+/* Background Clouds */
+.cloud {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 50px;
+    filter: blur(2px);
+    pointer-events: none;
+    z-index: 0;
+    animation: float-cloud linear infinite;
+}
+.cloud::before, .cloud::after {
+    content: '';
+    position: absolute;
+    background: inherit;
+    border-radius: 50%;
+}
+.cloud::before {
+    width: 60%; height: 100%; top: -40%; left: 15%;
+}
+.cloud::after {
+    width: 40%; height: 80%; top: -20%; right: 10%;
+}
+@keyframes float-cloud {
+    from { transform: translateX(-100vw); }
+    to { transform: translateX(100vw); }
+}
+
+.level-number {
+    font-family: 'Fredoka One', cursive;
+    font-size: 2rem;
+    color: #fff;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+}
+
+.locked-icon {
+    font-size: 2rem;
+    color: #bdc3c7;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+}
+
+.stars-display {
+    position: absolute;
+    bottom: -30px;
+    display: flex;
+    gap: 3px;
+    font-size: 1.2rem;
+    background: rgba(0,0,0,0.5);
+    padding: 3px 10px;
+    border-radius: 15px;
+    backdrop-filter: blur(2px);
+}
+
+.requirement-tooltip {
+    position: absolute;
+    top: -50px;
+    background: rgba(255,255,255,0.9);
+    padding: 8px 15px;
+    border-radius: 15px;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    pointer-events: none;
+    border: 2px solid #ff6b6b;
+    color: #333;
+    font-family: 'Nunito', sans-serif;
+    font-weight: bold;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    opacity: 0;
+    transform: translateY(10px);
+    transition: 0.3s;
+    z-index: 10;
+}
+
+.requirement-tooltip::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 8px 8px 0;
+    border-style: solid;
+    border-color: #ff6b6b transparent transparent transparent;
+}
+
+.level-node:hover .requirement-tooltip {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Adventure Game Styles */
+.target-panel {
+    background: rgba(0,0,0,0.6);
+    padding: 10px 30px;
+    border-radius: 30px;
+    border: 2px solid #D4A373;
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+    justify-content: center;
+    align-items: center;
+}
+
+.target-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: 'Fredoka One', cursive;
+    color: white;
+    font-size: 1.2rem;
+}
+
+.target-item img {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+}
+
+.header-top {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 20px;
+    background: #2c3e50;
+    color: white;
+    align-items: center;
+}
+
+/* ==========================================================================
+   UNIVERSAL DESSERT CURSOR (NO REVERT TO WHITE POINTER)
+   ========================================================================== */
+html, body, *, *::before, *::after {
+    cursor: url('/Content/PNG/Cursor32.png') 0 0, url('PNG/Cursor32.png') 0 0, auto !important;
+}
+
+a, button, [role="button"], input[type="button"], input[type="submit"], input[type="reset"], 
+select, label, .btn, .btn-back, .btn-back-pink, .level-node, .level-pin, .area-gate-btn, 
+.block-tray, .draggable-block, .cell, .block-option, .target-item, .audio-control,
+.swal2-confirm, .swal2-cancel, .swal2-close, .swal2-popup, .swal2-html-container * {
+    cursor: url('/Content/PNG/Cursor32.png') 0 0, url('PNG/Cursor32.png') 0 0, pointer !important;
+}
+
+input[type="text"], input[type="password"], input[type="email"], input[type="number"], textarea {
+    cursor: text !important;
+}

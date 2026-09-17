@@ -1,0 +1,100 @@
+@model UAS_C__Lanjutan.Models.Entity.User
+
+@{
+    ViewBag.Title = "Detail Pengguna - " + Model.Username;
+    var isAdmin = string.Equals(Model.Role, "Admin", StringComparison.OrdinalIgnoreCase);
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="admin-card">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 pb-3 mb-4 border-bottom">
+                <h3 class="fw-bold mb-0" style="color: #D93B65;">
+                    <span>👤</span> Detail Akun Pemain
+                </h3>
+                <a href="@Url.Action("Index", "Users")" class="btn btn-outline-secondary btn-sm" style="border-radius: 50px; font-weight: 600;">
+                    ⬅ Kembali ke Daftar
+                </a>
+            </div>
+
+            <!-- Profile Info Banner -->
+            <div class="d-flex align-items-center gap-4 p-3 rounded-4 mb-4" style="background: linear-gradient(135deg, #FFE5EC, #FFF0F5); border: 1.5px solid #FFCCD5;">
+                <div style="width: 72px; height: 72px; border-radius: 50%; overflow: hidden; background: #FFF; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; border: 3px solid #FF8EAA; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                    @if (!string.IsNullOrEmpty(Model.Avatar))
+                    {
+                        <img src="@Url.Content(Model.Avatar)" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover;" />
+                    }
+                    else
+                    {
+                        <span>@(isAdmin ? "👑" : "🧑‍🍳")</span>
+                    }
+                </div>
+                <div>
+                    <h4 class="fw-bold mb-1" style="color: #5D4037;">@Model.Username</h4>
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                        @if (isAdmin)
+                        {
+                            <span class="badge bg-danger rounded-pill px-3 py-1">👑 Administrator</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary rounded-pill px-3 py-1" style="background-color: #A08060 !important;">🧑‍🍳 Pemain Biasa</span>
+                        }
+                        <span class="text-muted small">ID: #@Model.UserId</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detail Grid -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <div class="p-3 rounded-3" style="background: #FFFDF9; border: 1px solid #FFE4E8;">
+                        <div class="text-muted small mb-1">📧 Alamat Email</div>
+                        <div class="fw-semibold">@(string.IsNullOrEmpty(Model.Email) ? "-" : Model.Email)</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 rounded-3" style="background: #FFFDF9; border: 1px solid #FFE4E8;">
+                        <div class="text-muted small mb-1">💰 Total Koin Toko</div>
+                        <div class="fw-bold text-warning-emphasis fs-5">@Model.TotalCoins.ToString("N0") Koin</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 rounded-3" style="background: #FFFDF9; border: 1px solid #FFE4E8;">
+                        <div class="text-muted small mb-1">🏆 High Score Puzzle</div>
+                        <div class="fw-bold text-success fs-5">@Model.HighScoreBb Poin</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 rounded-3" style="background: #FFFDF9; border: 1px solid #FFE4E8;">
+                        <div class="text-muted small mb-1">⭐ Level & XP</div>
+                        <div class="fw-semibold">Level @Model.Level (@Model.Xp XP)</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 rounded-3" style="background: #FFFDF9; border: 1px solid #FFE4E8;">
+                        <div class="text-muted small mb-1">📅 Tanggal Bergabung</div>
+                        <div class="fw-semibold">@Model.CreatedAt.ToString("dd MMMM yyyy, HH:mm:ss")</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 rounded-3" style="background: #FFFDF9; border: 1px solid #FFE4E8;">
+                        <div class="text-muted small mb-1">⏱️ Waktu Bermain</div>
+                        <div class="fw-semibold">@((Model.PlayTimeSeconds / 60)) Menit</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+                <a href="@Url.Action("Edit", "Users", new { id = Model.UserId })" class="btn btn-warning px-4" style="border-radius: 50px; font-weight: 600;">
+                    ✏️ Edit Data
+                </a>
+                <a href="@Url.Action("Delete", "Users", new { id = Model.UserId })" class="btn btn-danger px-4" style="border-radius: 50px; font-weight: 600;">
+                    🗑️ Hapus Akun
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

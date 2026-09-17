@@ -1,0 +1,169 @@
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Welcome to Dessert Game! 🧁</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+    <!-- TAMBAHKAN DUA BARIS INI DI LOGIN.CSHTML -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <link rel="stylesheet" href="@Url.Content("~/Content/dessert-theme.css")?v=@DateTime.Now.Ticks" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            cursor: url('@Url.Content("~/Content/PNG/Cursor32.png")') 0 0, auto;
+        }
+        input, textarea {
+            cursor: auto;
+        }
+    </style>
+</head>
+<body class="d-flex align-items-center justify-content-center">
+
+    <div id="floating-container"></div>
+
+    <audio id="bgmMusic" loop>
+        <source src="@Url.Content("~/Content/Audio/Main Theme - Dessert.mp3")" type="audio/mp3">
+    </audio>
+    <audio id="sfxClick">
+        <!-- Suara Efek Bubble Pop / Plop Lucu -->
+        <source src="@Url.Content("~/Content/Audio/bubble-pop.mp3")" type="audio/mp3">
+    </audio>
+
+    <!-- KOTAK LOGIN -->
+    <div class="card login-card shadow p-4 text-center">
+
+        <h2 class="fw-bold mb-1" style="color: #FF5C8A;">🧁 KYU'S DESSERT WORLD</h2>
+        <p class="text-muted small mb-4">Nikmati Keseruan Dunia Dessert!</p>
+
+        <div class="mb-3 text-start">
+            <label class="form-label fw-bold" style="color: #6C5B7B;">Username</label>
+            <input type="text" id="txtUsername" class="form-control" placeholder="Masukkan username..." />
+        </div>
+
+        <div class="mb-3 text-start">
+            <label class="form-label fw-bold" style="color: #6C5B7B;">Password</label>
+            <div class="input-group">
+                <input type="password" id="txtPassword" class="form-control" placeholder="Masukkan password..." />
+                <button class="btn btn-outline-secondary" type="button" id="btnToggleLoginPass" style="border-color:#FFB3B3;">👁️</button>
+            </div>
+        </div>
+
+        <div class="text-end mb-3">
+            <a href="#" id="btnForgotPassword" style="color: #B5835A; font-size: 0.85rem; text-decoration: none; font-weight: 600; transition: 0.2s;">
+                Lupa Password? 🍩
+            </a>
+        </div>
+        <button id="btnLogin" class="btn btn-masuk w-100 fw-bold py-2 mt-2 mb-2 shadow-sm">
+            <span id="loginText">Masuk Game 🚀</span>
+            <span id="loginSpinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
+        </button>
+        <a href="/Users/Create" id="btnGoRegister" class="btn btn-daftar w-100 fw-bold py-2 btn-sm">Belum Punya Akun? Registrasi</a>
+
+        <div id="lblPesan" class="text-danger mt-3 small fw-bold"></div>
+    </div>
+
+    <div class="audio-control fw-bold" id="musicToggle">🎵 Musik: OFF</div>
+
+    <div id="global-portrait-overlay">
+        <div class="global-portrait-card">
+            <div class="global-phone-icon">
+                <span style="font-size: 60px; display: inline-block;">📱</span>
+            </div>
+            <h2 class="global-portrait-title">Harap Putar Layar ke Posisi Tegak (Portrait) 🔄</h2>
+            <p class="global-portrait-desc">Halaman ini dirancang dalam posisi tegak (Portrait) agar pas dengan genggaman Anda. Silakan putar HP Anda!</p>
+        </div>
+    </div>
+
+    <!-- PANGGIL FILE JS BARU KAMU DI SINI -->
+    <script src="@Url.Content("~/Scripts/bubble-pop.js")?v=@DateTime.Now.Ticks"></script>
+    <script src="@Url.Content("~/Scripts/dessert-auth.js")?v=@DateTime.Now.Ticks"></script>
+
+    @if (TempData["RegisSukses"] != null)
+    {
+        <script>
+            $(document).ready(function () {
+                Swal.fire({
+                    title: 'Registrasi Berhasil! 🍰',
+                    text: 'Silakan masuk menggunakan akun barumu untuk mulai mengumpulkan koin!',
+                    icon: 'success',
+                    confirmButtonText: 'Siap, Let\'s Bake! 🚀',
+                    confirmButtonColor: '#D4A373',
+                    background: '#FFFEF7',
+                    color: '#7B5B3A',
+                    customClass: {
+                        popup: 'border-radius-24'
+                    }
+                });
+            });
+        </script>
+    }
+
+
+<script>
+    $(document).ready(function () {
+        var bgm = document.getElementById("bgmMusic");
+
+        // Mengatur kelanjutan detik musik
+        var lastTime = sessionStorage.getItem("bgm_current_time");
+        if (lastTime) {
+            bgm.currentTime = parseFloat(lastTime);
+        }
+        bgm.addEventListener("timeupdate", function () {
+            sessionStorage.setItem("bgm_current_time", bgm.currentTime);
+        });
+
+        // KODE MATA INTIP SUDAH AMAN DI DESSERT-AUTH.JS, JADI DI SINI BISA DIHAPUS AGAR TIDAK BENTROK
+    });
+</script>
+
+    <template id="tplResetPassword">
+        <div class="reset-password-container">
+            <!-- Timer & Status Banner 2 Menit -->
+            <div id="otpTimerBanner" class="text-center mb-3 p-2 rounded" style="background: #FFF2E2; border: 1.5px dashed #D4A373; transition: all 0.3s ease;">
+                <div id="otpTimerRunning">
+                    <span style="font-size: 0.85rem; color: #8B6B42; font-weight: 600;">⏰ Sisa Waktu OTP:</span>
+                    <span id="otpCountdown" style="font-size: 1.1rem; color: #D4A373; font-weight: 800; margin-left: 6px; letter-spacing: 1px;">02:00</span>
+                </div>
+                <div id="otpTimerExpired" style="display: none;">
+                    <span style="font-size: 0.85rem; color: #E63946; font-weight: 700;">⚠️ Waktu Habis! Kode OTP Kedaluwarsa</span>
+                </div>
+            </div>
+
+            <!-- Input OTP -->
+            <div class="mb-2">
+                <input type="text" id="swalOtp" class="form-control text-center fw-bold"
+                       placeholder="Masukkan 6 Digit OTP" maxlength="6"
+                       style="letter-spacing: 3px; font-size: 1.15rem; border-radius: 10px; border: 1.5px solid #E6CCB2; background: #FFFDF9;">
+            </div>
+
+            <!-- Resend Button / Link (Hanya muncul saat waktu 2 menit habis) -->
+            <div class="text-center mb-3" id="resendOtpContainer" style="display: none;">
+                <button type="button" id="btnResendOtp" class="btn btn-sm py-1 px-3 fw-bold" 
+                        style="color: white; background: #D4A373; border: 1px solid #C28B56; border-radius: 20px; font-size: 0.8rem; box-shadow: 0 2px 6px rgba(212,163,115,0.4); cursor: pointer;">
+                    🔄 Kirim Ulang OTP
+                </button>
+            </div>
+
+            <!-- Input Password Baru -->
+            <div class="mb-2">
+                <input type="password" id="swalNewPass" class="form-control"
+                       placeholder="Password Baru" style="border-radius: 10px; border: 1.5px solid #E6CCB2; font-size: 0.9rem;">
+            </div>
+
+            <!-- Checkbox Show/Hide Password Bergaya Dessert -->
+            <div class="text-start px-1 mb-2" style="font-size: 0.82rem; color: #8B6B42;">
+                <input type="checkbox" id="chkShowPassword" style="accent-color: #D4A373;">
+                <label for="chkShowPassword" style="user-select: none; font-weight: 600; cursor: pointer;">Lihat Password</label>
+            </div>
+        </div>
+    </template>
+</body>
+</html>

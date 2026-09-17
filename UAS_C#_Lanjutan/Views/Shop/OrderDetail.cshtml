@@ -1,0 +1,527 @@
+@model UAS_C__Lanjutan.Models.Entity.ShopOrder
+@using UAS_C__Lanjutan.Models.Entity
+
+@{
+    Layout = null;
+    var user = ViewBag.CurrentUser as User;
+    int cartCount = ViewBag.CartCount ?? 0;
+    var reviewedProductIds = ViewBag.ReviewedProductIds as List<int> ?? new List<int>();
+
+    // Tracking Step Index: 1=Pending, 2=Baking, 3=On_Delivery, 4=Completed
+    int currentStep = 1;
+    if (Model.OrderStatus == "Baking")
+    {
+        currentStep = 2;
+    }
+    else if (Model.OrderStatus == "On_Delivery")
+    {
+        currentStep = 3;
+    }
+    else if (Model.OrderStatus == "Completed")
+    {
+        currentStep = 4;
+    }
+}
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Detail Pesanan @Model.OrderCode - Kyu Dessert & Cafe</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="@Url.Content("~/Content/dessert-shop.css")?v=@DateTime.Now.Ticks" />
+    
+    <style>
+        @@media print {
+            .shop-navbar, .tracking-card, .btn-no-print, footer, .sim-panel {
+                display: none !important;
+            }
+            body {
+                background: #fff !important;
+            }
+            .shop-page-wrapper {
+                margin: 0 !important;
+                padding: 0 !important;
+                max-width: 100% !important;
+            }
+            .receipt-paper {
+                box-shadow: none !important;
+                border: 1px solid #000 !important;
+            }
+        }
+    </style>
+</head>
+<body class="shop-body">
+
+    <!-- NAVBAR -->
+    <nav class="shop-navbar">
+        <div class="shop-nav-container">
+            <a href="@Url.Action("Index", "Shop")" class="shop-brand">
+                <span class="shop-brand-icon">☕</span>
+                <span class="shop-brand-name">Kyu Dessert & Cafe</span>
+            </a>
+
+            <div class="shop-nav-links">
+                <a href="@Url.Action("OrderHistory", "Shop")" class="nav-shop-btn nav-shop-btn-outline">
+                    <span>⬅️</span>
+                    <span>Kembali ke Riwayat</span>
+                </a>
+
+                <button type="button" onclick="window.print()" class="nav-shop-btn nav-shop-btn-outline btn-no-print">
+                    <span>🖨️</span>
+                    <span>Cetak Invoice</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ORDER DETAIL CONTAINER -->
+    <div class="shop-page-wrapper" style="max-width: 840px;">
+        
+        <!-- VISUAL ORDER TRACKING TIMELINE -->
+        <div class="tracking-card" style="background: var(--cafe-card-bg); border-radius: var(--cafe-radius-lg); border: 1.5px solid var(--cafe-border); box-shadow: var(--cafe-shadow-md); padding: 32px; margin-bottom: 30px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; flex-wrap: wrap; gap: 10px;">
+                <div>
+                    <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--cafe-espresso); margin: 0;">
+                        🚚 Pelacakan Pesanan
+                    </h2>
+                    <span style="font-family: monospace; font-size: 0.95rem; color: var(--cafe-text-muted);">No. Pesanan: <strong>@Model.OrderCode</strong></span>
+                </div>
+
+                @if (Model.PaymentStatus == "Pending")
+                {
+                    <a href="@Url.Action("Payment", "Shop", new { id = Model.Id, orderId = Model.Id })" class="btn-action-cart btn-action-cart-fill btn-no-print" style="padding: 9px 22px; font-size: 0.9rem; text-decoration: none;">
+                        <span>💳 Bayar Sekarang</span>
+                    </a>
+                }
+                else if (Model.OrderStatus == "Completed")
+                {
+                    <div class="btn-no-print" style="display: flex; gap: 8px;">
+                        <button type="button" class="btn-action-cart btn-action-cart-fill" style="padding: 9px 20px; font-size: 0.88rem; border: none;" onclick="reorderItems(@Model.Id)">
+                            <span>🔁 Pesan Lagi</span>
+                        </button>
+                        <button type="button" class="btn-action-cart btn-action-cart-outline" style="padding: 9px 16px; font-size: 0.88rem;" onclick="window.print()">
+                            <span>🖨️ Cetak</span>
+                        </button>
+                    </div>
+                }
+                else
+                {
+                    <button type="button" class="btn-action-cart btn-action-cart-outline btn-no-print" style="padding: 9px 16px; font-size: 0.88rem;" onclick="window.print()">
+                        <span>🖨️ Cetak Struk</span>
+                    </button>
+                }
+            </div>
+
+            <!-- Progress Timeline -->
+            <div class="order-tracking-timeline">
+                <!-- Step 1: Bayar -->
+                <div class="tracking-step @(currentStep >= 1 ? (currentStep > 1 ? "completed" : "active") : "")">
+                    <div class="tracking-icon-circle">💳</div>
+                    <div class="tracking-step-label">Pembayaran</div>
+                </div>
+
+                <!-- Step 2: Baking di Kitchen -->
+                <div class="tracking-step @(currentStep >= 2 ? (currentStep > 2 ? "completed" : "active") : "")">
+                    <div class="tracking-icon-circle">👨‍🍳</div>
+                    <div class="tracking-step-label">Dapur & Kitchen</div>
+                </div>
+
+                <!-- Step 3: Kurir -->
+                <div class="tracking-step @(currentStep >= 3 ? (currentStep > 3 ? "completed" : "active") : "")">
+                    <div class="tracking-icon-circle">🛵</div>
+                    <div class="tracking-step-label">Diantar Kurir</div>
+                </div>
+
+                <!-- Step 4: Selesai -->
+                <div class="tracking-step @(currentStep >= 4 ? "completed" : "")">
+                    <div class="tracking-icon-circle">🎉</div>
+                    <div class="tracking-step-label">Tiba & Selesai</div>
+                </div>
+            </div>
+
+            <!-- LIVE REAL-TIME STATUS CARD (Otomatis & Realistis) -->
+            <div style="background: #FFFDF9; border: 1.5px solid var(--cafe-border); border-radius: var(--cafe-radius); padding: 20px; margin-top: 24px; box-shadow: 0 4px 12px rgba(158, 88, 37, 0.06);">
+                @if (Model.OrderStatus == "Pending_Payment")
+                {
+                    <div style="display: flex; align-items: center; gap: 14px;">
+                        <span style="font-size: 2.2rem;">⏳</span>
+                        <div>
+                            <strong style="color: var(--cafe-espresso); font-size: 1.05rem; display: block; margin-bottom: 3px;">
+                                Menunggu Pembayaran
+                            </strong>
+                            <span style="font-size: 0.86rem; color: var(--cafe-text-muted);">
+                                Selesaikan pembayaran agar pesanan Anda dapat segera disiapkan oleh kitchen chef kami.
+                            </span>
+                        </div>
+                    </div>
+                }
+                else if (Model.OrderStatus == "Baking")
+                {
+                    <div style="display: flex; align-items: center; gap: 14px;">
+                        <span style="font-size: 2.2rem;">👨‍🍳</span>
+                        <div style="flex: 1;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
+                                <strong style="color: var(--cafe-espresso); font-size: 1.05rem;">
+                                    Sedang Disiapkan di Kitchen Kyu
+                                </strong>
+                                <span style="background: #FFF3E0; color: #E65100; font-size: 0.76rem; font-weight: 700; padding: 3px 10px; border-radius: 12px; border: 1px solid #FFE0B2;">
+                                    🔥 Dapur Aktif
+                                </span>
+                            </div>
+                            <span style="font-size: 0.86rem; color: var(--cafe-text-muted); display: block; margin-top: 4px; line-height: 1.4;">
+                                Pastry chef & barista sedang meracik dan memanggang pesanan Anda dengan bahan premium. Mohon ditunggu, pesanan segera diantar!
+                            </span>
+                        </div>
+                    </div>
+                }
+                else if (Model.OrderStatus == "On_Delivery")
+                {
+                    <div style="display: flex; align-items: center; gap: 14px;">
+                        <span style="font-size: 2.2rem;">🛵</span>
+                        <div style="flex: 1;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
+                                <strong style="color: var(--cafe-espresso); font-size: 1.05rem;">
+                                    Kurir Sedang Mengantar Pesanan
+                                </strong>
+                                <span style="background: #E1F5FE; color: #0277BD; font-size: 0.76rem; font-weight: 700; padding: 3px 10px; border-radius: 12px; border: 1px solid #B3E5FC;">
+                                    📍 Sedang Meluncur
+                                </span>
+                            </div>
+                            <span style="font-size: 0.86rem; color: var(--cafe-text-muted); display: block; margin-top: 4px; line-height: 1.4;">
+                                Driver <strong>Budi Santoso</strong> (Honda Vario • B 4521 KYU) sedang meluncur mengantarkan pesanan ke alamat tujuan Anda.
+                            </span>
+                        </div>
+                    </div>
+                }
+                else if (Model.OrderStatus == "Completed")
+                {
+                    <div style="display: flex; align-items: center; gap: 14px;">
+                        <span style="font-size: 2.2rem;">🎉</span>
+                        <div style="flex: 1;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
+                                <strong style="color: #2E7D32; font-size: 1.05rem;">
+                                    Pesanan Telah Tiba & Selesai!
+                                </strong>
+                                <span style="background: #E8F5E9; color: #2E7D32; font-size: 0.76rem; font-weight: 700; padding: 3px 10px; border-radius: 12px; border: 1px solid #C8E6C9;">
+                                    ✅ Terkirim
+                                </span>
+                            </div>
+                            <span style="font-size: 0.86rem; color: var(--cafe-text-muted); display: block; margin-top: 4px; line-height: 1.4;">
+                                Sajian manis telah diterima. Selamat menikmati kelezatan dari Kyu Dessert & Cafe! Silakan berikan ulasan bintang Anda di tabel struk di bawah ⭐
+                            </span>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- DIGITAL INVOICE / STRUK BELANJA -->
+        <div class="receipt-paper">
+            <div class="receipt-header">
+                <div class="receipt-brand">☕ KYU DESSERT & CAFE</div>
+                <div style="font-size: 0.88rem; color: var(--cafe-text-muted);">Artisan Boutique Patisserie • Struk Digital Resmi</div>
+                <div class="receipt-order-code" style="margin-top: 6px;">#@Model.OrderCode</div>
+                <div style="font-size: 0.8rem; color: var(--cafe-text-subtle);">@Model.CreatedAt.ToString("dd MMMM yyyy, HH:mm:ss") WIB</div>
+            </div>
+
+            <!-- Recipient & Delivery Summary -->
+            <div class="receipt-two-col" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 22px; font-size: 0.9rem;">
+                <div>
+                    <strong style="color: var(--cafe-espresso); display: block; margin-bottom: 3px;">Penerima:</strong>
+                    <div>@Model.RecipientName (@Model.RecipientPhone)</div>
+                    <div style="color: var(--cafe-text-muted); font-size: 0.84rem; margin-top: 2px;">@Model.DeliveryAddress</div>
+                    @if (!string.IsNullOrEmpty(Model.DeliveryNotes))
+                    {
+                        <div style="color: var(--cafe-toffee); font-size: 0.8rem; font-style: italic;">Patokan: @Model.DeliveryNotes</div>
+                    }
+                </div>
+                <div>
+                    <strong style="color: var(--cafe-espresso); display: block; margin-bottom: 3px;">Pengiriman & Pembayaran:</strong>
+                    <div>@Model.ShippingMethod</div>
+                    <div style="color: var(--cafe-text-muted); font-size: 0.84rem;">Slot: @(Model.DeliveryTimeSlot ?? "Langsung")</div>
+                    <div style="color: var(--cafe-toffee); font-weight: 700; font-size: 0.84rem; margin-top: 4px;">Metode: @Model.PaymentMethod (@Model.PaymentStatus)</div>
+                </div>
+            </div>
+
+            <!-- Itemized Table -->
+            <div style="border-top: 1.5px solid var(--cafe-border); border-bottom: 1.5px solid var(--cafe-border); padding: 16px 0; margin-bottom: 16px;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.92rem;">
+                    <thead>
+                        <tr style="color: var(--cafe-text-muted); font-size: 0.82rem; text-transform: uppercase; border-bottom: 1px solid var(--cafe-border);">
+                            <th style="text-align: left; padding-bottom: 10px;">Sajian Dessert & Cafe</th>
+                            <th style="text-align: center; padding-bottom: 10px;">Qty</th>
+                            <th style="text-align: right; padding-bottom: 10px;">Harga</th>
+                            <th style="text-align: right; padding-bottom: 10px;">Subtotal</th>
+                            @if (Model.OrderStatus == "Completed")
+                            {
+                                <th style="text-align: center; padding-bottom: 10px;" class="btn-no-print">Ulasan</th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            var orderItems = Model.Items ?? new List<ShopOrderItem>();
+                        }
+                        @foreach (var item in orderItems)
+                        {
+                            <tr style="border-bottom: 1px dashed var(--cafe-border);">
+                                <td style="padding: 12px 0;">
+                                    <strong style="color: var(--cafe-espresso);">@item.ProductName</strong>
+                                    @if (!string.IsNullOrEmpty(item.VariantName))
+                                    {
+                                        <div style="font-size: 0.8rem; color: var(--cafe-toffee);">@item.VariantName</div>
+                                    }
+                                    @if (!string.IsNullOrEmpty(item.CustomNote))
+                                    {
+                                        <div style="font-size: 0.76rem; color: var(--cafe-text-muted); font-style: italic;">Note: "@item.CustomNote"</div>
+                                    }
+                                </td>
+                                <td style="text-align: center; padding: 12px 0;">@item.Quantity</td>
+                                <td style="text-align: right; padding: 12px 0;">Rp @item.Price.ToString("N0")</td>
+                                <td style="text-align: right; padding: 12px 0; font-weight: 700; color: var(--cafe-espresso);">
+                                    Rp @item.SubTotal.ToString("N0")
+                                </td>
+                                @if (Model.OrderStatus == "Completed")
+                                {
+                                    <td style="text-align: center; padding: 12px 0;" class="btn-no-print">
+                                        @if (reviewedProductIds.Contains(item.ProductId))
+                                        {
+                                            <span style="color: var(--cafe-success); font-size: 0.82rem; font-weight: 700;">✅ Dinilai</span>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="btn btn-sm btn-outline-warning" style="border-radius: 12px; font-size: 0.78rem; font-weight: 700;" onclick="openReviewModal(@item.ProductId, '@HttpUtility.JavaScriptStringEncode(item.ProductName)')">
+                                                ⭐ Beri Nilai
+                                            </button>
+                                        }
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Price Breakdown Calculation -->
+            <div style="width: 270px; margin-left: auto; font-size: 0.92rem;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                    <span style="color: var(--cafe-text-muted);">Subtotal:</span>
+                    <span>Rp @Model.SubTotal.ToString("N0")</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                    <span style="color: var(--cafe-text-muted);">Ongkos Kirim:</span>
+                    <span>Rp @Model.ShippingCost.ToString("N0")</span>
+                </div>
+                @if (Model.DiscountAmount > 0)
+                {
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 6px; color: var(--cafe-success); font-weight: 600;">
+                        <span>Voucher (@Model.VoucherCode):</span>
+                        <span>-Rp @Model.DiscountAmount.ToString("N0")</span>
+                    </div>
+                }
+                <div style="display: flex; justify-content: space-between; border-top: 1.5px solid var(--cafe-espresso); padding-top: 10px; margin-top: 10px; font-weight: 800; font-size: 1.2rem; color: var(--cafe-espresso);">
+                    <span>Total Tagihan:</span>
+                    <span>Rp @Model.GrandTotal.ToString("N0")</span>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 32px; padding-top: 18px; border-top: 1.5px dashed var(--cafe-border); font-size: 0.82rem; color: var(--cafe-text-subtle);">
+                Terima kasih telah memesan sajian manis di Kyu Dessert & Cafe! Nikmati momen manis bersama secangkir kehangatan ☕✨
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        function advanceOrderStatus(newStatus) {
+            var orderId = @Model.Id;
+
+            var formData = new FormData();
+            formData.append('orderId', orderId);
+            formData.append('status', newStatus);
+
+            fetch('@Url.Action("UpdateOrderStatus", "Shop")', {
+                method: 'POST',
+                body: formData
+            })
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Status Diperbarui!',
+                        text: 'Status pesanan berhasil diubah menjadi: ' + newStatus,
+                        timer: 1200,
+                        showConfirmButton: false
+                    }).then(function() {
+                        window.location.reload();
+                    });
+                }
+            });
+        }
+
+        function openReviewModal(productId, productName) {
+            Swal.fire({
+                title: '⭐ Ulas ' + productName,
+                html: `
+                    <div style="text-align: left;">
+                        <label style="font-weight: 700; font-size: 0.88rem; color: #6F5E53;">Pilih Rating Bintang:</label>
+                        <select id="swalRating" class="form-select" style="margin-bottom: 12px; border-radius: 12px;">
+                            <option value="5">⭐⭐⭐⭐⭐ 5 Bintang (Sempurna & Sangat Lezat!)</option>
+                            <option value="4">⭐⭐⭐⭐ 4 Bintang (Enak & Manis Pas)</option>
+                            <option value="3">⭐⭐⭐ 3 Bintang (Cukup Bagus)</option>
+                            <option value="2">⭐⭐ 2 Bintang (Kurang Cocok)</option>
+                            <option value="1">⭐ 1 Bintang (Kecewa)</option>
+                        </select>
+                        <label style="font-weight: 700; font-size: 0.88rem; color: #6F5E53;">Komentar & Testimoni:</label>
+                        <textarea id="swalComment" class="form-control" rows="3" placeholder="Ceritakan pengalaman rasa Anda dengan sajian dessert ini..." style="border-radius: 12px;"></textarea>
+                    </div>
+                `,
+                showCancelButton: true,
+                confirmButtonText: 'Kirim Ulasan 💌',
+                confirmButtonColor: '#9E5825',
+                cancelButtonText: 'Batal',
+                preConfirm: function() {
+                    var rating = document.getElementById('swalRating').value;
+                    var comment = document.getElementById('swalComment').value.trim();
+                    if (!comment) {
+                        Swal.showValidationMessage('Tuliskan sedikit komentar ulasan Anda!');
+                        return false;
+                    }
+                    return { rating: rating, comment: comment };
+                }
+            }).then(function(result) {
+                if (result.isConfirmed) {
+                    var formData = new FormData();
+                    formData.append('productId', productId);
+                    formData.append('orderId', @Model.Id);
+                    formData.append('rating', result.value.rating);
+                    formData.append('comment', result.value.comment);
+
+                    fetch('@Url.Action("SubmitReview", "Shop")', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(function(res) { return res.json(); })
+                    .then(function(data) {
+                        if (data.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Terima Kasih!',
+                                text: data.message,
+                                confirmButtonColor: '#9E5825'
+                            }).then(function() {
+                                window.location.reload();
+                            });
+                        }
+                    });
+                }
+            });
+        }
+
+        // AUTO-POLLING STATUS PESANAN (Real-time Timeline Progress)
+        var currentOrderId = @Model.Id;
+        var currentStatus = '@Model.OrderStatus';
+        var currentPaymentStatus = '@Model.PaymentStatus';
+
+        if (currentPaymentStatus === 'Paid' && currentStatus !== 'Completed' && currentStatus !== 'Cancelled') {
+            var trackingPollTimer = setInterval(function() {
+                fetch('@Url.Action("GetOrderStatus", "Shop")?orderId=' + currentOrderId)
+                    .then(function(res) { return res.json(); })
+                    .then(function(data) {
+                        if (data && data.success && data.orderStatus && data.orderStatus !== currentStatus) {
+                            clearInterval(trackingPollTimer);
+                            if (data.orderStatus === 'Completed') {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Pesanan Telah Tiba! 🎉',
+                                    text: 'Pesanan dessert Anda telah berhasil diantar oleh kurir. Selamat menikmati sajian kami!',
+                                    confirmButtonColor: '#9E5825',
+                                    confirmButtonText: 'Buka Struk & Beri Ulasan ⭐'
+                                }).then(function() {
+                                    window.location.reload();
+                                });
+                            } else if (data.orderStatus === 'On_Delivery') {
+                                Swal.fire({
+                                    icon: 'info',
+                                    title: 'Pesanan Sedang Diantar! 🛵',
+                                    text: 'Driver kami sedang dalam perjalanan mengantarkan pesanan ke alamat Anda.',
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                }).then(function() {
+                                    window.location.reload();
+                                });
+                            } else {
+                                window.location.reload();
+                            }
+                        }
+                    })
+                    .catch(function(err) {
+                        console.warn('Status polling error:', err);
+                    });
+            }, 5000);
+        }
+
+        // FITUR PESAN LAGI (REORDER)
+        function reorderItems(orderId) {
+            if (typeof playBubblePop === 'function') playBubblePop();
+            Swal.fire({
+                title: 'Pesan Lagi?',
+                text: 'Semua menu beserta varian & catatan khusus dari pesanan ini akan dimasukkan kembali ke keranjang belanja Anda.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Masukkan Keranjang 🛒',
+                confirmButtonColor: '#9E5825',
+                cancelButtonText: 'Batal',
+                cancelButtonColor: '#B0A39C'
+            }).then(function(result) {
+                if (result.isConfirmed) {
+                    Swal.showLoading();
+                    var formData = new FormData();
+                    formData.append('orderId', orderId);
+
+                    fetch('@Url.Action("Reorder", "Shop")', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(function(res) { return res.json(); })
+                    .then(function(data) {
+                        Swal.close();
+                        if (data && data.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil Masuk Keranjang! 🛒',
+                                text: data.message,
+                                confirmButtonText: 'Buka Keranjang Sekarang',
+                                confirmButtonColor: '#9E5825',
+                                showCancelButton: true,
+                                cancelButtonText: 'Tetap di Sini'
+                            }).then(function(cRes) {
+                                if (cRes.isConfirmed) {
+                                    window.location.href = data.redirectUrl;
+                                }
+                            });
+                        } else {
+                            Swal.fire('Gagal', (data ? data.message : 'Terjadi kesalahan.'), 'error');
+                        }
+                    })
+                    .catch(function() {
+                        Swal.close();
+                        Swal.fire('Error', 'Gagal memproses pesanan ulang.', 'error');
+                    });
+                }
+            });
+        }
+    </script>
+</body>
+</html>

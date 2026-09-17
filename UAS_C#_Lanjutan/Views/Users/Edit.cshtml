@@ -1,0 +1,87 @@
+@model UAS_C__Lanjutan.Models.Entity.User
+
+@{
+    ViewBag.Title = "Edit Data Pengguna - " + Model.Username;
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="admin-card">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 pb-3 mb-4 border-bottom">
+                <h3 class="fw-bold mb-0" style="color: #D93B65;">
+                    <span>✏️</span> Edit Data Pemain
+                </h3>
+                <a href="@Url.Action("Index", "Users")" class="btn btn-outline-secondary btn-sm" style="border-radius: 50px; font-weight: 600;">
+                    ⬅ Kembali ke Daftar
+                </a>
+            </div>
+
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+                @Html.HiddenFor(model => model.UserId)
+                @Html.HiddenFor(model => model.CreatedAt)
+                @Html.HiddenFor(model => model.Avatar)
+                @Html.HiddenFor(model => model.PlayTimeSeconds)
+                @Html.HiddenFor(model => model.IsDeleted)
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold" style="color: #5D4037;">👤 Username</label>
+                        @Html.EditorFor(model => model.Username, new { htmlAttributes = new { @class = "form-control", style = "border-radius: 12px; border: 1.5px solid #FFCCD5;" } })
+                        @Html.ValidationMessageFor(model => model.Username, "", new { @class = "text-danger small" })
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold" style="color: #5D4037;">📧 Email</label>
+                        @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control", style = "border-radius: 12px; border: 1.5px solid #FFCCD5;" } })
+                        @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger small" })
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold" style="color: #5D4037;">🔑 Password Hash</label>
+                        @Html.EditorFor(model => model.Password, new { htmlAttributes = new { @class = "form-control", style = "border-radius: 12px; border: 1.5px solid #FFCCD5;" } })
+                        @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger small" })
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold" style="color: #5D4037;">🛡️ Role Hak Akses</label>
+                        <select name="Role" id="Role" class="form-select" style="border-radius: 12px; border: 1.5px solid #FFCCD5;">
+                            <option value="User" @(Model.Role == "User" ? "selected" : "")>🧑‍🍳 User (Pemain Biasa)</option>
+                            <option value="Admin" @(Model.Role == "Admin" ? "selected" : "")>👑 Admin (Administrator)</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold" style="color: #5D4037;">💰 Total Koin</label>
+                        @Html.EditorFor(model => model.TotalCoins, new { htmlAttributes = new { @class = "form-control", type = "number", style = "border-radius: 12px; border: 1.5px solid #FFCCD5;" } })
+                        @Html.ValidationMessageFor(model => model.TotalCoins, "", new { @class = "text-danger small" })
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold" style="color: #5D4037;">🏆 High Score</label>
+                        @Html.EditorFor(model => model.HighScoreBb, new { htmlAttributes = new { @class = "form-control", type = "number", style = "border-radius: 12px; border: 1.5px solid #FFCCD5;" } })
+                        @Html.ValidationMessageFor(model => model.HighScoreBb, "", new { @class = "text-danger small" })
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold" style="color: #5D4037;">⭐ Level</label>
+                        @Html.EditorFor(model => model.Level, new { htmlAttributes = new { @class = "form-control", type = "number", style = "border-radius: 12px; border: 1.5px solid #FFCCD5;" } })
+                        @Html.ValidationMessageFor(model => model.Level, "", new { @class = "text-danger small" })
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+                    <a href="@Url.Action("Index", "Users")" class="btn btn-light px-4" style="border-radius: 50px; font-weight: 600;">
+                        Batal
+                    </a>
+                    <button type="submit" class="btn btn-warning px-4" style="border-radius: 50px; font-weight: 600; background: linear-gradient(135deg, #FFB347, #FF8E53); border: none; color: #FFF;">
+                        💾 Simpan Perubahan
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+</div>

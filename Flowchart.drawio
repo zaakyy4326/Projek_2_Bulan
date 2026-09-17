@@ -1,0 +1,497 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.0.3 Chrome/140.0.7339.249 Electron/38.7.0 Safari/537.36" version="29.0.3">
+  <diagram id="flowchart-kyu-dessert" name="Flowchart Kyu Dessert World">
+    <mxGraphModel dx="6280" dy="4005" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="n73KnmBoMo3bDHOY4tJV-1" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-1710" y="-890" width="310" height="460" as="geometry" />
+        </mxCell>
+        <mxCell id="title" value="&lt;b&gt;FLOWCHART SISTEM APLIKASI&lt;/b&gt;&lt;br&gt;Kyu&#39;s Dessert World &amp; Boutique Cafe&lt;br&gt;&lt;i&gt;ASP.NET MVC 5 + Web API 2&lt;/i&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=18;" parent="1" vertex="1">
+          <mxGeometry x="250" y="-230" width="600" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="start" value="Mulai Aplikasi" style="shape=ellipse;whiteSpace=wrap;html=1;fontStyle=1;fontSize=13;" parent="1" vertex="1">
+          <mxGeometry x="460" y="-130" width="180" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="appStart" value="Application_Start()&lt;br&gt;Registrasi Route, WebAPI,&lt;br&gt;Bundle, Filter, Migrasi DB" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="430" y="-30" width="240" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="e_start_app" style="edgeStyle=orthogonalEdgeStyle;" parent="1" source="start" target="appStart" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="cekSession" value="Apakah User&lt;br&gt;Sudah Login?&lt;br&gt;(Session UserId)" style="rhombus;whiteSpace=wrap;html=1;fontSize=11;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="440" y="85" width="220" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="e_app_session" style="edgeStyle=orthogonalEdgeStyle;" parent="1" source="appStart" target="cekSession" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="loginPage" value="Tampilkan Halaman&lt;br&gt;Login &amp; Registrasi&lt;br&gt;(AccountController &amp;rarr; Login)" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="-270" y="100" width="230" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="e_session_login" value="Tidak" style="edgeStyle=orthogonalEdgeStyle;fontStyle=1;fontSize=10;fontColor=#B85450;" parent="1" source="cekSession" target="loginPage" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="authChoice" value="Pilih Aksi&lt;br&gt;Autentikasi?" style="rhombus;whiteSpace=wrap;html=1;fontSize=11;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="-240" y="350" width="170" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="e_login_authchoice" style="edgeStyle=orthogonalEdgeStyle;" parent="1" source="loginPage" target="authChoice" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="register" value="Input Data Registrasi&lt;br&gt;(Username, Email @gmail,&lt;br&gt;Password min 8 huruf+angka)" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="-560" y="360" width="250" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="e_auth_register" value="Register" style="edgeStyle=orthogonalEdgeStyle;fontStyle=1;fontSize=10;fontColor=#9673A6;" parent="1" source="authChoice" target="register" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="validasiRegis" value="Validasi:&lt;br&gt;Username unik?&lt;br&gt;Email unik &amp; @gmail?&lt;br&gt;Password valid?" style="rhombus;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="-540" y="495" width="210" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="e_regis_valid" style="edgeStyle=orthogonalEdgeStyle;" parent="1" source="register" target="validasiRegis" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="regisGagal" value="Tampilkan Pesan Error&lt;br&gt;Validasi Gagal" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="-760" y="360" width="170" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="e_valid_gagal" value="Tidak" style="edgeStyle=orthogonalEdgeStyle;fontStyle=1;fontSize=10;fontColor=#B85450;" parent="1" source="validasiRegis" target="regisGagal" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_gagal_kembali" style="edgeStyle=orthogonalEdgeStyle;dashed=1;" parent="1" source="regisGagal" target="register" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-440" y="390" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="simpanUser" value="Hash Password SHA-256,&lt;br&gt;Simpan User ke Database,&lt;br&gt;Beri Resep Awal (Donat &amp; Es Krim),&lt;br&gt;Kirim Email Notifikasi Registrasi" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="-565" y="820" width="260" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="e_valid_simpan" value="Ya (Valid)" style="edgeStyle=orthogonalEdgeStyle;fontStyle=1;fontSize=10;fontColor=#82B366;" parent="1" source="validasiRegis" target="simpanUser" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_simpan_login" value="Redirect ke Login" style="edgeStyle=orthogonalEdgeStyle;dashed=1;fontSize=10;" parent="1" source="simpanUser" target="loginPage" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-490" y="740" />
+              <mxPoint x="-820" y="740" />
+              <mxPoint x="-820" y="140" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="loginInput" value="Input Username&lt;br&gt;&amp; Password" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="-260" y="530" width="210" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="e_auth_login" value="Login" style="edgeStyle=orthogonalEdgeStyle;fontStyle=1;fontSize=10;fontColor=#6C8EBF;" parent="1" source="authChoice" target="loginInput" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="authAPI" value="API POST /api/auth/login&lt;br&gt;(AuthController.Login)&lt;br&gt;Hash &amp; Cocokkan Password" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="-270" y="650" width="230" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="e_input_auth" style="edgeStyle=orthogonalEdgeStyle;" parent="1" source="loginInput" target="authAPI" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="loginValid" value="Autentikasi&lt;br&gt;Berhasil?" style="rhombus;whiteSpace=wrap;html=1;fontSize=11;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="-235" y="760" width="160" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="e_auth_valid" style="edgeStyle=orthogonalEdgeStyle;" parent="1" source="authAPI" target="loginValid" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="loginGagal" value="Tampilkan Pesan&lt;br&gt;Login Gagal / Akun&lt;br&gt;Dinonaktifkan" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="-5" y="780" width="170" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="e_loginvalid_gagal" value="Tidak" style="edgeStyle=orthogonalEdgeStyle;fontStyle=1;fontSize=10;fontColor=#B85450;" parent="1" source="loginValid" target="loginGagal" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="lupaPassword" value="Lupa Password?&lt;br&gt;Input Email Terdaftar" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="470" y="370" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="e_auth_lupa" value="Lupa Password" style="edgeStyle=orthogonalEdgeStyle;fontStyle=1;fontSize=10;fontColor=#D6B656;" parent="1" source="authChoice" target="lupaPassword" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="sendOTP" value="Generate OTP 6 Digit,&lt;br&gt;Simpan ke DB (Expired 2 menit),&lt;br&gt;Kirim Email via SMTP Gmail&lt;br&gt;(api/auth/request-otp)" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="460" y="460" width="240" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="e_lupa_otp" style="edgeStyle=orthogonalEdgeStyle;" parent="1" source="lupaPassword" target="sendOTP" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="inputOTP" value="Input Kode OTP &amp;&lt;br&gt;Password Baru" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="470" y="575" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="e_otp_input" style="edgeStyle=orthogonalEdgeStyle;" parent="1" source="sendOTP" target="inputOTP" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="validOTP" value="OTP Valid &amp;&lt;br&gt;Belum Expired?" style="rhombus;whiteSpace=wrap;html=1;fontSize=10;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="495" y="660" width="170" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="e_inputotp_valid" style="edgeStyle=orthogonalEdgeStyle;" parent="1" source="inputOTP" target="validOTP" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="resetPwd" value="Update Password Baru&lt;br&gt;(Hash SHA-256),&lt;br&gt;Hapus OTP dari DB&lt;br&gt;(api/auth/reset-password)" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="465" y="790" width="230" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="e_validotp_reset" value="Ya" style="edgeStyle=orthogonalEdgeStyle;fontStyle=1;fontSize=10;fontColor=#82B366;" parent="1" source="validOTP" target="resetPwd" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_reset_login" value="Redirect ke Login" style="edgeStyle=orthogonalEdgeStyle;dashed=1;fontSize=10;" parent="1" source="resetPwd" target="loginPage" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="210" y="825" />
+              <mxPoint x="210" y="140" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="otpGagal" value="OTP Expired/Salah&lt;br&gt;Tampilkan Pesan Error" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="880" y="680" width="180" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="e_validotp_gagal" value="Tidak" style="edgeStyle=orthogonalEdgeStyle;fontStyle=1;fontSize=10;fontColor=#B85450;" parent="1" source="validOTP" target="otpGagal" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="n73KnmBoMo3bDHOY4tJV-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="setSession" target="mainMenu">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="90" y="930" />
+              <mxPoint x="90" y="930" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="setSession" value="Set Session&lt;br&gt;(UserId, Username, Role),&lt;br&gt;Generate Token GUID,&lt;br&gt;Simpan di Memori Server" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="-275" y="890" width="240" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="e_loginvalid_session" value="Ya (Berhasil)" style="edgeStyle=orthogonalEdgeStyle;fontStyle=1;fontSize=10;fontColor=#82B366;" parent="1" source="loginValid" target="setSession" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="mainMenu" value="&lt;b&gt;MENU UTAMA&lt;/b&gt;&lt;br&gt;(MainMenuController.Index)&lt;br&gt;Sinkronisasi Pencapaian,&lt;br&gt;Load Profil Pemain,&lt;br&gt;Lencana Terpasang" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fontStyle=0;" parent="1" vertex="1">
+          <mxGeometry x="410" y="890" width="280" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="e_session_mainmenu" style="edgeStyle=orthogonalEdgeStyle;" parent="1" source="cekSession" target="mainMenu" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="660" y="255" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="550" y="255" />
+              <mxPoint x="2140" y="255" />
+              <mxPoint x="2140" y="1160" />
+              <mxPoint x="560" y="1160" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_session_mainmenu_label" value="Ya (Sudah Login)" style="text;html=1;fontSize=10;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="660" y="230" width="120" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="menuChoice" value="Pilih Menu?" style="rhombus;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="490" y="1250" width="200" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="e_main_choice" style="edgeStyle=orthogonalEdgeStyle;" parent="1" source="mainMenu" target="menuChoice" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="puzzleMenu" value="&lt;b&gt;PUZZLE GAME MENU&lt;/b&gt;&lt;br&gt;(PuzzleController.Index)&lt;br&gt;Leaderboard, Mode Game" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="-95" y="1320" width="250" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="e_choice_puzzle" value="Main Game" style="edgeStyle=orthogonalEdgeStyle;fontStyle=1;fontSize=10;fontColor=#FF8888;" parent="1" source="menuChoice" target="puzzleMenu" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="gameMode" value="Pilih Mode&lt;br&gt;Permainan?" style="rhombus;whiteSpace=wrap;html=1;fontSize=11;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="-70" y="1430" width="200" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="e_puzzle_mode" style="edgeStyle=orthogonalEdgeStyle;" parent="1" source="puzzleMenu" target="gameMode" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="klasik" value="&lt;b&gt;Game Puzzle Klasik 8x8&lt;/b&gt;&lt;br&gt;(PuzzleController.Classic)&lt;br&gt;Tanpa Batas Waktu,&lt;br&gt;Susun Balok, Combo, SFX" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="-405" y="1390" width="240" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="e_mode_klasik" value="Klasik" style="edgeStyle=orthogonalEdgeStyle;fontStyle=1;fontSize=10;fontColor=#FF9933;" parent="1" source="gameMode" target="klasik" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="klasikScore" value="Simpan High Score&lt;br&gt;(PuzzleService.&lt;br&gt;SaveClassicHighScore)&lt;br&gt;Cek Achievement RajaBlok&lt;br&gt;jika skor &gt;= 1.000.000" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="-405" y="1515" width="240" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="e_klasik_score" style="edgeStyle=orthogonalEdgeStyle;" parent="1" source="klasik" target="klasikScore" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="adventure" value="&lt;b&gt;Mode Petualangan&lt;/b&gt;&lt;br&gt;(PuzzleController.Adventure)&lt;br&gt;Peta 149 Level,&lt;br&gt;Target Misi per Level" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="-85" y="1570" width="230" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="e_mode_adv" value="Petualangan" style="edgeStyle=orthogonalEdgeStyle;fontStyle=1;fontSize=10;fontColor=#FF9933;" parent="1" source="gameMode" target="adventure" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="playAdv" value="Mainkan Level X&lt;br&gt;(PuzzleController.&lt;br&gt;PlayAdventure)&lt;br&gt;Kumpulkan Target Objek" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="-85" y="1690" width="230" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="e_adv_play" style="edgeStyle=orthogonalEdgeStyle;" parent="1" source="adventure" target="playAdv" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="advScore" value="Simpan Progress Level&lt;br&gt;(PuzzleService.&lt;br&gt;SaveAdventureProgress)&lt;br&gt;Bintang, Skor, IsCompleted&lt;br&gt;Cek Achievement BintangKejora&lt;br&gt;(50 bintang) / DewaDessert (Lvl 150)" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="-95" y="1830" width="250" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="e_play_advscore" style="edgeStyle=orthogonalEdgeStyle;" parent="1" source="playAdv" target="advScore" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="mabar" value="&lt;b&gt;Mode Main Bersama&lt;/b&gt;&lt;br&gt;(Mabar / Duel 1v1)" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="190" y="1455" width="200" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="e_mode_mabar" value="Main Bersama" style="edgeStyle=orthogonalEdgeStyle;fontStyle=1;fontSize=10;fontColor=#FF9933;" parent="1" source="gameMode" target="mabar" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="mabarChoice" value="Buat Room&lt;br&gt;atau Join?" style="rhombus;whiteSpace=wrap;html=1;fontSize=10;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="210" y="1580" width="160" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="e_mabar_choice" style="edgeStyle=orthogonalEdgeStyle;" parent="1" source="mabar" target="mabarChoice" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="createRoom" value="Buat Room Mabar&lt;br&gt;(CreateMabarRoom)&lt;br&gt;Generate Kode Room,&lt;br&gt;Set Target Skor &amp; Timer 3m" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="185" y="1820" width="210" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="e_mbchoice_create" value="Buat Room" style="edgeStyle=orthogonalEdgeStyle;fontStyle=1;fontSize=10;" parent="1" source="mabarChoice" target="createRoom" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="joinRoom" value="Join Room via&lt;br&gt;Kode / Undangan Teman&lt;br&gt;(JoinMabarRoomByCode/&lt;br&gt;RespondMabarInvite)" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="400" y="1650" width="220" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="e_mbchoice_join" value="Join Room" style="edgeStyle=orthogonalEdgeStyle;fontStyle=1;fontSize=10;" parent="1" source="mabarChoice" target="joinRoom" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="mabarPlay" value="Pertandingan Dimulai!&lt;br&gt;(StartMabarMatch)&lt;br&gt;Update Skor Realtime,&lt;br&gt;Cek Target/Timer/Board Lock" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="470" y="1820" width="240" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="e_create_play" style="edgeStyle=orthogonalEdgeStyle;" parent="1" source="createRoom" target="mabarPlay" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_join_play" style="edgeStyle=orthogonalEdgeStyle;" parent="1" source="joinRoom" target="mabarPlay" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="mabarResult" value="Pertandingan Selesai!&lt;br&gt;Tentukan Pemenang&lt;br&gt;(UpdateMabarScore)" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="470" y="2010" width="240" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="e_play_result" style="edgeStyle=orthogonalEdgeStyle;" parent="1" source="mabarPlay" target="mabarResult" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="simpanKoin" value="Simpan Koin Hasil Game&lt;br&gt;(SimpanKoinGame)&lt;br&gt;Update Misi Harian,&lt;br&gt;Cek Achievement SoClose" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="-400" y="1730" width="230" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="e_klasikscore_koin" style="edgeStyle=orthogonalEdgeStyle;" parent="1" source="klasikScore" target="simpanKoin" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="shopIndex" value="&lt;b&gt;KATALOG TOKO&lt;/b&gt;&lt;br&gt;(ShopController.Index)&lt;br&gt;Kategori, Pencarian,&lt;br&gt;Sorting, Paginasi" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="900" y="1270" width="240" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="e_choice_shop" value="Buka Kafe / Toko" style="edgeStyle=orthogonalEdgeStyle;fontStyle=1;fontSize=10;fontColor=#3399FF;" parent="1" source="menuChoice" target="shopIndex" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="shopDetail" value="Detail Produk&lt;br&gt;(ProductDetail)&lt;br&gt;Info, Varian, Bahan,&lt;br&gt;Review, Produk Terkait" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="900" y="1400" width="240" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="e_shop_detail" value="Pilih Produk" style="edgeStyle=orthogonalEdgeStyle;fontStyle=1;fontSize=10;" parent="1" source="shopIndex" target="shopDetail" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="addCart" value="Tambah ke Keranjang&lt;br&gt;(AddToCart)&lt;br&gt;Pilih Varian, Qty,&lt;br&gt;Catatan Khusus" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="900" y="1530" width="240" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="e_detail_cart" value="Tambah Keranjang" style="edgeStyle=orthogonalEdgeStyle;fontStyle=1;fontSize=10;" parent="1" source="shopDetail" target="addCart" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="cartPage" value="Halaman Keranjang (Cart)&lt;br&gt;Update Qty, Hapus Item,&lt;br&gt;Hitung SubTotal,&lt;br&gt;Tampilkan Voucher Tersedia" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="900" y="1640" width="240" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="e_addcart_cart" style="edgeStyle=orthogonalEdgeStyle;" parent="1" source="addCart" target="cartPage" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="checkout" value="Halaman Checkout&lt;br&gt;(Checkout)&lt;br&gt;Input: Nama, Telepon,&lt;br&gt;Alamat, Metode Kirim,&lt;br&gt;Tanggal/Waktu Antar,&lt;br&gt;Voucher, Pembayaran" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="890" y="1760" width="260" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="e_cart_checkout" value="Checkout" style="edgeStyle=orthogonalEdgeStyle;fontStyle=1;fontSize=10;" parent="1" source="cartPage" target="checkout" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="validVoucher" value="Voucher&lt;br&gt;Valid?" style="rhombus;whiteSpace=wrap;html=1;fontSize=10;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="1200" y="1760" width="140" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="e_checkout_voucher" value="Validasi Voucher" style="edgeStyle=orthogonalEdgeStyle;fontStyle=1;fontSize=10;" parent="1" source="checkout" target="validVoucher" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="voucherOk" value="Hitung Diskon&lt;br&gt;(Free Shipping/&lt;br&gt;Percent/Fixed)" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="1200" y="1890" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="e_voucher_ok" value="Ya" style="edgeStyle=orthogonalEdgeStyle;fontStyle=1;fontSize=10;fontColor=#82B366;" parent="1" source="validVoucher" target="voucherOk" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="placeOrder" value="Buat Pesanan (PlaceOrder)&lt;br&gt;Generate Kode KYU-xxx,&lt;br&gt;Simpan Order &amp; Items,&lt;br&gt;Update Stok &amp; TotalSold,&lt;br&gt;Kosongkan Keranjang" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="890" y="1910" width="260" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="e_checkout_order" style="edgeStyle=orthogonalEdgeStyle;" parent="1" source="checkout" target="placeOrder" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="payment" value="Halaman Pembayaran&lt;br&gt;(Payment)&lt;br&gt;Simulasi QRIS Dinamis,&lt;br&gt;Timer Batas Waktu 15 Menit" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="890" y="2040" width="260" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="e_order_payment" style="edgeStyle=orthogonalEdgeStyle;" parent="1" source="placeOrder" target="payment" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="simPay" value="Simulasi Bayar&lt;br&gt;(SimulatePay)&lt;br&gt;Status &amp;rarr; Paid,&lt;br&gt;Order &amp;rarr; Baking" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="890" y="2160" width="260" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="e_payment_sim" value="Scan &amp; Bayar" style="edgeStyle=orthogonalEdgeStyle;fontStyle=1;fontSize=10;" parent="1" source="payment" target="simPay" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="tracking" value="Pelacakan Pesanan&lt;br&gt;(OrderDetail + GetOrderStatus)&lt;br&gt;Auto Progress Berdasarkan Waktu:&lt;br&gt;Baking &amp;rarr; On_Delivery (45s)&lt;br&gt;&amp;rarr; Completed (90s)" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="890" y="2270" width="260" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="e_sim_tracking" style="edgeStyle=orthogonalEdgeStyle;" parent="1" source="simPay" target="tracking" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="review" value="Submit Ulasan &amp; Rating&lt;br&gt;(SubmitReview)&lt;br&gt;Recalculate Rating Produk" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="890" y="2400" width="260" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="e_tracking_review" value="Pesanan Selesai" style="edgeStyle=orthogonalEdgeStyle;fontStyle=1;fontSize=10;" parent="1" source="tracking" target="review" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="reorder" value="Pesan Lagi (Reorder)&lt;br&gt;Masukkan Ulang ke Keranjang" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="1300" y="2400" width="200" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="e_review_reorder" value="Pesan Lagi" style="edgeStyle=orthogonalEdgeStyle;fontStyle=1;fontSize=10;" parent="1" source="review" target="reorder" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_reorder_cart" style="edgeStyle=orthogonalEdgeStyle;dashed=1;" parent="1" source="reorder" target="cartPage" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1400" y="2430" />
+              <mxPoint x="1400" y="1680" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="profile" value="&lt;b&gt;PROFIL PEMAIN&lt;/b&gt;&lt;br&gt;Update Username (7 hari),&lt;br&gt;Upload/Pilih Avatar,&lt;br&gt;Ganti Email (OTP Verifikasi)" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="470" y="1410" width="240" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="e_choice_profile" value="Profil" style="edgeStyle=orthogonalEdgeStyle;fontStyle=1;fontSize=10;fontColor=#9966CC;" parent="1" source="menuChoice" target="profile" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="social" value="Sosial &amp; Teman&lt;br&gt;(FindPlayers, AddFriend,&lt;br&gt;AcceptFriendRequest,&lt;br&gt;RemoveFriend)&lt;br&gt;Cari &amp; Kelola Pertemanan" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="470" y="1510" width="240" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="e_profile_social" style="edgeStyle=orthogonalEdgeStyle;" parent="1" source="profile" target="social" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="recipeBook" value="&lt;b&gt;BUKU RESEP&lt;/b&gt;&lt;br&gt;(RecipeBook / RecipeShop)&lt;br&gt;Lihat Semua Resep,&lt;br&gt;Beli Resep dengan Koin" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="-430" y="1265" width="230" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="e_choice_recipe" value="Toko Resep" style="edgeStyle=orthogonalEdgeStyle;fontStyle=1;fontSize=10;fontColor=#E8A060;" parent="1" source="menuChoice" target="recipeBook" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="450" y="1300" />
+              <mxPoint x="-285" y="1300" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="unlockRecipe" value="Buka Resep Baru&lt;br&gt;(UnlockRecipe)&lt;br&gt;Kurangi Koin User,&lt;br&gt;Cek Achievement:&lt;br&gt;ChefMagang (4 Resep) /&lt;br&gt;MasterPastry (8 Resep)" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="-700" y="1250" width="180" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="e_recipe_unlock" value="Beli Resep" style="edgeStyle=orthogonalEdgeStyle;fontStyle=1;fontSize=10;" parent="1" source="recipeBook" target="unlockRecipe" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="cooking" value="&lt;b&gt;DAPUR MEMASAK&lt;/b&gt;&lt;br&gt;(MainMenuController.Cooking)&lt;br&gt;Masak Resep Terbuka,&lt;br&gt;Animasi Memasak" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="-715" y="1460" width="210" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="e_unlock_cooking" style="edgeStyle=orthogonalEdgeStyle;" parent="1" source="unlockRecipe" target="cooking" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="achievement" value="&lt;b&gt;BUKU PENCAPAIAN&lt;/b&gt;&lt;br&gt;(GetBukuPencapaian)&lt;br&gt;7 Achievement + XP + Voucher&lt;br&gt;Pin Lencana ke Profil (max 3)&lt;br&gt;Level Up System (300 XP/lvl)" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="10" y="1110" width="250" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="e_main_ach" value="Pencapaian" style="edgeStyle=orthogonalEdgeStyle;fontStyle=1;fontSize=10;fontColor=#B8860B;" parent="1" source="mainMenu" target="achievement" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="135" y="950" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="dailyMission" value="&lt;b&gt;MISI HARIAN&lt;/b&gt;&lt;br&gt;(GetMisiHarian)&lt;br&gt;3 Slot Misi/Hari:&lt;br&gt;2x Masak Menu + 1x Streak&lt;br&gt;Klaim Hadiah Koin" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="-370" y="1110" width="230" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="e_ach_daily" style="edgeStyle=orthogonalEdgeStyle;" parent="1" source="achievement" target="dailyMission" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="heartbeat" value="Heartbeat (tiap 30 detik)&lt;br&gt;Akumulasi PlayTimeSeconds,&lt;br&gt;Cek Achievement PlayTime&lt;br&gt;(min 45 menit = 2700 dtk)" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;dashed=1;" parent="1" vertex="1">
+          <mxGeometry x="960" y="810" width="230" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="e_main_heartbeat" value="Background" style="edgeStyle=orthogonalEdgeStyle;dashed=1;fontStyle=2;fontSize=10;" parent="1" source="mainMenu" target="heartbeat" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="leaderboard" value="Leaderboard&lt;br&gt;Top 10 High Score Klasik&lt;br&gt;Top 10 Level Tertinggi&lt;br&gt;Lihat Profil Publik Pemain" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="640" y="1630" width="240" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="e_social_leaderboard" style="edgeStyle=orthogonalEdgeStyle;" parent="1" source="social" target="leaderboard" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_admin_actions" style="edgeStyle=orthogonalEdgeStyle;" parent="1" target="adminActions" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="915" y="920.0000000000005" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_actions_check" style="edgeStyle=orthogonalEdgeStyle;" parent="1" target="adminCheck" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1105" y="960.0000000000005" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="logout" value="Logout&lt;br&gt;(AccountController.Logout)&lt;br&gt;Session.Clear(),&lt;br&gt;Hapus Cookie" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="1490" y="2520" width="200" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="e_main_logout" value="Logout" style="edgeStyle=orthogonalEdgeStyle;fontStyle=1;fontSize=10;fontColor=#B85450;" parent="1" source="mainMenu" target="logout" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1590" y="930" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_logout_login" style="edgeStyle=orthogonalEdgeStyle;dashed=1;" parent="1" source="logout" target="loginPage" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-870" y="2560" />
+              <mxPoint x="-870" y="140" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="end" value="Selesai" style="shape=ellipse;whiteSpace=wrap;html=1;fontStyle=1;fontSize=13;" parent="1" vertex="1">
+          <mxGeometry x="495" y="2810" width="180" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="e_review_end" style="edgeStyle=orthogonalEdgeStyle;dashed=1;" parent="1" source="review" target="end" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="585" y="2430" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_mabar_end" style="edgeStyle=orthogonalEdgeStyle;dashed=1;" parent="1" source="mabarResult" target="end" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="590" y="2460" />
+              <mxPoint x="585" y="2460" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="legend_title" value="&lt;b&gt;SIMBOL FLOWCHART&lt;/b&gt;" style="text;html=1;fontSize=12;align=center;" parent="1" vertex="1">
+          <mxGeometry x="-1670" y="-880" width="250" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="leg1" value="Start / End (Terminator)" style="shape=ellipse;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="-1645" y="-830" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="leg2" value="Proses / Aksi (Process)" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="-1645" y="-770" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="leg3" value="Keputusan (Decision)" style="rhombus;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="-1625" y="-720" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="leg4" value="Input / Output Data" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="-1645" y="-640" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="leg5" value="Tampilan Halaman (Page)" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="-1645" y="-580" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="leg6" value="Error / Gagal" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="-1645" y="-530" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="leg7" value="Sukses / Berhasil" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="-1645" y="-480" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="n73KnmBoMo3bDHOY4tJV-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="leg5" target="leg5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

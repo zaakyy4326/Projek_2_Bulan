@@ -1,0 +1,282 @@
+@model List<UAS_C__Lanjutan.Models.Entity.ShopProduct>
+@using UAS_C__Lanjutan.Models.Entity
+
+@{
+    Layout = null;
+    var user = ViewBag.CurrentUser as User;
+    var categories = ViewBag.Categories as List<ShopCategory> ?? new List<ShopCategory>();
+    string activeCat = ViewBag.ActiveCategory as string ?? "";
+    string searchKw = ViewBag.SearchKeyword as string ?? "";
+    string activeSort = ViewBag.ActiveSort as string ?? "popular";
+    int cartCount = ViewBag.CartCount ?? 0;
+    int currentPage = ViewBag.CurrentPage ?? 1;
+    int totalPages = ViewBag.TotalPages ?? 1;
+    int totalItems = ViewBag.TotalItems ?? 0;
+    int pageSize = ViewBag.PageSize ?? 8;
+}
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>☕ Kyu Dessert & Cafe - Boutique Patisserie & Specialty Cafe</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="@Url.Content("~/Content/dessert-shop.css")?v=@DateTime.Now.Ticks" />
+</head>
+<body class="shop-body">
+
+    <!-- TOP NAVBAR -->
+    <nav class="shop-navbar">
+        <div class="shop-nav-container">
+            <a href="@Url.Action("Index", "Shop")" class="shop-brand">
+                <span class="shop-brand-icon">☕</span>
+                <span class="shop-brand-name">Kyu Dessert & Cafe</span>
+                <span class="shop-brand-badge">Artisan Patisserie</span>
+            </a>
+
+            <div class="shop-nav-links">
+                <a href="@Url.Action("Index", "MainMenu")" class="nav-shop-btn nav-shop-btn-outline" title="Kembali ke Menu Game">
+                    <span>🎮</span>
+                    <span>Menu Game</span>
+                </a>
+
+                <a href="@Url.Action("OrderHistory", "Shop")" class="nav-shop-btn nav-shop-btn-outline" title="Riwayat Pesanan">
+                    <span>📦</span>
+                    <span>Pesanan Saya</span>
+                </a>
+
+                <a href="@Url.Action("Cart", "Shop")" class="nav-shop-btn nav-shop-btn-primary" title="Keranjang Belanja">
+                    <span>🛒</span>
+                    <span>Keranjang</span>
+                    <span class="cart-counter-badge" id="navCartCount">@cartCount</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO PROMO BANNER - LUXURY CAFE AMBIENCE -->
+    <div class="shop-hero-banner">
+        <div class="hero-banner-inner">
+            <div class="hero-banner-content">
+                <div class="hero-cafe-badge">
+                    <span>☕</span>
+                    <span>Artisan Patisserie & Boutique Cafe</span>
+                </div>
+                <h1>Kyu Artisan Dessert & Cafe</h1>
+                <p>Nikmati pilihan dessert artisan terbaik: cheesecake lembut, pastry mentega Prancis renyah, hingga mochi gelato segar dengan cita rasa autentik kafe mewah.</p>
+                <div class="hero-voucher-pill">
+                    <span>🎟️</span>
+                    <span>Gunakan Voucher Hadiah Pencapaian Game Anda saat Checkout!</span>
+                </div>
+            </div>
+            <div class="hero-banner-art">
+                <div class="hero-cafe-card">
+                    <div class="cafe-card-pill">✨ Chef's Selection</div>
+                    <div class="cafe-card-title">Handcrafted Daily</div>
+                    <div class="cafe-card-features">
+                        <div class="cafe-feature-item">
+                            <span class="feature-bullet">☕</span>
+                            <span>Single-Origin Roast Pairings</span>
+                        </div>
+                        <div class="cafe-feature-item">
+                            <span class="feature-bullet">🥐</span>
+                            <span>French Butter Lamination</span>
+                        </div>
+                        <div class="cafe-feature-item">
+                            <span class="feature-bullet">🍃</span>
+                            <span>100% Ceremonial Grade Matcha</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTROLS: CATEGORIES & SEARCH -->
+    <div class="shop-controls-wrapper">
+        <!-- Category Chips -->
+        <div class="category-chips-scroll">
+            <a href="@Url.Action("Index", "Shop", new { cat = "", search = searchKw, sort = activeSort })" 
+               class="cat-chip @(string.IsNullOrEmpty(activeCat) ? "active" : "")">
+                <span>✨</span>
+                <span>Semua Menu</span>
+            </a>
+            @foreach (var cat in categories)
+            {
+                <a href="@Url.Action("Index", "Shop", new { cat = cat.Slug, search = searchKw, sort = activeSort })" 
+                   class="cat-chip @(activeCat == cat.Slug ? "active" : "")">
+                    <span>@cat.IconEmoji</span>
+                    <span>@cat.Name</span>
+                </a>
+            }
+        </div>
+
+        <!-- Filter & Search Bar -->
+        <div class="shop-filter-bar">
+            <form method="get" action="@Url.Action("Index", "Shop")" class="shop-search-box">
+                <input type="hidden" name="cat" value="@activeCat" />
+                <input type="hidden" name="sort" value="@activeSort" />
+                <span>🔍</span>
+                <input type="text" name="search" value="@searchKw" placeholder="Cari dessert favorit (contoh: Cheesecake, Macaron, Matcha, Croissant)..." />
+                @if (!string.IsNullOrEmpty(searchKw))
+                {
+                    <a href="@Url.Action("Index", "Shop", new { cat = activeCat, sort = activeSort })" style="color: var(--cafe-text-muted); text-decoration:none; font-weight:bold;">✕</a>
+                }
+            </form>
+
+            <div class="shop-sort-box">
+                <span style="font-size: 0.88rem; font-weight: 700; color: var(--cafe-mocha);">Urutkan:</span>
+                <select id="sortSelect" onchange="applySort(this.value)">
+                    <option value="popular" @(activeSort == "popular" ? "selected" : "")>🔥 Paling Populer</option>
+                    <option value="name_asc" @(activeSort == "name_asc" ? "selected" : "")>🔤 Nama: A ke Z</option>
+                    <option value="name_desc" @(activeSort == "name_desc" ? "selected" : "")>🔡 Nama: Z ke A</option>
+                    <option value="price_asc" @(activeSort == "price_asc" ? "selected" : "")>💵 Harga: Rendah ke Tinggi</option>
+                    <option value="price_desc" @(activeSort == "price_desc" ? "selected" : "")>💎 Harga: Tinggi ke Rendah</option>
+                    <option value="rating" @(activeSort == "rating" ? "selected" : "")>⭐ Rating Tertinggi</option>
+                    <option value="newest" @(activeSort == "newest" ? "selected" : "")>✨ Menu Terbaru</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- PRODUCT GRID -->
+    <div class="shop-product-grid">
+        @if (Model == null || !Model.Any())
+        {
+            <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; background: var(--cafe-card-bg); border-radius: var(--cafe-radius); border: 1.5px dashed var(--cafe-border);">
+                <div style="font-size: 3.5rem; margin-bottom: 10px;">☕</div>
+                <h3 style="color: var(--cafe-espresso); font-weight: 700;">Dessert Tidak Ditemukan</h3>
+                <p style="color: var(--cafe-text-muted); font-size: 0.95rem;">Coba cari dengan kata kunci lain atau pilih kategori yang berbeda.</p>
+                <a href="@Url.Action("Index", "Shop")" class="nav-shop-btn nav-shop-btn-primary" style="margin-top: 10px;">Lihat Semua Menu</a>
+            </div>
+        }
+        else
+        {
+            foreach (var item in Model)
+            {
+                <div class="product-card">
+                    @if (!string.IsNullOrEmpty(item.BadgeText))
+                    {
+                        <div class="badge-tag-floating">@item.BadgeText</div>
+                    }
+
+                    <div class="product-img-wrapper">
+                        <img src="@item.ImageUrl" alt="@item.Name" class="product-img" loading="lazy" />
+                    </div>
+
+                    <div class="product-card-body">
+                        <div class="product-category-tag">@(item.Category?.Name ?? "Dessert")</div>
+                        <a href="@Url.Action("ProductDetail", "Shop", new { id = item.Id })" class="product-card-title">@item.Name</a>
+                        <p class="product-card-desc">@item.ShortDescription</p>
+
+                        <div class="product-meta-row">
+                            <div class="product-rating-stars">
+                                <span>★</span>
+                                <span>@item.Rating.ToString("F1")</span>
+                                <span style="color: var(--cafe-text-subtle); font-weight: normal;">(@item.TotalReviews)</span>
+                            </div>
+                            <div>Terjual @item.TotalSold+</div>
+                        </div>
+
+                        <div class="product-card-footer">
+                            <div class="price-group">
+                                @if (item.OriginalPrice.HasValue && item.OriginalPrice.Value > item.Price)
+                                {
+                                    <span class="original-price-strike">Rp @item.OriginalPrice.Value.ToString("N0")</span>
+                                }
+                                <span class="current-price-label">Rp @item.Price.ToString("N0")</span>
+                            </div>
+
+                            <a href="@Url.Action("ProductDetail", "Shop", new { id = item.Id })" class="btn-add-cart-quick" title="Lihat Pilihan & Beli">
+                                <span>🛒</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+
+    <!-- PAGINATION & RESULTS INFO -->
+    @if (totalItems > 0)
+    {
+        <div class="shop-pagination-container">
+            <div class="pagination-info-text">
+                Menampilkan <strong>@(((currentPage - 1) * pageSize) + 1)</strong> - <strong>@(Math.Min(currentPage * pageSize, totalItems))</strong> dari <strong>@totalItems</strong> dessert lezat
+            </div>
+
+            @if (totalPages > 1)
+            {
+                <div class="shop-pagination">
+                    @if (currentPage > 1)
+                    {
+                        <a href="@Url.Action("Index", "Shop", new { cat = activeCat, search = searchKw, sort = activeSort, page = currentPage - 1 })" class="page-nav-btn" title="Halaman Sebelumnya">
+                            &laquo; Sebelumnya
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="page-nav-btn disabled">&laquo; Sebelumnya</span>
+                    }
+
+                    <div class="page-numbers-group">
+                        @for (int p = 1; p <= totalPages; p++)
+                        {
+                            if (p == currentPage)
+                            {
+                                <span class="page-num-btn active">@p</span>
+                            }
+                            else if (p == 1 || p == totalPages || (p >= currentPage - 2 && p <= currentPage + 2))
+                            {
+                                <a href="@Url.Action("Index", "Shop", new { cat = activeCat, search = searchKw, sort = activeSort, page = p })" class="page-num-btn">
+                                    @p
+                                </a>
+                            }
+                            else if (p == currentPage - 3 || p == currentPage + 3)
+                            {
+                                <span class="page-num-dots">...</span>
+                            }
+                        }
+                    </div>
+
+                    @if (currentPage < totalPages)
+                    {
+                        <a href="@Url.Action("Index", "Shop", new { cat = activeCat, search = searchKw, sort = activeSort, page = currentPage + 1 })" class="page-nav-btn" title="Halaman Selanjutnya">
+                            Selanjutnya &raquo;
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="page-nav-btn disabled">Selanjutnya &raquo;</span>
+                    }
+                </div>
+            }
+        </div>
+    }
+
+    <!-- FOOTER -->
+    <footer style="text-align: center; padding: 40px 20px; color: var(--cafe-text-muted); font-size: 0.9rem; border-top: 1.5px solid var(--cafe-border); background: var(--cafe-card-bg); margin-top: 50px;">
+        <p style="margin: 0; font-weight: 600; font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--cafe-espresso);">☕ Kyu Dessert & Cafe &copy; @DateTime.Now.Year. All Rights Reserved.</p>
+        <p style="margin: 6px 0 0 0; font-size: 0.85rem; color: var(--cafe-text-subtle);">Freshly baked handcrafted desserts & artisan cafe moments.</p>
+    </footer>
+
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <script>
+        function applySort(sortVal) {
+            var url = new URL(window.location.href);
+            url.searchParams.set('sort', sortVal);
+            url.searchParams.set('page', '1');
+            window.location.href = url.toString();
+        }
+    </script>
+</body>
+</html>

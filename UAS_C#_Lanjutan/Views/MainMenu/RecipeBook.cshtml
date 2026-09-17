@@ -1,0 +1,543 @@
+@using UAS_C__Lanjutan.Models.Entity
+
+@{
+    Layout = null;
+
+    var player = ViewBag.PlayerInfo as User;
+
+    var recipes = ViewBag.AllRecipes as List<Recipe>;
+    var unlockedIds = ViewBag.UnlockedRecipeIds as List<int>;
+    int idSelanjutnyaDapatDibeli = recipes.FirstOrDefault(r => !unlockedIds.Contains(r.RecipeId))?.RecipeId ?? -1;
+}
+
+@functions {
+    public string GetRecipeEmoji(string name)
+    {
+        switch (name)
+        {
+            case "Donat": return "&#x1F369;";
+            case "Es Krim": return "&#x1F366;";
+            case "Cupcake": return "&#x1F9C1;";
+            case "Pancake": return "&#x1F95E;";
+            case "Waffle": return "&#x1F9C7;";
+            case "Shortcake": return "&#x1F370;";
+            case "Pai": return "&#x1F967;";
+            case "Kue Ultah": return "&#x1F382;";
+            default: return "&#x1F36A;";
+        }
+    }
+
+    public string GetIngredientImage(string name)
+    {
+        switch (name)
+        {
+            case "Tepung": return "tepung.png";
+            case "Gula": return "gula.png";
+            case "Mentega": return "mentega.png";
+            case "Ragi": return "ragi.png";
+            case "Susu": return "susu.png";
+            case "Telur": return "telur.png";
+            case "Krim Keju": return "krim-keju.png";
+            default: return "";
+        }
+    }
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>&#x1F4DA; Buku Resep - Kyu's Dessert World</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="@Url.Content("~/Content/dessert-theme.css")?v=@DateTime.Now.Ticks" />
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #f9efdf 0%, #eeddcc 50%, #f5e6d0 100%);
+            font-family: 'Quicksand', 'Segoe UI Emoji', sans-serif;
+            min-height: 100vh;
+            padding: 30px 20px;
+            position: relative;
+        }
+
+        body {
+            cursor: url('@Url.Content("~/Content/PNG/Cursor32.png")') 0 0, auto;
+        }
+        input, textarea {
+            cursor: auto;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(#e9d6bd 1px, transparent 1px);
+            background-size: 28px 28px;
+            opacity: 0.25;
+            pointer-events: none;
+            top: 0;
+            left: 0;
+        }
+
+        .recipe-book-container {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* ===== HEADER BUKU RESEP ===== */
+        .book-header {
+            background: linear-gradient(135deg, #5a412d, #7B5B3A, #5a412d);
+            border-radius: 24px 24px 0 0;
+            padding: 20px 30px;
+            text-align: center;
+            box-shadow: 0 4px 0 #3d2a1a, 0 8px 20px rgba(0,0,0,0.2);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-bottom: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .book-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #D4A373, #ffb347, #ffd700, #ffb347, #D4A373);
+        }
+
+        .book-header h2 {
+            color: #ffe8c5 !important;
+            font-weight: 700;
+            font-size: 1.6rem;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            margin: 0;
+        }
+
+        .book-header .subtitle {
+            color: #d4a373;
+            font-size: 0.85rem;
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        /* ===== STAT BAR ===== */
+        .stat-bar {
+            background: rgba(90, 65, 45, 0.5);
+            backdrop-filter: blur(8px);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            border-left: 2px solid rgba(255,255,255,0.1);
+            border-right: 2px solid rgba(255,255,255,0.1);
+        }
+
+        .stat-pill {
+            background: rgba(0,0,0,0.4);
+            color: #ffe8c5;
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        /* ===== BODY BUKU ===== */
+        .book-body {
+            background: linear-gradient(180deg, rgba(255, 250, 240, 0.92) 0%, rgba(255, 245, 230, 0.95) 100%);
+            backdrop-filter: blur(10px);
+            border-left: 2px solid #e8d1a8;
+            border-right: 2px solid #e8d1a8;
+            border-bottom: 2px solid #e8d1a8;
+            border-radius: 0 0 24px 24px;
+            padding: 24px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+        }
+
+        /* ===== GRID RESEP ===== */
+        .recipe-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 16px;
+        }
+
+        /* ===== KARTU RESEP ===== */
+        .rb-card {
+            background: linear-gradient(145deg, #fff9ef 0%, #fff0d6 100%);
+            border-radius: 20px;
+            padding: 16px;
+            border: 2px solid #eedcbd;
+            box-shadow: 0 4px 10px rgba(180, 140, 80, 0.12), inset 0 1px 0 rgba(255,255,255,0.8);
+            transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .rb-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, #ffcc80, transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .rb-card:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 10px 24px rgba(180, 140, 80, 0.25), inset 0 1px 0 rgba(255,255,255,0.9);
+            border-color: #d4a373;
+        }
+
+        .rb-card:hover::before {
+            opacity: 1;
+        }
+
+        .rb-card.locked {
+            background: linear-gradient(145deg, #f0ece6 0%, #e8e0d4 100%);
+            border-color: #d5cec3;
+        }
+
+        .rb-card.locked .rb-emoji {
+            filter: grayscale(0.6) opacity(0.5);
+        }
+
+        /* ===== EMOJI RESEP ===== */
+        .rb-emoji {
+            font-size: 2.8rem;
+            line-height: 1;
+            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.15));
+            transition: transform 0.3s ease;
+        }
+
+        .rb-card:hover .rb-emoji {
+            transform: scale(1.15) rotate(-5deg);
+        }
+
+        /* ===== NAMA RESEP ===== */
+        .rb-name {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #5a3e20;
+            letter-spacing: 0.5px;
+            text-align: center;
+        }
+
+        /* ===== INFO RESEP ===== */
+        .rb-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            width: 100%;
+        }
+
+        .rb-cost {
+            background: linear-gradient(135deg, rgba(212, 163, 115, 0.25), rgba(255, 200, 130, 0.25));
+            padding: 4px 14px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #7b5b3a;
+        }
+
+        .rb-ingredient-count {
+            font-size: 0.75rem;
+            color: #9b8668;
+            font-weight: 500;
+        }
+
+        /* ===== BAHAN BAHAN ===== */
+        .rb-ingredients {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            padding: 6px 8px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 12px;
+            width: 100%;
+            min-height: 42px;
+        }
+
+        .rb-ing-icon {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+            filter: drop-shadow(0 1px 3px rgba(0,0,0,0.15));
+            transition: all 0.2s ease;
+            border-radius: 6px;
+            background: rgba(255,255,255,0.7);
+            padding: 2px;
+        }
+
+        .rb-ing-icon:hover {
+            transform: scale(1.25) translateY(-3px);
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+            background: rgba(255,240,210,0.9);
+        }
+
+        /* ===== STATUS BADGE ===== */
+        .rb-status-unlocked {
+            background: linear-gradient(135deg, #4cd964, #34c759);
+            color: white;
+            padding: 5px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.78rem;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 0 #2aa84a;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .rb-btn-unlock {
+            background: linear-gradient(135deg, #ffaa66, #ff8c33);
+            color: white;
+            border: none;
+            padding: 6px 20px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            box-shadow: 0 3px 0 #c26a1a;
+            transition: all 0.1s ease;
+            letter-spacing: 0.5px;
+        }
+
+        .rb-btn-unlock:hover {
+            background: linear-gradient(135deg, #ffb877, #ff9944);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 0 #c26a1a;
+        }
+
+        .rb-btn-unlock:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #c26a1a;
+        }
+
+        /* ===== TOMBOL KEMBALI ===== */
+        .btn-back {
+            background: linear-gradient(135deg, #5a412d, #7B5B3A);
+            color: #ffe8c5;
+            border: none;
+            padding: 10px 28px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            box-shadow: 0 3px 0 #3d2a1a;
+            transition: all 0.15s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 20px;
+        }
+
+        .btn-back:hover {
+            color: #fff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 0 #3d2a1a;
+        }
+
+        .btn-back:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #3d2a1a;
+        }
+
+        @@media (max-width: 600px) {
+            .recipe-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                gap: 10px;
+            }
+
+            .book-header h2 {
+                font-size: 1.2rem;
+            }
+
+            .rb-emoji {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="recipe-book-container">
+
+        <div class="book-header">
+            <h2>&#x1F4DA; Buku Resep</h2>
+            <div class="subtitle">Kumpulkan semua resep untuk menjadi Chef terbaik!</div>
+        </div>
+
+        <div class="stat-bar">
+            <div class="stat-pill">&#x1F4B0; Koin: <b>@player.TotalCoins</b></div>
+            <div class="stat-pill">&#x1F4D6; Resep: <b>@unlockedIds.Count / @recipes.Count</b></div>
+        </div>
+
+        <div class="book-body">
+            <div class="recipe-grid">
+
+                @foreach (var recipe in recipes)
+                {
+                    bool sudahUnlock = unlockedIds.Contains(recipe.RecipeId);
+                    bool bisaDibeli = !sudahUnlock && recipe.RecipeId == idSelanjutnyaDapatDibeli;
+                    string emoji = GetRecipeEmoji(recipe.RecipeName);
+
+                    <div class="rb-card @(sudahUnlock ? "" : "locked")">
+                        <div class="rb-emoji">@emoji</div>
+                        <div class="rb-name">@recipe.RecipeName</div>
+
+                        <div class="rb-info">
+                            <div class="rb-cost">
+                                &#x1F4B0; @recipe.UnlockCost Koin
+                            </div>
+                            <div class="rb-ingredient-count">
+                                &#x1F9C2; @recipe.Ingredients.Count Bahan
+                            </div>
+                        </div>
+
+                        @if (sudahUnlock)
+                        {
+                            <div class="rb-ingredients">
+                                @foreach (var bahan in recipe.Ingredients)
+                                {
+                                    var img = GetIngredientImage(bahan.IngredientName);
+                                    if (!string.IsNullOrEmpty(img))
+                                    {
+                                        <img src="@Url.Content("~/Content/PNG/" + img)"
+                                             class="rb-ing-icon"
+                                             title="@bahan.IngredientName"
+                                             alt="@bahan.IngredientName" />
+                                    }
+                                    else
+                                    {
+                                        <span class="rb-ing-icon d-flex align-items-center justify-content-center"
+                                              title="@bahan.IngredientName"
+                                              style="font-size: 0.7rem; color:#7b5b3a; font-weight:600;">
+                                            @bahan.IngredientName
+                                        </span>
+                                    }
+                                }
+                            </div>
+
+                            <span class="rb-status-unlocked">&#x1F513; Terbuka</span>
+                        }
+                        else if (bisaDibeli)
+                        {
+                            <div class="rb-ingredients" style="filter: blur(3px); opacity: 0.4;">
+                                @foreach (var bahan in recipe.Ingredients)
+                                {
+                                    <span class="rb-ing-icon d-flex align-items-center justify-content-center"
+                                          style="font-size: 1rem;">&#x2753;</span>
+                                }
+                            </div>
+
+                            <button class="rb-btn-unlock btnUnlockRecipe"
+                                    data-id="@recipe.RecipeId">
+                                &#x1F512; Unlock
+                            </button>
+                        }
+                        else
+                        {
+                            <div class="rb-ingredients" style="filter: blur(3px); opacity: 0.4;">
+                                @foreach (var bahan in recipe.Ingredients)
+                                {
+                                    <span class="rb-ing-icon d-flex align-items-center justify-content-center"
+                                          style="font-size: 1rem;">&#x2753;</span>
+                                }
+                            </div>
+
+                            <button class="rb-btn-unlock"
+                                    style="background: #b0a59a; box-shadow: 0 2px 0 #8b7d6e; opacity: 0.8;"
+                                    disabled title="Selesaikan pembelian resep sebelumnya">
+                                &#x1F512; Terkunci
+                            </button>
+                        }
+                    </div>
+                }
+
+            </div>
+
+            <div class="text-center">
+                <a href="/MainMenu/Index" class="btn-back">
+                    &#x2B05;&#xFE0F; Kembali ke Menu
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <div id="global-portrait-overlay">
+        <div class="global-portrait-card">
+            <div class="global-phone-icon">
+                <span style="font-size: 60px; display: inline-block;">📱</span>
+            </div>
+            <h2 class="global-portrait-title">Harap Putar Layar ke Posisi Tegak (Portrait) 🔄</h2>
+            <p class="global-portrait-desc">Halaman ini dirancang dalam posisi tegak (Portrait) agar pas dengan genggaman Anda. Silakan putar HP Anda!</p>
+        </div>
+    </div>
+
+    <script src="@Url.Content("~/Scripts/bubble-pop.js")?v=@DateTime.Now.Ticks"></script>
+
+    <script>
+        $(".btnUnlockRecipe").click(function () {
+            var recipeId = $(this).data("id");
+            var $btn = $(this);
+
+            $.ajax({
+                url: "/MainMenu/UnlockRecipe",
+                type: "POST",
+                data: { recipeId: recipeId },
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire({
+                            title: "Berhasil! &#x1F389;",
+                            text: response.message,
+                            icon: "success",
+                            background: '#FFFEF7',
+                            color: '#7B5B3A',
+                            confirmButtonColor: '#D4A373'
+                        }).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            title: "Gagal &#x1F622;",
+                            text: response.message,
+                            icon: "error",
+                            background: '#FFFEF7',
+                            color: '#7B5B3A',
+                            confirmButtonColor: '#D4A373'
+                        });
+                    }
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

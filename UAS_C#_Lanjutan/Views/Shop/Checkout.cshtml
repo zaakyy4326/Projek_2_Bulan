@@ -1,0 +1,350 @@
+@model List<UAS_C__Lanjutan.Models.Entity.ShopCartItem>
+@using UAS_C__Lanjutan.Models.Entity
+
+@{
+    Layout = null;
+    var user = ViewBag.CurrentUser as User;
+    decimal subTotal = ViewBag.SubTotal ?? 0;
+    var availableVouchers = ViewBag.AvailableVouchers as List<ShopVoucher> ?? new List<ShopVoucher>();
+}
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>📦 Checkout Pengiriman - Kyu Dessert & Cafe</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="@Url.Content("~/Content/dessert-shop.css")?v=@DateTime.Now.Ticks" />
+</head>
+<body class="shop-body">
+
+    <!-- NAVBAR -->
+    <nav class="shop-navbar">
+        <div class="shop-nav-container">
+            <a href="@Url.Action("Index", "Shop")" class="shop-brand">
+                <span class="shop-brand-icon">☕</span>
+                <span class="shop-brand-name">Kyu Dessert & Cafe</span>
+            </a>
+
+            <div class="shop-nav-links">
+                <a href="@Url.Action("Cart", "Shop")" class="nav-shop-btn nav-shop-btn-outline">
+                    <span>⬅️</span>
+                    <span>Kembali ke Keranjang</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- CHECKOUT FORM WRAPPER -->
+    <div class="shop-page-wrapper">
+        <h1 class="page-header-title">
+            <span>📦</span>
+            <span>Konfirmasi Alamat & Pembayaran</span>
+        </h1>
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger" style="border-radius: 16px; font-weight: 600; background: #FDEDED; border-color: #F5C2C7; color: var(--cafe-danger);">
+                @TempData["ErrorMessage"]
+            </div>
+        }
+
+        <form method="post" action="@Url.Action("PlaceOrder", "Shop")" id="formCheckout">
+            @Html.AntiForgeryToken()
+            
+            <div class="cart-layout-grid">
+                <!-- Left: Delivery Information -->
+                <div class="cart-items-card">
+                    <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--cafe-espresso); margin-bottom: 18px; border-bottom: 1.5px solid var(--cafe-border); padding-bottom: 12px;">
+                        📍 1. Data Penerima & Alamat Pengantaran
+                    </h3>
+
+                    <div class="checkout-form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+                        <div>
+                            <label style="font-size: 0.85rem; font-weight: 700; color: var(--cafe-mocha); margin-bottom: 4px; display: block;">Nama Penerima *</label>
+                            <input type="text" name="recipientName" class="custom-note-input" value="@(user?.Username ?? "")" placeholder="Nama Lengkap" required />
+                        </div>
+                        <div>
+                            <label style="font-size: 0.85rem; font-weight: 700; color: var(--cafe-mocha); margin-bottom: 4px; display: block;">Nomor WhatsApp / HP *</label>
+                            <input type="text" name="recipientPhone" class="custom-note-input" placeholder="08123456789" required />
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 14px;">
+                        <label style="font-size: 0.85rem; font-weight: 700; color: var(--cafe-mocha); margin-bottom: 4px; display: block;">Alamat Lengkap Pengiriman *</label>
+                        <textarea name="deliveryAddress" class="custom-note-input" rows="3" placeholder="Nama jalan, nomor rumah, RT/RW, blok, kelurahan, kecamatan, kota..." required></textarea>
+                    </div>
+
+                    <div style="margin-bottom: 24px;">
+                        <label style="font-size: 0.85rem; font-weight: 700; color: var(--cafe-mocha); margin-bottom: 4px; display: block;">Patokan / Catatan Khusus Kurir</label>
+                        <input type="text" name="deliveryNotes" class="custom-note-input" placeholder="Contoh: 'Pagar cokelat sebelah toko bunga / Titip lobby receptionist'" />
+                    </div>
+
+                    <!-- Shipping Method Selection -->
+                    <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--cafe-espresso); margin-bottom: 14px; border-bottom: 1.5px solid var(--cafe-border); padding-bottom: 12px;">
+                        🛵 2. Layanan Pengantaran Khusus Cafe & Cake Box
+                    </h3>
+
+                    <div class="shipping-cards-grid">
+                        <label class="shipping-card-option selected" id="optShipInstant">
+                            <input type="radio" name="shippingMethod" value="Instant (1-2 Jam)" data-cost="20000" checked onchange="updateShipping(this)" />
+                            <div>
+                                <div class="shipping-icon">🛵</div>
+                                <div class="shipping-name">Instant Delivery</div>
+                                <div class="shipping-cost">Rp 20.000</div>
+                                <div class="shipping-time">1 - 2 Jam (Cooler Bag)</div>
+                            </div>
+                        </label>
+
+                        <label class="shipping-card-option" id="optShipSameDay">
+                            <input type="radio" name="shippingMethod" value="Same Day (6-8 Jam)" data-cost="14000" onchange="updateShipping(this)" />
+                            <div>
+                                <div class="shipping-icon">🚗</div>
+                                <div class="shipping-name">Same Day</div>
+                                <div class="shipping-cost">Rp 14.000</div>
+                                <div class="shipping-time">6 - 8 Jam</div>
+                            </div>
+                        </label>
+
+                        <label class="shipping-card-option" id="optShipReguler">
+                            <input type="radio" name="shippingMethod" value="Reguler Express" data-cost="9000" onchange="updateShipping(this)" />
+                            <div>
+                                <div class="shipping-icon">📦</div>
+                                <div class="shipping-name">Reguler Express</div>
+                                <div class="shipping-cost">Rp 9.000</div>
+                                <div class="shipping-time">1 - 2 Hari</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <!-- Delivery Date & Slot Picker -->
+                    <div class="checkout-form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 20px; background: var(--cafe-cream-soft); border: 1.5px dashed var(--cafe-border-dark); padding: 16px; border-radius: var(--cafe-radius);">
+                        <div>
+                            <label style="font-size: 0.85rem; font-weight: 700; color: var(--cafe-mocha); margin-bottom: 4px; display: block;">📅 Tanggal Pengantaran</label>
+                            <input type="date" name="deliveryDate" class="custom-note-input" value="@DateTime.Now.ToString("yyyy-MM-dd")" min="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                        </div>
+                        <div>
+                            <label style="font-size: 0.85rem; font-weight: 700; color: var(--cafe-mocha); margin-bottom: 4px; display: block;">⏰ Pilihan Slot Waktu</label>
+                            <select name="deliveryTimeSlot" class="custom-note-input">
+                                <option value="Sekarang (ASAP)">⚡ Langsung Diantar (ASAP)</option>
+                                <option value="Pagi (09:00 - 12:00)">☀️ Pagi (09:00 - 12:00)</option>
+                                <option value="Siang (13:00 - 16:00)">🌤️ Siang (13:00 - 16:00)</option>
+                                <option value="Sore/Malam (17:00 - 20:00)">🌙 Sore/Malam (17:00 - 20:00)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Payment Method Selection -->
+                    <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--cafe-espresso); margin: 28px 0 14px 0; border-bottom: 1.5px solid var(--cafe-border); padding-bottom: 12px;">
+                        💳 3. Pilih Metode Pembayaran
+                    </h3>
+
+                    <div class="payment-methods-grid">
+                        <label class="payment-method-card selected">
+                            <input type="radio" name="paymentMethod" value="QRIS" checked onchange="highlightPayment(this)" style="display:none;" />
+                            <div style="font-size: 1.4rem;">📱</div>
+                            <div style="font-size: 0.82rem; font-weight: 700;">QRIS Instant</div>
+                        </label>
+
+                        <label class="payment-method-card">
+                            <input type="radio" name="paymentMethod" value="BCA_VA" onchange="highlightPayment(this)" style="display:none;" />
+                            <div style="font-size: 1.4rem;">🏦</div>
+                            <div style="font-size: 0.82rem; font-weight: 700;">BCA VA</div>
+                        </label>
+
+                        <label class="payment-method-card">
+                            <input type="radio" name="paymentMethod" value="MANDIRI_VA" onchange="highlightPayment(this)" style="display:none;" />
+                            <div style="font-size: 1.4rem;">🏛️</div>
+                            <div style="font-size: 0.82rem; font-weight: 700;">Mandiri VA</div>
+                        </label>
+
+                        <label class="payment-method-card">
+                            <input type="radio" name="paymentMethod" value="GOPAY" onchange="highlightPayment(this)" style="display:none;" />
+                            <div style="font-size: 1.4rem;">👛</div>
+                            <div style="font-size: 0.82rem; font-weight: 700;">GoPay</div>
+                        </label>
+
+                        <label class="payment-method-card">
+                            <input type="radio" name="paymentMethod" value="SHOPEEPAY" onchange="highlightPayment(this)" style="display:none;" />
+                            <div style="font-size: 1.4rem;">🛒</div>
+                            <div style="font-size: 0.82rem; font-weight: 700;">ShopeePay</div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Right: Order Summary & Voucher Claim -->
+                <div class="summary-card">
+                    <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--cafe-espresso); margin-bottom: 18px; border-bottom: 1.5px solid var(--cafe-border); padding-bottom: 12px;">
+                        Ringkasan Pesanan
+                    </h3>
+
+                    <!-- Order Item Preview List -->
+                    <div style="max-height: 220px; overflow-y: auto; margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px;">
+                        @foreach (var ci in Model)
+                        {
+                            <div style="display: flex; gap: 10px; align-items: center; background: var(--cafe-cream-soft); border: 1px solid var(--cafe-border); border-radius: var(--cafe-radius-sm); padding: 8px 12px;">
+                                <img src="@ci.Product.ImageUrl" alt="@ci.Product.Name" style="width: 45px; height: 45px; border-radius: 8px; object-fit: cover;" />
+                                <div style="flex: 1; font-size: 0.85rem;">
+                                    <div style="font-weight: 700; color: var(--cafe-espresso);">@ci.Product.Name</div>
+                                    <div style="color: var(--cafe-text-muted); font-size: 0.75rem;">@ci.Quantity x Rp @ci.Product.Price.ToString("N0")</div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Voucher Selector / Input -->
+                    <div class="voucher-apply-box">
+                        <div style="font-weight: 700; color: var(--cafe-espresso); font-size: 0.9rem;">
+                            🎟️ Voucher Diskon & Achievement:
+                        </div>
+                        
+                        @if (availableVouchers.Any())
+                        {
+                            <select id="ddlVouchers" class="custom-note-input" style="margin-top: 6px; font-size: 0.82rem;" onchange="selectVoucherPreset(this.value)">
+                                <option value="">-- Pilih Voucher Terbuka Anda --</option>
+                                @foreach (var v in availableVouchers)
+                                {
+                                    <option value="@v.Code">@v.Code - @v.Name (Min. Rp @v.MinSpend.ToString("N0"))</option>
+                                }
+                            </select>
+                        }
+
+                        <div class="voucher-input-group">
+                            <input type="text" name="voucherCode" id="txtVoucherCode" class="voucher-input" placeholder="KODE VOUCHER" />
+                            <button type="button" class="btn-voucher-apply" onclick="applyVoucherCode()">Gunakan</button>
+                        </div>
+                        <div id="voucherStatusMsg" style="font-size: 0.8rem; margin-top: 6px; display: none;"></div>
+                    </div>
+
+                    <!-- Price Calculations Breakdown -->
+                    <div class="summary-row">
+                        <span>Total Produk:</span>
+                        <strong id="lblSubTotalVal">Rp @subTotal.ToString("N0")</strong>
+                    </div>
+
+                    <div class="summary-row">
+                        <span>Ongkos Kirim:</span>
+                        <strong id="lblShippingCostVal" style="color: var(--cafe-mocha);">Rp 20.000</strong>
+                    </div>
+
+                    <div class="summary-row" id="rowDiscount" style="display: none; color: var(--cafe-success);">
+                        <span>Diskon Voucher:</span>
+                        <strong id="lblDiscountVal">-Rp 0</strong>
+                    </div>
+
+                    <div class="summary-row total-row">
+                        <span>Total Pembayaran:</span>
+                        <span id="lblGrandTotalVal" style="color: var(--cafe-espresso); font-size: 1.35rem;">
+                            Rp @((subTotal + 20000).ToString("N0"))
+                        </span>
+                    </div>
+
+                    <button type="submit" class="btn-action-cart btn-action-cart-fill" style="width: 100%; margin-top: 20px; font-size: 1.05rem;">
+                        <span>Bayar Sekarang ➡️</span>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        var currentSubtotal = @subTotal;
+        var currentShippingCost = 20000;
+        var currentDiscount = 0;
+
+        function updateShipping(radio) {
+            document.querySelectorAll('.shipping-card-option').forEach(function(el) {
+                el.classList.remove('selected');
+            });
+            radio.closest('.shipping-card-option').classList.add('selected');
+
+            currentShippingCost = parseFloat(radio.getAttribute('data-cost')) || 20000;
+            document.getElementById('lblShippingCostVal').innerText = 'Rp ' + currentShippingCost.toLocaleString('id-ID');
+
+            // Revalidate voucher if active
+            var currentVCode = document.getElementById('txtVoucherCode').value.trim();
+            if (currentVCode) {
+                applyVoucherCode();
+            } else {
+                recalcGrandTotal();
+            }
+        }
+
+        function highlightPayment(radio) {
+            document.querySelectorAll('.payment-method-card').forEach(function(el) {
+                el.classList.remove('selected');
+            });
+            radio.closest('.payment-method-card').classList.add('selected');
+        }
+
+        function selectVoucherPreset(code) {
+            if (code) {
+                document.getElementById('txtVoucherCode').value = code;
+                applyVoucherCode();
+            }
+        }
+
+        function applyVoucherCode() {
+            var code = document.getElementById('txtVoucherCode').value.trim();
+            if (!code) {
+                currentDiscount = 0;
+                document.getElementById('rowDiscount').style.display = 'none';
+                document.getElementById('voucherStatusMsg').style.display = 'none';
+                recalcGrandTotal();
+                return;
+            }
+
+            var selectedShipRadio = document.querySelector('input[name="shippingMethod"]:checked');
+            var shipMethod = selectedShipRadio ? selectedShipRadio.value : 'Instant';
+
+            var formData = new FormData();
+            formData.append('code', code);
+            formData.append('subtotal', currentSubtotal);
+            formData.append('shippingMethod', shipMethod);
+
+            fetch('@Url.Action("ValidateVoucher", "Shop")', {
+                method: 'POST',
+                body: formData
+            })
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                var msgEl = document.getElementById('voucherStatusMsg');
+                msgEl.style.display = 'block';
+
+                if (data.success) {
+                    currentDiscount = data.discountAmount;
+                    msgEl.style.color = '#2D7A58';
+                    msgEl.innerText = '✅ ' + data.message + ' (-' + data.formattedDiscount + ')';
+
+                    document.getElementById('rowDiscount').style.display = 'flex';
+                    document.getElementById('lblDiscountVal').innerText = '-' + data.formattedDiscount;
+                } else {
+                    currentDiscount = 0;
+                    msgEl.style.color = '#A83232';
+                    msgEl.innerText = '❌ ' + data.message;
+                    document.getElementById('rowDiscount').style.display = 'none';
+                }
+                recalcGrandTotal();
+            })
+            .catch(function(err) {
+                console.error(err);
+            });
+        }
+
+        function recalcGrandTotal() {
+            var grand = Math.max(0, (currentSubtotal + currentShippingCost) - currentDiscount);
+            document.getElementById('lblGrandTotalVal').innerText = 'Rp ' + grand.toLocaleString('id-ID');
+        }
+    </script>
+</body>
+</html>

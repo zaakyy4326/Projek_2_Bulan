@@ -1,0 +1,154 @@
+@{
+    ViewBag.Title = "Adventure Level " + ViewBag.LevelData.LevelNumber;
+    Layout = null;
+    var playerInfo = ViewBag.PlayerInfo as UAS_C__Lanjutan.Models.Entity.User;
+    var unlockedRecipes = ViewBag.UnlockedRecipes as List<UAS_C__Lanjutan.Models.Entity.Recipe>;
+    var levelData = ViewBag.LevelData as UAS_C__Lanjutan.Models.Entity.PuzzleLevel;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level @levelData.LevelNumber - Kyu's Dessert World</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="~/Content/dessert-theme.css?v=@DateTime.Now.Ticks" />
+    <link rel="stylesheet" href="~/Content/puzzle-classic.css?v=@DateTime.Now.Ticks" />
+    <link rel="stylesheet" href="~/Content/puzzle-adventure.css?v=@DateTime.Now.Ticks" />
+    <style>
+        html, body, *, *::before, *::after {
+            cursor: url('@Url.Content("~/Content/PNG/Cursor32.png")') 0 0, auto !important;
+        }
+        a, button, [role="button"], input[type="button"], input[type="submit"], input[type="reset"], 
+        select, label, .btn, .btn-back-pink, .btn-back, .block-option, .draggable-block, 
+        .cell, .target-item, .swal2-confirm, .swal2-cancel, .swal2-close, .swal2-popup, .swal2-html-container * {
+            cursor: url('@Url.Content("~/Content/PNG/Cursor32.png")') 0 0, pointer !important;
+        }
+        input[type="text"], input[type="password"], input[type="email"], input[type="number"], textarea {
+            cursor: text !important;
+        }
+    </style>
+</head>
+@{
+    string bgClass = "";
+    if (levelData.IsBonusLevel) {
+        bgClass = "luxury-boss-bg";
+    } else {
+        bgClass = (levelData.LevelNumber % 2 == 0) ? "luxury-pastel-bg" : "luxury-caramel-bg";
+    }
+}
+<body class="@bgClass">
+    <div id="held-block-container"></div>
+    <input type="hidden" id="urlSaveScore" value="@Url.Action("SaveScore", "Puzzle")" />
+    <input type="hidden" id="urlSaveAdventureScore" value="@Url.Action("SaveAdventureProgress", "Puzzle")" />
+    <input type="hidden" id="urlBack" value="@Url.Action("Adventure", "Puzzle")" />
+    <input type="hidden" id="urlNextLevel" value="@(ViewBag.NextLevelId != null ? Url.Action("PlayAdventure", "Puzzle", new { id = ViewBag.NextLevelId }) : "")" />
+
+    <!-- Audio Elements -->
+    <audio id="sfxGrab" src="@Url.Content("~/Content/Audio/GrabBlock.mp3")" preload="auto"></audio>
+    <audio id="sfxPlace" src="@Url.Content("~/Content/Audio/BlockPlace.mp3")" preload="auto"></audio>
+    <audio id="sfxGameOver" src="@Url.Content("~/Content/Audio/game over.mp3")" preload="auto"></audio>
+    <audio id="sfxGameSelesai" src="@Url.Content("~/Content/Audio/game selesai.mp3")" preload="auto"></audio>
+    <audio id="sfxNewBest" src="@Url.Content("~/Content/Audio/New High Score.mp3")" preload="auto"></audio>
+    <audio id="sfxCollectDessert" src="@Url.Content("~/Content/Audio/Collect dessert sound.mp3")" preload="auto"></audio>
+    <audio id="sfxCollectBintang" src="@Url.Content("~/Content/Audio/Collect bintang sound.mp3")" preload="auto"></audio>
+
+    <!-- Combo Audios -->
+    @for (int i = 1; i <= 10; i++)
+    {
+        <audio id="sfxCombo@(i)" src="@Url.Content($"~/Content/Audio/Combo {i}.mp3")" preload="auto"></audio>
+    }
+
+    <!-- Praise Audios -->
+    <audio id="sfxGreat" src="@Url.Content("~/Content/Audio/Great.mp3")" preload="auto"></audio>
+    <audio id="sfxAmazing" src="@Url.Content("~/Content/Audio/Amazing.mp3")" preload="auto"></audio>
+    <audio id="sfxExcellent" src="@Url.Content("~/Content/Audio/Excelllent.mp3")" preload="auto"></audio>
+    <audio id="sfxAwesome" src="@Url.Content("~/Content/Audio/Awesome!.mp3")" preload="auto"></audio>
+    <audio id="sfxFantastic" src="@Url.Content("~/Content/Audio/Fantastic!.mp3")" preload="auto"></audio>
+    <audio id="sfxSuperFantastic" src="@Url.Content("~/Content/Audio/Super Fantastic!.mp3")" preload="auto"></audio>
+    <audio id="sfxUnbelievable" src="@Url.Content("~/Content/Audio/Unbelievable!.mp3")" preload="auto"></audio>
+
+    <!-- BGMs -->
+    <audio id="bgmMusic" loop preload="auto"></audio>
+    <input type="hidden" id="bgm1Src" value="@Url.Content("~/Content/Audio/Bgm1_PlayPuzzle.mp3")" />
+    <input type="hidden" id="bgm2Src" value="@Url.Content("~/Content/Audio/Bgm2_PlayPuzzle.mp3")" />
+
+    <div class="top-nav-bar">
+        <div class="nav-left">
+            <a href="@Url.Action("Adventure", "Puzzle")" id="btnBackToMenu" class="btn-back-pink"><span style="font-size:0.9rem;">⬅️</span> <span>Peta</span></a>
+        </div>
+        <div class="nav-center">
+            <div class="score-title">Level @levelData.LevelNumber @(levelData.IsBonusLevel ? "- BONUS" : "")</div>
+            <div class="score-title" style="display:@(levelData.IsBonusLevel ? "block" : "none");">SCORE: <span id="currentScore">0</span> / @levelData.TargetScore</div>
+        </div>
+        <div class="nav-right" style="text-align:right;">
+            <div class="audio-control fw-bold" id="musicToggle" style=" color:white; background:rgba(0,0,0,0.5); padding:5px 15px; border-radius:20px; display:inline-block;">&#x1F3B5; Musik: ON</div>
+        </div>
+    </div>
+
+    <!-- MAIN GAME AREA -->
+    @if (!levelData.IsBonusLevel)
+    {
+        <!-- Normal Level: target panel top, board + pieces side by side -->
+        <div class="game-wrapper adv-normal-wrapper">
+            <div class="target-panel" id="targetPanel">
+                <!-- Akan di-render via JS berdasarkan TargetDessertsJson dan StarBlocksCount -->
+            </div>
+            <div class="adv-board-row">
+                <div class="game-container adv-board-only">
+                    <div class="grid-board" id="gridBoard">
+                        <!-- JS will generate 64 cells -->
+                    </div>
+                </div>
+                <div class="blocks-container adv-pieces-side" id="blocksContainer">
+                    <div class="block-option empty"></div>
+                    <div class="block-option empty"></div>
+                    <div class="block-option empty"></div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- Bonus Level: original vertical layout -->
+        <div class="game-wrapper" style="display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; flex-grow: 1; box-sizing: border-box;">
+            <div class="game-container">
+                <div class="grid-board" id="gridBoard">
+                    <!-- JS will generate 64 cells -->
+                </div>
+                <div class="blocks-container" id="blocksContainer">
+                    <div class="block-option empty"></div>
+                    <div class="block-option empty"></div>
+                    <div class="block-option empty"></div>
+                </div>
+            </div>
+        </div>
+    }
+    <!-- Hidden data for Javascript -->
+    <input type="hidden" id="levelDataJson" value='@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(levelData))' />
+
+    <script>
+        console.log("Adventure Game Init. Level:", @levelData.LevelNumber);
+        
+        // This variable is consumed by puzzle-adventure.js synchronously
+        window.unlockedNames = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(unlockedRecipes?.Select(r => r.RecipeName).ToList() ?? new List<string>()));
+    </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <div id="global-portrait-overlay">
+        <div class="global-portrait-card">
+            <div class="global-phone-icon">
+                <span style="font-size: 60px; display: inline-block;">📱</span>
+            </div>
+            <h2 class="global-portrait-title">Harap Putar Layar ke Posisi Tegak (Portrait) 🔄</h2>
+            <p class="global-portrait-desc">Halaman ini dirancang dalam posisi tegak (Portrait) agar pas dengan genggaman Anda. Silakan putar HP Anda!</p>
+        </div>
+    </div>
+
+    <script src="@Url.Content("~/Scripts/bubble-pop.js")?v=@DateTime.Now.Ticks"></script>
+    <script src="~/Scripts/puzzle-adventure.js?v=@DateTime.Now.Ticks"></script>
+</body>
+</html>

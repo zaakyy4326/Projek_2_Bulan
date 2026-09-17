@@ -1,0 +1,447 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\EntityFramework.6.5.1\build\EntityFramework.props" Condition="Exists('..\packages\EntityFramework.6.5.1\build\EntityFramework.props')" />
+  <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildTargetProperties)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildTargetProperties)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{B95F0997-EE55-479F-B160-3616D897292B}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>UAS_C__Lanjutan</RootNamespace>
+    <AssemblyName>UAS_C#_Lanjutan</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <MvcBuildViews>false</MvcBuildViews>
+    <UseIISExpress>true</UseIISExpress>
+    <Use64BitIISExpress />
+    <IISExpressSSLPort>44350</IISExpressSSLPort>
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.5.1\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.5.1\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="EPPlus, Version=4.1.1.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPPlus.4.1.1\lib\net40\EPPlus.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Newtonsoft.Json.Bson, Version=1.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.Bson.1.0.2\lib\net45\Newtonsoft.Json.Bson.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.5.5\lib\net461\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Formatting, Version=6.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.6.0.0\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.3\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Cors, Version=5.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Cors.5.3.0\lib\net45\System.Web.Cors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.3.0\lib\net45\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http, Version=5.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.3.0\lib\net45\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.Cors, Version=5.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Cors.5.3.0\lib\net45\System.Web.Http.Cors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost, Version=5.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.3.0\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.3.0\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.3.0\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.3.0\lib\net45\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.3.0\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.3.0\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="Microsoft.Web.Infrastructure, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.2.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http">
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest">
+    </Reference>
+    <Reference Include="System.Web.Optimization">
+      <HintPath>..\packages\Microsoft.AspNet.Web.Optimization.1.1.3\lib\net40\System.Web.Optimization.dll</HintPath>
+    </Reference>
+    <Reference Include="WebGrease">
+      <Private>True</Private>
+      <HintPath>..\packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
+    </Reference>
+    <Reference Include="Antlr3.Runtime">
+      <Private>True</Private>
+      <HintPath>..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform">
+      <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_Start\BundleConfig.cs" />
+    <Compile Include="App_Start\FilterConfig.cs" />
+    <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Areas\HelpPage\ApiDescriptionExtensions.cs" />
+    <Compile Include="Areas\HelpPage\App_Start\HelpPageConfig.cs" />
+    <Compile Include="Areas\HelpPage\Controllers\HelpController.cs" />
+    <Compile Include="Areas\HelpPage\HelpPageAreaRegistration.cs" />
+    <Compile Include="Areas\HelpPage\HelpPageConfigurationExtensions.cs" />
+    <Compile Include="Areas\HelpPage\ModelDescriptions\CollectionModelDescription.cs" />
+    <Compile Include="Areas\HelpPage\ModelDescriptions\ComplexTypeModelDescription.cs" />
+    <Compile Include="Areas\HelpPage\ModelDescriptions\DictionaryModelDescription.cs" />
+    <Compile Include="Areas\HelpPage\ModelDescriptions\EnumTypeModelDescription.cs" />
+    <Compile Include="Areas\HelpPage\ModelDescriptions\EnumValueDescription.cs" />
+    <Compile Include="Areas\HelpPage\ModelDescriptions\IModelDocumentationProvider.cs" />
+    <Compile Include="Areas\HelpPage\ModelDescriptions\KeyValuePairModelDescription.cs" />
+    <Compile Include="Areas\HelpPage\ModelDescriptions\ModelDescription.cs" />
+    <Compile Include="Areas\HelpPage\ModelDescriptions\ModelDescriptionGenerator.cs" />
+    <Compile Include="Areas\HelpPage\ModelDescriptions\ModelNameAttribute.cs" />
+    <Compile Include="Areas\HelpPage\ModelDescriptions\ModelNameHelper.cs" />
+    <Compile Include="Areas\HelpPage\ModelDescriptions\ParameterAnnotation.cs" />
+    <Compile Include="Areas\HelpPage\ModelDescriptions\ParameterDescription.cs" />
+    <Compile Include="Areas\HelpPage\ModelDescriptions\SimpleTypeModelDescription.cs" />
+    <Compile Include="Areas\HelpPage\Models\HelpPageApiModel.cs" />
+    <Compile Include="Areas\HelpPage\SampleGeneration\HelpPageSampleGenerator.cs" />
+    <Compile Include="Areas\HelpPage\SampleGeneration\HelpPageSampleKey.cs" />
+    <Compile Include="Areas\HelpPage\SampleGeneration\ImageSample.cs" />
+    <Compile Include="Areas\HelpPage\SampleGeneration\InvalidSample.cs" />
+    <Compile Include="Areas\HelpPage\SampleGeneration\ObjectGenerator.cs" />
+    <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.cs" />
+    <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
+    <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
+    <Compile Include="Controllers\AuthController.cs" />
+    <Compile Include="Controllers\ProductsApiController.cs" />
+    <Compile Include="Controllers\UserApiController.cs" />
+    <Compile Include="Controllers\MVC\AccountController.cs" />
+    <Compile Include="Controllers\MVC\ErrorController.cs" />
+    <Compile Include="Controllers\MVC\MainMenuController.cs" />
+    <Compile Include="Controllers\MVC\PuzzleController.cs" />
+    <Compile Include="Controllers\MVC\RecipeShopController.cs" />
+    <Compile Include="Controllers\MVC\ShopController.cs" />
+    <Compile Include="Controllers\MVC\UsersController.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Helpers\TokenAuthAttribute.cs" />
+    <Compile Include="Helpers\PasswordHelper.cs" />
+    <Compile Include="Models\Entity\Recipe.cs" />
+    <Compile Include="Models\Entity\RecipeIngredient.cs" />
+    <Compile Include="Models\Entity\User.cs" />
+    <Compile Include="Models\Entity\UserRecipe.cs" />
+    <Compile Include="Models\Entity\PuzzleLevel.cs" />
+    <Compile Include="Models\Entity\UserPuzzleLevel.cs" />
+    <Compile Include="Models\Entity\UserDailyMission.cs" />
+    <Compile Include="Models\Entity\UserAchievement.cs" />
+    <Compile Include="Models\Entity\UserFriend.cs" />
+    <Compile Include="Models\Entity\ShopCategory.cs" />
+    <Compile Include="Models\Entity\ShopProduct.cs" />
+    <Compile Include="Models\Entity\ShopProductVariant.cs" />
+    <Compile Include="Models\Entity\ShopCartItem.cs" />
+    <Compile Include="Models\Entity\ShopOrder.cs" />
+    <Compile Include="Models\Entity\ShopOrderItem.cs" />
+    <Compile Include="Models\Entity\ShopProductReview.cs" />
+    <Compile Include="Models\Entity\ShopVoucher.cs" />
+    <Compile Include="Models\Entity\MabarRoom.cs" />
+    <Compile Include="Models\Entity\MabarInvitation.cs" />
+    <Compile Include="Models\Viewmodel\LoginRequest.cs" />
+    <Compile Include="Models\Viewmodel\RecipeShopViewModel.cs" />
+    <Compile Include="Models\Viewmodel\ResetPasswordRequest.cs" />
+    <Compile Include="Models\Viewmodel\UserToken.cs" />
+    <Compile Include="Models\Viewmodel\PuzzleSaveScoreRequest.cs" />
+    <Compile Include="Models\Viewmodel\PuzzleUnlockedBlocksResponse.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\Base\BaseService.cs" />
+    <Compile Include="Services\Context\GameDbContext.cs" />
+    <Compile Include="Services\Impl\GameService.cs" />
+    <Compile Include="Services\Impl\PuzzleService.cs" />
+    <Compile Include="Services\Interface\IGameService.cs" />
+    <Compile Include="Services\Interface\IPuzzleService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\HelpPage\HelpPage.css" />
+    <Content Include="Content\Audio\Amazing.mp3" />
+    <Content Include="Content\Audio\Awesome!.mp3" />
+    <Content Include="Content\Audio\Bgm_Peta_Level.mp3" />
+    <Content Include="Content\Audio\Bgm_Puzzle.mp3" />
+    <Content Include="Content\Audio\bubble-pop.mp3" />
+    <Content Include="Content\Audio\Collect dessert sound.mp3" />
+    <Content Include="Content\Audio\Excelllent.mp3" />
+    <Content Include="Content\Audio\Fantastic!.mp3" />
+    <Content Include="Content\Audio\game over.mp3" />
+    <Content Include="Content\Audio\game selesai.mp3" />
+    <Content Include="Content\Audio\Great.mp3" />
+    <Content Include="Content\Audio\Main Theme - Dessert.mp3" />
+    <Content Include="Content\Audio\New High Score.mp3" />
+    <Content Include="Content\Audio\Ngebungkus sound.mp3" />
+    <Content Include="Content\Audio\Nice!.mp3" />
+    <Content Include="Content\Audio\pelanggan kecewa sound.mp3" />
+    <Content Include="Content\Audio\Put ingredient.mp3" />
+    <Content Include="Content\Audio\sajikan sound.mp3" />
+    <Content Include="Content\Audio\So Close%28for cooking%29.mp3" />
+    <Content Include="Content\Audio\sound beli resep.mp3" />
+    <Content Include="Content\Audio\sound-effect-mulai-game.mp3" />
+    <Content Include="Content\Audio\suara countdown pelanggan.mp3" />
+    <Content Include="Content\Audio\Suara mesin eskrim.mp3" />
+    <Content Include="Areas\HelpPage\Views\_ViewStart.cshtml" />
+    <Content Include="Content\Audio\Super Fantastic!.mp3" />
+    <Content Include="Content\Audio\timer 10 detik lagi.mp3" />
+    <Content Include="Content\Audio\Unbelievable!.mp3" />
+    <Content Include="Content\PNG\avatar\avatar_1.png" />
+    <Content Include="Content\PNG\avatar\avatar_10.png" />
+    <Content Include="Content\PNG\avatar\avatar_2.png" />
+    <Content Include="Content\PNG\avatar\avatar_3.png" />
+    <Content Include="Content\PNG\avatar\avatar_4.png" />
+    <Content Include="Content\PNG\avatar\avatar_5.png" />
+    <Content Include="Content\PNG\avatar\avatar_6.png" />
+    <Content Include="Content\PNG\avatar\avatar_7.png" />
+    <Content Include="Content\PNG\avatar\avatar_8.png" />
+    <Content Include="Content\PNG\avatar\avatar_9.png" />
+    <Content Include="Content\PNG\Cursor.png" />
+    <Content Include="Content\PNG\Mangkuk_after.png" />
+    <Content Include="Views\Web.config" />
+    <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Views\Shared\Error.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Users\Create.cshtml" />
+    <Content Include="Views\Users\Delete.cshtml" />
+    <Content Include="Views\Users\Details.cshtml" />
+    <Content Include="Views\Users\Edit.cshtml" />
+    <Content Include="Views\Users\Index.cshtml" />
+    <Content Include="Views\Account\Login.cshtml" />
+    <Content Include="Views\MainMenu\Index.cshtml" />
+    <Content Include="Views\MainMenu\Cooking.cshtml" />
+    <Content Include="Views\MainMenu\RecipeBook.cshtml" />
+    <Content Include="Views\MainMenu\RecipeBookPartial.cshtml" />
+    <Content Include="Views\Puzzle\Index.cshtml" />
+    <Content Include="Views\Puzzle\Classic.cshtml" />
+    <Content Include="Views\Puzzle\Adventure.cshtml" />
+    <Content Include="Views\Puzzle\AdventureGame.cshtml" />
+    <Content Include="Views\Puzzle\Mabar.cshtml" />
+    <Content Include="Views\Shop\Cart.cshtml" />
+    <Content Include="Views\Shop\Checkout.cshtml" />
+    <Content Include="Views\Shop\Index.cshtml" />
+    <Content Include="Views\Shop\OrderDetail.cshtml" />
+    <Content Include="Views\Shop\OrderHistory.cshtml" />
+    <Content Include="Views\Shop\Payment.cshtml" />
+    <Content Include="Views\Shop\ProductDetail.cshtml" />
+    <Content Include="Views\Error\Forbidden.cshtml" />
+    <Content Include="Views\Error\NotFound.cshtml" />
+    <Content Include="Views\Error\ServerError.cshtml" />
+    <Content Include="Views\Error\Unauthorized.cshtml" />
+    <Content Include="Content\Audio\Suara oven.mp3" />
+    <Content Include="Content\dessert-cooking-table.css" />
+    <Content Include="Content\dessert-intro.css" />
+    <Content Include="Content\dessert-menu.css" />
+    <Content Include="Content\dessert-theme.css" />
+    <Content Include="Content\puzzle-menu.css" />
+    <Content Include="Content\puzzle-classic.css" />
+    <Content Include="Content\PNG\anggur.png" />
+    <Content Include="Content\PNG\Buku-resep.png" />
+    <Content Include="Content\PNG\bungkusan_cupcake__pancake__shortcake_dan_waffle.png" />
+    <Content Include="Content\PNG\bungkusan_eskrim_donat.png" />
+    <Content Include="Content\PNG\bungkusan_Pai_Kue_Ultah.png" />
+    <Content Include="Content\PNG\ceri.png" />
+    <Content Include="Content\PNG\coklat.png" />
+    <Content Include="Content\PNG\gula.png" />
+    <Content Include="Content\PNG\krim-keju.png" />
+    <Content Include="Content\PNG\Layout.png" />
+    <Content Include="Content\PNG\mangkuk.png" />
+    <Content Include="Content\PNG\mentega.png" />
+    <Content Include="Content\PNG\mesin_eskrim-after.png" />
+    <Content Include="Content\PNG\mesin_eskrim_before.png" />
+    <Content Include="Content\PNG\Order-monitor.png" />
+    <Content Include="Content\PNG\oven_before.png" />
+    <Content Include="Content\PNG\over_after.png" />
+    <Content Include="Content\PNG\ragi.png" />
+    <Content Include="Content\PNG\stroberi.png" />
+    <Content Include="Content\PNG\susu.png" />
+    <Content Include="Content\PNG\telur.png" />
+    <Content Include="Content\PNG\tepung.png" />
+    <Content Include="Content\PNG\vanila.png" />
+    <Content Include="favicon.ico" />
+    <Content Include="Global.asax" />
+    <Content Include="Areas\HelpPage\Views\Web.config" />
+    <Content Include="Areas\HelpPage\Views\Shared\_Layout.cshtml" />
+    <Content Include="Areas\HelpPage\Views\Help\ResourceModel.cshtml" />
+    <Content Include="Areas\HelpPage\Views\Help\Index.cshtml" />
+    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\TextSample.cshtml" />
+    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\SimpleTypeModelDescription.cshtml" />
+    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\Samples.cshtml" />
+    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\Parameters.cshtml" />
+    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\ModelDescriptionLink.cshtml" />
+    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\KeyValuePairModelDescription.cshtml" />
+    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\InvalidSample.cshtml" />
+    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\ImageSample.cshtml" />
+    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\HelpPageApiModel.cshtml" />
+    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\EnumTypeModelDescription.cshtml" />
+    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\DictionaryModelDescription.cshtml" />
+    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\ComplexTypeModelDescription.cshtml" />
+    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\CollectionModelDescription.cshtml" />
+    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\ApiGroup.cshtml" />
+    <Content Include="Areas\HelpPage\Views\Help\Api.cshtml" />
+    <Content Include="Scripts\dessert-auth.js" />
+    <Content Include="Scripts\dessert-cooking.js" />
+    <Content Include="Scripts\main-menu.js" />
+    <Content Include="Scripts\puzzle-menu.js" />
+    <Content Include="Scripts\puzzle-classic.js" />
+    <Content Include="Web.config" />
+    <Content Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Views\Puzzle\AdventureGame.cshtml" />
+    <Content Include="Scripts\puzzle-adventure.js" />
+    <Content Include="Scripts\bubble-pop.js" />
+    <Content Include="Content\dessert-shop.css" />
+    <Content Include="Content\puzzle-adventure.css" />
+    <Content Include="Content\puzzle-adventure-ocean.css" />
+    <Content Include="Content\Images\chocolate-cursor.png" />
+    <Content Include="Content\Images\chocolate-cursor-32.png" />
+    <Content Include="Content\Images\products\strawberry-glazed-artisan-donut.jpg" />
+    <Content Include="Content\PNG\Cursor32.png" />
+    <Content Include="Content\PNG\Meja.png" />
+    <Content Include="Content\Audio\Bgm1_PlayPuzzle.mp3" />
+    <Content Include="Content\Audio\Bgm2_PlayPuzzle.mp3" />
+    <Content Include="Content\Audio\BlockPlace.mp3" />
+    <Content Include="Content\Audio\Combo 1.mp3" />
+    <Content Include="Content\Audio\Combo 2.mp3" />
+    <Content Include="Content\Audio\Combo 3.mp3" />
+    <Content Include="Content\Audio\Combo 4.mp3" />
+    <Content Include="Content\Audio\Combo 5.mp3" />
+    <Content Include="Content\Audio\Combo 6.mp3" />
+    <Content Include="Content\Audio\Combo 7.mp3" />
+    <Content Include="Content\Audio\Combo 8.mp3" />
+    <Content Include="Content\Audio\Combo 9.mp3" />
+    <Content Include="Content\Audio\Combo 10.mp3" />
+    <Content Include="Content\Audio\GrabBlock.mp3" />
+    <Content Include="Content\Audio\So Close(for cooking).mp3" />
+    <Content Include="Scripts\client-router.js" />
+    <Content Include="Scripts\puzzle-mabar.js" />
+    <Content Include="Content\puzzle-mabar.css" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+    <Folder Include="Content\Uploads\" />
+    <Folder Include="Content\Images\products\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="add_soft_delete_columns.sql" />
+    <None Include="create_shop_tables.sql" />
+    <None Include="final_update_all_55_user_links.sql" />
+    <None Include="seed_55_desserts.sql" />
+    <None Include="seed_perfect_55.sql" />
+    <None Include="seed_perfect_55_clean.sql" />
+    <None Include="seeder_150.sql" />
+    <None Include="update_user_images.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
+    <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
+  </Target>
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>62465</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>https://localhost:44350/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+
+  <Import Project="..\packages\EntityFramework.6.5.1\build\EntityFramework.targets" Condition="Exists('..\packages\EntityFramework.6.5.1\build\EntityFramework.targets')" />
+</Project>
