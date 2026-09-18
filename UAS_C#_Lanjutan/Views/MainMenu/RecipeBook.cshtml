@@ -7,7 +7,8 @@
 
     var recipes = ViewBag.AllRecipes as List<Recipe>;
     var unlockedIds = ViewBag.UnlockedRecipeIds as List<int>;
-    int idSelanjutnyaDapatDibeli = recipes.FirstOrDefault(r => !unlockedIds.Contains(r.RecipeId))?.RecipeId ?? -1;
+    var nextRecipe = (recipes != null && unlockedIds != null) ? recipes.FirstOrDefault(r => !unlockedIds.Contains(r.RecipeId)) : null;
+    int idSelanjutnyaDapatDibeli = nextRecipe != null ? nextRecipe.RecipeId : -1;
 }
 
 @functions {

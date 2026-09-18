@@ -68,7 +68,7 @@
                     <div class="checkout-form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
                         <div>
                             <label style="font-size: 0.85rem; font-weight: 700; color: var(--cafe-mocha); margin-bottom: 4px; display: block;">Nama Penerima *</label>
-                            <input type="text" name="recipientName" class="custom-note-input" value="@(user?.Username ?? "")" placeholder="Nama Lengkap" required />
+                            <input type="text" name="recipientName" class="custom-note-input" value="@(user != null ? user.Username : "")" placeholder="Nama Lengkap" required />
                         </div>
                         <div>
                             <label style="font-size: 0.85rem; font-weight: 700; color: var(--cafe-mocha); margin-bottom: 4px; display: block;">Nomor WhatsApp / HP *</label>

@@ -171,7 +171,7 @@
                     </div>
 
                     <div class="product-card-body">
-                        <div class="product-category-tag">@(item.Category?.Name ?? "Dessert")</div>
+                        <div class="product-category-tag">@(item.Category != null ? item.Category.Name : "Dessert")</div>
                         <a href="@Url.Action("ProductDetail", "Shop", new { id = item.Id })" class="product-card-title">@item.Name</a>
                         <p class="product-card-desc">@item.ShortDescription</p>
 

@@ -7,7 +7,7 @@
     var player = ViewBag.PlayerInfo as User;
     var pinList = ViewBag.PinnedAchievements as List<string> ?? new List<string>();
 
-    int userLvl = player?.Level ?? 1;
+    int userLvl = player != null ? player.Level : 1;
     string borderClass = "border-bronze";
     if (userLvl >= 15) { borderClass = "border-rainbow"; }
     else if (userLvl >= 10) { borderClass = "border-gold"; }
@@ -121,7 +121,7 @@
         <!-- Profil Corner & Toko Dessert Button - Pojok Kanan Atas -->
         <div class="profile-corner" style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
 
-            @if (Session["Role"]?.ToString() == "Admin" || player?.Role == "Admin")
+            @if ((Session["Role"] != null && Session["Role"].ToString() == "Admin") || (player != null && player.Role == "Admin"))
             {
                 <!-- Tombol Admin Panel Khusus Role Admin -->
                 <a href="@Url.Action("Index", "Users")" class="btn-admin-nav-corner" title="Panel Kelola Pengguna (Admin)" style="display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #6C5CE7, #8E44AD); color: #fff; text-decoration: none; padding: 7px 16px; border-radius: 50px; font-weight: 700; font-size: 0.92rem; box-shadow: 0 4px 12px rgba(108, 92, 231, 0.35); border: 2px solid #FFF; transition: all 0.25s;">

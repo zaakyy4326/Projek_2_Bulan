@@ -64,7 +64,7 @@
     <div class="shop-page-wrapper">
         <h1 class="page-header-title">
             <span>🛒</span>
-            <span>Keranjang Belanja (@(Model?.Count ?? 0) Menu)</span>
+            <span>Keranjang Belanja (@(Model != null ? Model.Count : 0) Menu)</span>
         </h1>
 
         @if (Model == null || !Model.Any())

@@ -5,6 +5,17 @@
     var playerInfo = ViewBag.PlayerInfo as UAS_C__Lanjutan.Models.Entity.User;
     var opponentInfo = ViewBag.OpponentInfo as UAS_C__Lanjutan.Models.Entity.User;
     bool isHost = ViewBag.IsHost != null && (bool)ViewBag.IsHost;
+
+    int roomId = room != null ? room.RoomId : 0;
+    int playerId = playerInfo != null ? playerInfo.UserId : 0;
+    int targetScore = room != null ? room.TargetScore : 1000;
+    int timeLimit = room != null ? room.TimeLimitSeconds : 180;
+    string roomStatus = room != null ? room.Status : "Waiting";
+    string roomCode = room != null ? room.RoomCode : "";
+    string hostAvatar = isHost ? (playerInfo != null && !string.IsNullOrEmpty(playerInfo.Avatar) ? playerInfo.Avatar : "/Content/Images/default-avatar.png") : (opponentInfo != null && !string.IsNullOrEmpty(opponentInfo.Avatar) ? opponentInfo.Avatar : "/Content/Images/default-avatar.png");
+    string hostName = isHost ? (playerInfo != null ? playerInfo.Username : "Host") : (opponentInfo != null ? opponentInfo.Username : "Host");
+    string guestAvatar = !isHost ? (playerInfo != null && !string.IsNullOrEmpty(playerInfo.Avatar) ? playerInfo.Avatar : "/Content/Images/default-avatar.png") : (opponentInfo != null && !string.IsNullOrEmpty(opponentInfo.Avatar) ? opponentInfo.Avatar : "/Content/Images/default-avatar.png");
+    string guestName = !isHost ? (playerInfo != null ? playerInfo.Username : "Guest") : (opponentInfo != null ? opponentInfo.Username : "Menunggu Lawan...");
 }
 
 <!DOCTYPE html>
@@ -35,12 +46,12 @@
     <div id="mabar-held-container"></div>
 
     <!-- Hidden Server Variables -->
-    <input type="hidden" id="mabarRoomId" value="@(room?.RoomId ?? 0)" />
-    <input type="hidden" id="currentUserId" value="@(playerInfo?.UserId ?? 0)" />
+    <input type="hidden" id="mabarRoomId" value="@roomId" />
+    <input type="hidden" id="currentUserId" value="@playerId" />
     <input type="hidden" id="isHostUser" value="@(isHost ? "true" : "false")" />
-    <input type="hidden" id="targetScoreVal" value="@(room?.TargetScore ?? 1000)" />
-    <input type="hidden" id="timeLimitVal" value="@(room?.TimeLimitSeconds ?? 180)" />
-    <input type="hidden" id="initialRoomStatus" value="@(room?.Status ?? "Waiting")" />
+    <input type="hidden" id="targetScoreVal" value="@targetScore" />
+    <input type="hidden" id="timeLimitVal" value="@timeLimit" />
+    <input type="hidden" id="initialRoomStatus" value="@roomStatus" />
     <input type="hidden" id="urlBackToMenu" value="@Url.Action("Index", "Puzzle")" />
 
     <!-- Audio Elements -->
@@ -71,20 +82,20 @@
     </audio>
 
     <!-- LOBBY SCREEN OVERLAY (Waiting for Guest / Start) -->
-    <div id="mabarLobbyOverlay" class="mabar-lobby-screen" style="@(room?.Status == "Playing" ? "display:none;" : "")">
+    <div id="mabarLobbyOverlay" class="mabar-lobby-screen" style="@(roomStatus == "Playing" ? "display:none;" : "")">
         <div class="mabar-lobby-box">
             <h2 style="font-family:'Fredoka One', cursive; color:#ffd166; margin:0 0 4px 0; font-size:1.8rem; letter-spacing:1px;">
                 ⚔️ RUANG TANDING 1 VS 1 ⚔️
             </h2>
             <div style="font-size:0.9rem; color:#fecfef;">
-                Kode Room: <b style="color:#ffd166; font-size:1.05rem;">@(room?.RoomCode)</b>
+                Kode Room: <b style="color:#ffd166; font-size:1.05rem;">@roomCode</b>
             </div>
 
             <div class="mabar-matchup-row">
                 <!-- Host Player -->
                 <div class="mabar-lobby-player">
-                    <img id="lobbyHostAvatar" src="@(isHost ? (playerInfo?.Avatar ?? "/Content/Images/default-avatar.png") : (opponentInfo?.Avatar ?? "/Content/Images/default-avatar.png"))" class="mabar-lobby-avatar" />
-                    <div id="lobbyHostName" class="mabar-lobby-name">@(isHost ? playerInfo?.Username : (opponentInfo?.Username ?? "Host"))</div>
+                    <img id="lobbyHostAvatar" src="@hostAvatar" class="mabar-lobby-avatar" />
+                    <div id="lobbyHostName" class="mabar-lobby-name">@hostName</div>
                     <span class="mabar-lobby-role">👑 Pembuat Room</span>
                 </div>
 
@@ -92,9 +103,9 @@
 
                 <!-- Guest Player -->
                 <div class="mabar-lobby-player">
-                    <img id="lobbyGuestAvatar" src="@(!isHost ? (playerInfo?.Avatar ?? "/Content/Images/default-avatar.png") : (opponentInfo?.Avatar ?? "/Content/Images/default-avatar.png"))" class="mabar-lobby-avatar" style="@(opponentInfo == null && isHost ? "opacity:0.4; filter:grayscale(1);" : "")" />
+                    <img id="lobbyGuestAvatar" src="@guestAvatar" class="mabar-lobby-avatar" style="@(opponentInfo == null && isHost ? "opacity:0.4; filter:grayscale(1);" : "")" />
                     <div id="lobbyGuestName" class="mabar-lobby-name">
-                        @(!isHost ? playerInfo?.Username : (opponentInfo?.Username ?? "Menunggu Lawan..."))
+                        @guestName
                     </div>
                     <span id="lobbyGuestStatus" class="mabar-lobby-role" style="@(opponentInfo == null && isHost ? "background:#495057; color:#ced4da;" : "")">
                         @(!isHost ? "⚔️ Penantang" : (opponentInfo != null ? "⚔️ Siap Bertanding" : "⏳ Belum Terhubung"))
@@ -103,8 +114,8 @@
             </div>
 
             <div style="background:rgba(255,255,255,0.08); padding:10px; border-radius:12px; margin-bottom:15px; font-size:0.92rem; color:#fecfef;">
-                🎯 Target Menang: <b style="color:#ffd166;">@((room?.TargetScore ?? 1000).ToString("N0")) Poin</b> &bull; 
-                ⏱️ Waktu: <b style="color:#06d6a0;">@((room?.TimeLimitSeconds ?? 180) / 60) Menit</b>
+                🎯 Target Menang: <b style="color:#ffd166;">@(targetScore.ToString("N0")) Poin</b> &bull; 
+                ⏱️ Waktu: <b style="color:#06d6a0;">@(timeLimit / 60) Menit</b>
             </div>
 
             <div id="lobbyControls">
@@ -137,11 +148,11 @@
             <div id="hudCardHost" class="hud-player-card @(isHost ? "is-you" : "")">
                 <div class="hud-avatar-wrap">
                     <span class="hud-lead-crown">👑</span>
-                    <img id="hudHostAvatar" src="@(isHost ? (playerInfo?.Avatar ?? "/Content/Images/default-avatar.png") : (opponentInfo?.Avatar ?? "/Content/Images/default-avatar.png"))" class="hud-avatar" />
+                    <img id="hudHostAvatar" src="@hostAvatar" class="hud-avatar" />
                 </div>
                 <div class="hud-player-info">
                     <div class="hud-player-name">
-                        <span id="hudHostName">@(isHost ? playerInfo?.Username : (opponentInfo?.Username ?? "Host"))</span>
+                        <span id="hudHostName">@hostName</span>
                         @if (isHost) { <span class="hud-badge-you">KAMU</span> }
                     </div>
                     <div class="hud-player-score"><span id="hudHostScore">0</span> <span style="font-size:0.7rem; color:#fecfef;">pts</span></div>
@@ -154,18 +165,18 @@
             <!-- CENTER TIMER & TARGET -->
             <div class="mabar-center-hud">
                 <div id="mabarTimer" class="mabar-timer-badge">03:00</div>
-                <div class="mabar-target-badge">🎯 TARGET: @((room?.TargetScore ?? 1000).ToString("N0")) PTS</div>
+                <div class="mabar-target-badge">🎯 TARGET: @(targetScore.ToString("N0")) PTS</div>
             </div>
 
             <!-- GUEST HUD CARD -->
             <div id="hudCardGuest" class="hud-player-card @(!isHost ? "is-you" : "")">
                 <div class="hud-avatar-wrap">
                     <span class="hud-lead-crown">👑</span>
-                    <img id="hudGuestAvatar" src="@(!isHost ? (playerInfo?.Avatar ?? "/Content/Images/default-avatar.png") : (opponentInfo?.Avatar ?? "/Content/Images/default-avatar.png"))" class="hud-avatar" />
+                    <img id="hudGuestAvatar" src="@guestAvatar" class="hud-avatar" />
                 </div>
                 <div class="hud-player-info">
                     <div class="hud-player-name">
-                        <span id="hudGuestName">@(!isHost ? playerInfo?.Username : (opponentInfo?.Username ?? "Guest"))</span>
+                        <span id="hudGuestName">@guestName</span>
                         @if (!isHost) { <span class="hud-badge-you">KAMU</span> }
                     </div>
                     <div class="hud-player-score"><span id="hudGuestScore">0</span> <span style="font-size:0.7rem; color:#fecfef;">pts</span></div>

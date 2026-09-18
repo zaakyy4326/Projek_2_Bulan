@@ -133,7 +133,7 @@
         console.log("Adventure Game Init. Level:", @levelData.LevelNumber);
         
         // This variable is consumed by puzzle-adventure.js synchronously
-        window.unlockedNames = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(unlockedRecipes?.Select(r => r.RecipeName).ToList() ?? new List<string>()));
+        window.unlockedNames = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(unlockedRecipes != null ? unlockedRecipes.Select(r => r.RecipeName).ToList() : new List<string>()));
     </script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

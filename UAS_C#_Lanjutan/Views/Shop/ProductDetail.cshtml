@@ -67,7 +67,7 @@
             <!-- Right: Product Configurator & Info -->
             <div class="detail-info-wrapper">
                 <div class="detail-category-tag">
-                    @(Model.Category?.Name ?? "Artisan Dessert")
+                    @(Model.Category != null ? Model.Category.Name : "Artisan Dessert")
                 </div>
 
                 <h1 class="detail-title">@Model.Name</h1>

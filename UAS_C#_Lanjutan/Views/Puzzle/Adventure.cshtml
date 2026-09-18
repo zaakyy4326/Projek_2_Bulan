@@ -94,7 +94,7 @@
                     continue; // Fog of War: completely hide areas beyond the next one
                 }
 
-                var progress = userProgress?.FirstOrDefault(p => p.LevelId == level.LevelId);
+                var progress = userProgress != null ? userProgress.FirstOrDefault(p => p.LevelId == level.LevelId) : null;
                 bool isCompleted = progress != null && (progress.IsCompleted || (level.IsBonusLevel && progress.HighScore >= level.TargetScore));
                 int stars = progress != null ? progress.Stars : 0;
                 
