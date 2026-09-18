@@ -58,7 +58,7 @@
     <!-- Combo Audios -->
     @for (int i = 1; i <= 10; i++)
     {
-        <audio id="sfxCombo@(i)" src="@Url.Content($"~/Content/Audio/Combo {i}.mp3")" preload="auto"></audio>
+        <audio id="sfxCombo@(i)" src="@Url.Content("~/Content/Audio/Combo " + i + ".mp3")" preload="auto"></audio>
     }
 
     <!-- Praise Audios -->

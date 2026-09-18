@@ -111,7 +111,7 @@
                     else if (level.RequiredStars > 0 && totalAccumulatedStars < level.RequiredStars)
                     {
                         isLocked = true;
-                        lockReason = $"Butuh {level.RequiredStars} Bintang";
+                        lockReason = "Butuh " + level.RequiredStars + " Bintang";
                     }
                 }
 
@@ -140,7 +140,7 @@
                             if (!isCompleted && !isLocked && !hasRecipe)
                             {
                                 isLocked = true;
-                                lockReason = $"Buka resep {requiredRecipeName} di Dapur";
+                                lockReason = "Buka resep " + requiredRecipeName + " di Dapur";
                             }
                         }
                         else
