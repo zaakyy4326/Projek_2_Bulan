@@ -6,6 +6,19 @@
     var userProgress = ViewBag.UserProgress as List<UAS_C__Lanjutan.Models.Entity.UserPuzzleLevel>;
 }
 
+@functions {
+    public string GetAreaEmoji(int lvl) {
+        if (lvl <= 20) return "&#x1F369;"; // Donat
+        if (lvl <= 40) return "&#x1F9C1;"; // Cupcake
+        if (lvl <= 60) return "&#x1F95E;"; // Pancake
+        if (lvl <= 80) return "&#x1F9C7;"; // Waffle
+        if (lvl <= 100) return "&#x1F370;"; // Shortcake
+        if (lvl <= 120) return "&#x1F382;"; // Birthday cake
+        if (lvl <= 140) return "&#x1F967;"; // Pai
+        return "&#x1F3C1;"; // Checkered flag
+    }
+}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -60,17 +73,6 @@
             }
         }
         int playerArea = ((maxUnlockedLevel - 1) / 20) + 1;
-
-        string GetAreaEmoji(int lvl) {
-            if (lvl <= 20) return "&#x1F369;"; // Donat
-            if (lvl <= 40) return "&#x1F9C1;"; // Cupcake
-            if (lvl <= 60) return "&#x1F95E;"; // Pancake
-            if (lvl <= 80) return "&#x1F9C7;"; // Waffle
-            if (lvl <= 100) return "&#x1F370;"; // Shortcake
-            if (lvl <= 120) return "&#x1F382;"; // Birthday cake
-            if (lvl <= 140) return "&#x1F967;"; // Pai
-            return "&#x1F3C1;"; // Checkered flag
-        }
     }
 
     <div class="header">
