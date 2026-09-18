@@ -108,6 +108,7 @@ UAS_C#_Lanjutan/
    - Jalankan `Tabel Create_utf8.sql` (untuk membuat tabel-tabel utama).
    - Jalankan `Insert Query.sql` (untuk mengisi data resep, level game, dan menu toko).
    - Jalankan `add_soft_delete_columns.sql` (untuk memastikan kolom penonaktifan data/soft delete siap digunakan).
+   - (Agar semua clean, disarankan run saja semua sql yang tersedia)
 
 ### 3. Konfigurasi Koneksi Database
 Buka berkas `Web.config` pada baris `<connectionStrings>` dan pastikan nama server SQL Server sesuai dengan konfigurasi komputer Anda:
