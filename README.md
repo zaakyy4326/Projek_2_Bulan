@@ -153,38 +153,4 @@ Untuk mempermudah pengujian endpoint backend secara mandiri:
 4. Pastikan aplikasi sedang berjalan di IIS Express (`https://localhost:44350`), lalu klik tombol **Send** untuk menguji respons data.
 
 ---
-
-## 🔄 Alur Sistem & Interaksi Pengguna (Flowchart)
-
-```mermaid
-flowchart TD
-    Start([Mulai Aplikasi]) --> Login[Halaman Login & Registrasi]
-    Login -->|Autentikasi Berhasil| MainMenu[Menu Utama Kerajaan Dessert]
-    
-    %% Cabang Mode Game
-    MainMenu -->|Pilih Main| GameChoice{Pilih Mode Permainan}
-    GameChoice -->|Klasik| Classic[Game Puzzle Balok 8x8]
-    GameChoice -->|Petualangan| Adventure[Petualangan 149 Level]
-    GameChoice -->|Main Teman| Mabar[Mode Mabar Kode Kamar]
-    
-    Classic & Adventure --> Score[Kumpulkan Skor, Bintang & Koin]
-    Score --> Achievements[Buka Pencapaian & Voucher Belanja]
-    
-    %% Cabang E-Commerce
-    MainMenu -->|Buka Kafe| Shop[Katalog Toko Kyu Dessert]
-    Shop --> SearchFilter[Pencarian, Filter Kategori & Urutkan Menu]
-    SearchFilter --> Detail[Detail Menu & Pilih Varian]
-    Detail --> Cart[Keranjang Belanja]
-    Achievements -.->|Gunakan Voucher| Cart
-    Cart --> Checkout[Konfirmasi Pengiriman & Pembayaran]
-    Checkout --> Payment[Simulasi Bayar QRIS Dinamis]
-    Payment -->|Pembayaran Berhasil| Tracking[Pelacakan Pesanan Dapur Realtime]
-    Tracking -->|Pesanan Tiba| FinishOrder[Detail Transaksi Selesai]
-    
-    %% Cabang Profil & Admin
-    MainMenu -->|Klik Profil| Profile[Profil Pemain, Avatar & Leaderboard]
-    MainMenu -->|Role Admin| AdminPanel[Panel Kelola Pengguna /Users]
-```
-
----
 *Kyu's Dessert World & Cafe — Proyek Pengembangan Aplikasi Pemrograman C# Lanjutan.*
