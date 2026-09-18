@@ -14,10 +14,18 @@
     <link rel="stylesheet" href="@Url.Content("~/Content/dessert-theme.css")?v=@DateTime.Now.Ticks" />
     
     <style>
+        html {
+            overflow-x: hidden;
+            overflow-y: auto !important;
+            height: auto !important;
+        }
         body {
             font-family: 'Fredoka', cursive, sans-serif;
             background: linear-gradient(135deg, #FFF9F2 0%, #FFF0F5 50%, #FFEBEF 100%);
             min-height: 100vh;
+            height: auto !important;
+            overflow-y: auto !important;
+            overflow-x: hidden;
             display: flex;
             flex-direction: column;
             color: #5D4037;
